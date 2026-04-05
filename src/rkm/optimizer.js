@@ -29,8 +29,18 @@ function calcSizeRatio(opNo, geometry) {
 // Партионные операции (1 раз на партию — контроль, настройка, раскрой, комплектация)
 const BATCH_OPS = new Set([1, 2, 3, 6, 9, 10, 24, 25]);
 
-function calcSerialFactor(qty) {
+/**
+ * Коэффициент серийности.
+ * Базовый — по количеству штук.
+ * Усиленный — для площадных позиций с большим объёмом (>100 м²):
+ *   массовая плитка обрабатывается на поточных линиях — нормы снижаются сильнее.
+ */
+function calcSerialFactor(qty, areaMode) {
   if (qty <= 1) return 1.0;
+  if (areaMode && areaMode.totalArea > 100) {
+    // Усиленная серийность: при 200 м² фактор ~0.55, при 500 м² ~0.42
+    return Math.max(0.15, 1.0 / Math.pow(qty, 0.14));
+  }
   return Math.max(0.3, 1.0 / Math.pow(qty, 0.08));
 }
 
@@ -50,6 +60,84 @@ function getCalcPrice(result, controlUnit) {
 }
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+// ============================================================
+// ПЛОЩАДНОЙ РЕЖИМ: определение и пересчёт виртуального изделия
+// ============================================================
+
+/**
+ * Определяет, нужен ли площадной режим.
+ * Площадной режим включается автоматически, если единица контрольной цены —
+ * кв.м. или пог.м. При этом:
+ *   - виртуальное изделие = 1 м² (1000×1000×T мм) или 1 м.п. (1000×W×T мм)
+ *   - quantity_pieces пересчитывается как количество таких виртуальных штук
+ *   - включается усиленная серийность для массовых партий
+ *
+ * @returns {Object|null} — { enabled, virtualDims, virtualQty, originalDims, totalArea }
+ */
+function detectAreaMode(product) {
+  const controlUnit = getControlUnit(product);
+  if (controlUnit === 'piece') return null;
+
+  const dims = product.dimensions;
+  if (!dims) return null;
+
+  const L_mm = dims.length;
+  const W_mm = dims.width;
+  const T_mm = dims.thickness;
+
+  // Оригинальная площадь одной штуки (м²)
+  const pieceArea_m2 = (L_mm / 1000) * (W_mm / 1000);
+  // Оригинальная длина одной штуки (м)
+  const pieceLength_m = L_mm / 1000;
+
+  // Считаем общее количество
+  const qtyStr = product.quantity || '';
+  const qtyMatch = qtyStr.match(/[\d.,]+/);
+  const qtyNum = qtyMatch ? parseFloat(qtyMatch[0].replace(',', '.')) : (product.quantity_pieces || 1);
+
+  let totalArea = 0;
+  let totalLength = 0;
+  let virtualDims, virtualQty;
+
+  if (controlUnit === 'm2') {
+    // 1 виртуальная штука = 1 м² = 1000×1000×T мм
+    virtualDims = { length: 1000, width: 1000, thickness: T_mm };
+    totalArea = qtyNum; // qtyNum уже в м²
+    virtualQty = Math.ceil(qtyNum); // N виртуальных штук = N м²
+  } else {
+    // m.p.: 1 виртуальная штука = 1 м.п. = 1000×W×T мм
+    virtualDims = { length: 1000, width: W_mm, thickness: T_mm };
+    totalLength = qtyNum;
+    totalArea = qtyNum * (W_mm / 1000); // приблизительная площадь
+    virtualQty = Math.ceil(qtyNum);
+  }
+
+  return {
+    enabled: true,
+    controlUnit,
+    virtualDims,
+    virtualQty,
+    originalDims: { length: L_mm, width: W_mm, thickness: T_mm },
+    originalQtyPieces: product.quantity_pieces || 1,
+    totalArea,
+    totalLength,
+    pieceArea_m2,
+    pieceLength_m
+  };
+}
+
+/**
+ * Применяет площадной режим к продукту — заменяет размеры и quantity.
+ */
+function applyAreaMode(product, areaMode) {
+  const p = deepClone(product);
+  p.dimensions = { ...areaMode.virtualDims };
+  p.quantity_pieces = areaMode.virtualQty;
+  // Помечаем что работаем в площадном режиме
+  p._area_mode = areaMode;
+  return p;
+}
 
 // ============================================================
 // РАСЧЁТ ОДНОГО ПРОХОДА
@@ -96,7 +184,7 @@ function calcPass(product, overheadOverrides) {
 // SIZE-BASED ПЕРВИЧНОЕ МАСШТАБИРОВАНИЕ
 // ============================================================
 
-function calcAdjustedNorm(opNo, baseNorm, geometry, complexityType, qty) {
+function calcAdjustedNorm(opNo, baseNorm, geometry, complexityType, qty, areaMode) {
   if (baseNorm === 0) return 0;
   const minNorm = baseNorm * 0.005;
 
@@ -107,20 +195,20 @@ function calcAdjustedNorm(opNo, baseNorm, geometry, complexityType, qty) {
   const alpha = sizeProfiles.operation_alpha[String(opNo)] || 0.25;
   const sizeRatio = calcSizeRatio(opNo, geometry);
   const complexity = sizeProfiles.complexity_multipliers[complexityType] || 1.0;
-  const serialFactor = calcSerialFactor(qty);
+  const serialFactor = calcSerialFactor(qty, areaMode);
 
   return Math.max(minNorm, baseNorm * (alpha + (1 - alpha) * sizeRatio * complexity) * serialFactor);
 }
 
-function buildSizeBasedOverrides(product, geometry) {
+function buildSizeBasedOverrides(product, geometry, areaMode) {
   const norms = require('../../data/rkm_norms.json');
   const ct = product.geometry_type || 'profile';
   const qty = product.quantity_pieces || 1;
   const overrides = {};
   for (const op of norms.operations) {
     overrides[op.no] = {
-      chel_ch: Math.round(calcAdjustedNorm(op.no, op.base_chel_ch, geometry, ct, qty) * 1000) / 1000,
-      mash_ch: Math.round(calcAdjustedNorm(op.no, op.base_mash_ch, geometry, ct, qty) * 1000) / 1000
+      chel_ch: Math.round(calcAdjustedNorm(op.no, op.base_chel_ch, geometry, ct, qty, areaMode) * 1000) / 1000,
+      mash_ch: Math.round(calcAdjustedNorm(op.no, op.base_mash_ch, geometry, ct, qty, areaMode) * 1000) / 1000
     };
   }
   return overrides;
@@ -150,11 +238,14 @@ function getSizeBasedKReject(V_net) {
 /**
  * Оптимизация РКМ: подбор параметров чтобы цена попала в коридор ±tolerance от controlPrice.
  *
- * Стратегия (4 этапа):
+ * Стратегия (5 этапов + площадной режим):
  * 0. Расчёт «как есть» → проверка.
+ * 0.5. [НОВОЕ] Если единица кв.м./пог.м. — автоматический переход в площадной режим
+ *     (виртуальное изделие 1м²/1м.п., усиленная серийность).
  * 1-2. Size-based масштабирование (нормы, расходники, k_reject) → проверка.
  * 3. Итеративный подбор глобального множителя норм (binary search) → проверка.
  * 4. Подстройка накладных/прибыли/резерва (binary search) → финал.
+ * 5. Подбор k_reject → финал.
  */
 function optimizeRKM(product, controlPrice, options = {}) {
   const tolerance = options.tolerance || 0.15;
@@ -162,25 +253,39 @@ function optimizeRKM(product, controlPrice, options = {}) {
   const log = [];
   const controlUnit = getControlUnit(product);
 
+  // --- Площадной режим: автодетект ---
+  const areaMode = detectAreaMode(product);
+  let workProduct = product;
+
+  if (areaMode) {
+    log.push(`[Площадной режим] Единица: ${controlUnit === 'm2' ? 'кв.м.' : 'пог.м.'}`);
+    log.push(`  Виртуальное изделие: ${areaMode.virtualDims.length}×${areaMode.virtualDims.width}×${areaMode.virtualDims.thickness}мм`);
+    log.push(`  Виртуальное количество: ${areaMode.virtualQty} шт (≈${areaMode.totalArea.toFixed(1)} м²)`);
+    if (areaMode.totalArea > 100) {
+      log.push(`  Усиленная серийность: партия >100 м² → поточная линия`);
+    }
+    workProduct = applyAreaMode(product, areaMode);
+  }
+
   // --- ЭТАП 0 ---
-  const baseResult = calcPass(product);
+  const baseResult = calcPass(workProduct);
   const basePrice = getCalcPrice(baseResult, controlUnit);
   const baseRatio = basePrice / controlPrice;
   log.push(`[Этап 0] Без оптимизации: calc=${basePrice.toFixed(2)}, ctrl=${controlPrice.toFixed(2)}, ratio=${(baseRatio*100).toFixed(1)}%`);
 
   if (baseRatio >= (1 - tolerance) && baseRatio <= (1 + tolerance)) {
     log.push(`[OK] В коридоре.`);
-    return { optimized_product: deepClone(product), result: baseResult, log, converged: true, stage: 0 };
+    return { optimized_product: deepClone(workProduct), result: baseResult, log, converged: true, stage: 0, area_mode: areaMode };
   }
 
   // --- ЭТАП 1-2: Size-based ---
-  const opt = deepClone(product);
+  const opt = deepClone(workProduct);
   const geometry = calcGeometry(opt);
   const V_net = geometry.V_net;
   const qty = opt.quantity_pieces || 1;
 
   if (!opt.rkm) opt.rkm = {};
-  opt.rkm.norms_override = buildSizeBasedOverrides(opt, geometry);
+  opt.rkm.norms_override = buildSizeBasedOverrides(opt, geometry, areaMode);
   opt.rkm.material_prices = { ...buildSizeBasedMaterialPrices(V_net, qty), ...(opt.rkm.material_prices || {}) };
   if (!product.rkm || !product.rkm.k_reject) {
     opt.rkm.k_reject = getSizeBasedKReject(V_net);
@@ -193,15 +298,14 @@ function optimizeRKM(product, controlPrice, options = {}) {
 
   if (ratio1 >= (1 - tolerance) && ratio1 <= (1 + tolerance)) {
     log.push(`[OK] Попали в коридор.`);
-    return { optimized_product: opt, result: r1, log, converged: true, stage: 2 };
+    return { optimized_product: opt, result: r1, log, converged: true, stage: 2, area_mode: areaMode };
   }
 
   // --- ЭТАП 3: Бинарный поиск по глобальному множителю норм ---
-  // Ищем multiplier M такой, что при norm[i] = sizeBasedNorm[i] * M цена ≈ target
   const norms = require('../../data/rkm_norms.json');
   const sizeOverrides = deepClone(opt.rkm.norms_override);
 
-  let loM = 0.01, hiM = 20.0; // диапазон множителя
+  let loM = 0.01, hiM = 20.0;
   let bestOpt = deepClone(opt);
   let bestResult = r1;
   let bestRatio = ratio1;
@@ -209,14 +313,12 @@ function optimizeRKM(product, controlPrice, options = {}) {
   for (let i = 0; i < 40; i++) {
     const midM = (loM + hiM) / 2;
 
-    // Применяем множитель к size-based нормам
     const testOpt = deepClone(opt);
     for (const op of norms.operations) {
       const key = String(op.no);
       const sizeNorm = sizeOverrides[key];
       if (!sizeNorm) continue;
 
-      // Ограничения: [0.5%..300%] от базовой нормы
       let ch = sizeNorm.chel_ch * midM;
       let mh = sizeNorm.mash_ch * midM;
       ch = Math.max(op.base_chel_ch * 0.005, Math.min(op.base_chel_ch * 3.0, ch));
@@ -240,10 +342,9 @@ function optimizeRKM(product, controlPrice, options = {}) {
       loM = midM;
     }
 
-    // Ранний выход если попали
     if (tRatio >= (1 - tolerance) && tRatio <= (1 + tolerance)) {
       log.push(`[Этап 3] Бинарный поиск: M=${midM.toFixed(4)}, calc=${tp.toFixed(2)}, ratio=${(tRatio*100).toFixed(1)}%`);
-      return { optimized_product: testOpt, result: tr, log, converged: true, stage: 3 };
+      return { optimized_product: testOpt, result: tr, log, converged: true, stage: 3, area_mode: areaMode };
     }
 
     if (Math.abs(hiM - loM) < 0.001) break;
@@ -251,9 +352,8 @@ function optimizeRKM(product, controlPrice, options = {}) {
 
   log.push(`[Этап 3] Лучший M: ratio=${(bestRatio*100).toFixed(1)}%`);
 
-  // Проверяем, попали ли
   if (bestRatio >= (1 - tolerance) && bestRatio <= (1 + tolerance)) {
-    return { optimized_product: bestOpt, result: bestResult, log, converged: true, stage: 3 };
+    return { optimized_product: bestOpt, result: bestResult, log, converged: true, stage: 3, area_mode: areaMode };
   }
 
   // --- ЭТАП 4: Подстройка накладных ---
@@ -262,7 +362,6 @@ function optimizeRKM(product, controlPrice, options = {}) {
   const isExpensive = bestRatio > 1.0 + tolerance;
 
   if (isExpensive) {
-    // Снижаем: прибыль → накладные → резерв
     const params = [
       { key: 'pribyl_ot_sebestoimosti', min: ranges.pribyl_ot_sebestoimosti.min, max: ranges.pribyl_ot_sebestoimosti.default },
       { key: 'nakladnye_ot_FOT', min: ranges.nakladnye_ot_FOT.min, max: ranges.nakladnye_ot_FOT.default },
@@ -281,7 +380,6 @@ function optimizeRKM(product, controlPrice, options = {}) {
       if (checkP / controlPrice >= (1 - tolerance) && checkP / controlPrice <= (1 + tolerance)) break;
     }
   } else {
-    // Повышаем: прибыль → накладные
     const params = [
       { key: 'pribyl_ot_sebestoimosti', min: rates.overheads.pribyl_ot_sebestoimosti, max: 0.55 },
       { key: 'nakladnye_ot_FOT', min: rates.overheads.nakladnye_ot_FOT, max: 4.0 }
@@ -312,16 +410,13 @@ function optimizeRKM(product, controlPrice, options = {}) {
   }
 
   if (converged) {
-    return { optimized_product: bestOpt, result: finalResult, log, converged: true, stage: 4 };
+    return { optimized_product: bestOpt, result: finalResult, log, converged: true, stage: 4, area_mode: areaMode };
   }
 
   // --- ЭТАП 5: Подбор k_reject и цены блока ---
-  // Если всё равно дорого — снижаем k_reject (меньше брака = меньше сырья)
-  // Если дёшево — повышаем k_reject
   log.push(`[Этап 5] Подбор k_reject/k_allow...`);
 
   if (finalRatio > 1.0 + tolerance) {
-    // Снижаем k_reject до минимума 1.05
     let lo = 1.05, hi = bestOpt.rkm.k_reject || 1.4;
     for (let i = 0; i < 25; i++) {
       const mid = (lo + hi) / 2;
@@ -341,9 +436,24 @@ function optimizeRKM(product, controlPrice, options = {}) {
   finalRatio = finalPrice / controlPrice;
   converged = finalRatio >= (1 - tolerance) && finalRatio <= (1 + tolerance);
 
-  log.push(`[Этап 5] Финал: calc=${finalPrice.toFixed(2)}, ratio=${(finalRatio*100).toFixed(1)}%, converged=${converged}`);
+  // --- Пометка «рыночная цена» для несходящихся позиций ---
+  if (!converged) {
+    log.push(`[Этап 5] НЕ УДАЛОСЬ войти в коридор: calc=${finalPrice.toFixed(2)}, ratio=${(finalRatio*100).toFixed(1)}%`);
+    log.push(`[РЫНОЧНАЯ ЦЕНА] Себестоимость материалов и операций превышает контрольную цену.`);
+    log.push(`  Рекомендация: обосновать новую рыночную цену ${finalPrice.toFixed(2)} руб/${controlUnit === 'm2' ? 'м²' : controlUnit === 'mp' ? 'м.п.' : 'шт'}`);
+  } else {
+    log.push(`[Этап 5] Финал: calc=${finalPrice.toFixed(2)}, ratio=${(finalRatio*100).toFixed(1)}%, converged=${converged}`);
+  }
 
-  return { optimized_product: bestOpt, result: finalResult, log, converged, stage: 5 };
+  return {
+    optimized_product: bestOpt,
+    result: finalResult,
+    log,
+    converged,
+    stage: 5,
+    area_mode: areaMode,
+    market_price_recommendation: !converged ? finalPrice : null
+  };
 }
 
 module.exports = {
@@ -355,5 +465,7 @@ module.exports = {
   calcPass,
   getControlUnit,
   getCalcPrice,
-  calcSerialFactor
+  calcSerialFactor,
+  detectAreaMode,
+  applyAreaMode
 };

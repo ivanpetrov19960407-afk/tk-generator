@@ -1066,8 +1066,20 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
 
   // Row 2: description
   mergeCells(ws, 'A2:F2');
-  ws.getCell('A2').value = 'Допустимый коридор отклонения: \u00b115% от контрольной цены. Цена не должна превышать контрольную.';
+  const areaMode = info.area_mode;
+  let descText = 'Допустимый коридор отклонения: \u00b115% от контрольной цены. Цена не должна превышать контрольную.';
+  if (areaMode) {
+    descText += ` \u041f\u041b\u041e\u0429\u0410\u0414\u041d\u041e\u0419 \u0420\u0415\u0416\u0418\u041c: 1 \u0448\u0442 = 1 ${areaMode.controlUnit === 'm2' ? '\u043c\u00B2' : '\u043c.\u043f.'} (${areaMode.virtualDims.length}\u00d7${areaMode.virtualDims.width}\u00d7${areaMode.virtualDims.thickness}\u043c\u043c)`;
+  }
+  ws.getCell('A2').value = descText;
   ws.getCell('A2').font = { italic: true, size: 10 };
+
+  // Row 3: Пометка площадного режима
+  if (areaMode) {
+    mergeCells(ws, 'A3:F3');
+    ws.getCell('A3').value = `\u25B6 \u041f\u043b\u043e\u0449\u0430\u0434\u043d\u043e\u0439 \u0440\u0435\u0436\u0438\u043c: \u0432\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0435 \u0438\u0437\u0434\u0435\u043b\u0438\u0435 ${areaMode.virtualDims.length}\u00d7${areaMode.virtualDims.width}\u00d7${areaMode.virtualDims.thickness}\u043c\u043c, \u043a\u043e\u043b-\u0432\u043e: ${areaMode.virtualQty} \u0448\u0442 (\u2248${areaMode.totalArea.toFixed(1)} \u043c\u00B2)${areaMode.totalArea > 100 ? ', \u0443\u0441\u0438\u043b\u0435\u043d\u043d\u0430\u044f \u0441\u0435\u0440\u0438\u0439\u043d\u043e\u0441\u0442\u044c' : ''}`;
+    ws.getCell('A3').font = { bold: true, size: 10, color: { argb: 'FF2E75B6' } };
+  }
 
   // Row 4: headers
   const headers = ['Показатель', 'Расчётная', 'Контрольная', 'Отклонение, %', 'Статус', 'Комментарий'];
@@ -1085,6 +1097,7 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
   const controlUnit = info.control_unit || 'шт';
   const converged = info.converged;
   const stage = info.stage;
+  const BLUE_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } };
 
   // Определяем какую цену сравниваем
   let calcLabel, calcFormula, ctrlLabel;
@@ -1137,9 +1150,10 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
   ws.getCell(7, 6).alignment = { wrapText: true };
   applyBorderToRange(ws, 7, 1, 7, 6);
 
-  // Условное форматирование строки 7 на основе статического результата оптимизации
-  const statusFill = converged ? GREEN_FILL : RED_FILL;
-  ws.getCell(7, 5).fill = statusFill;
+  // Условное форматирование строки 7
+  let statusFill7 = converged ? GREEN_FILL : RED_FILL;
+  if (!converged && info.market_price_recommendation) statusFill7 = BLUE_FILL;
+  ws.getCell(7, 5).fill = statusFill7;
   ws.getRow(7).height = 22;
 
   // Row 9: Секция детализации
@@ -1166,10 +1180,32 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
 
   // Row 12: Результат
   ws.getCell(12, 1).value = 'Результат оптимизации';
-  ws.getCell(12, 2).value = converged ? 'СХОДИМОСТЬ ДОСТИГНУТА' : 'НЕ УДАЛОСЬ ВОЙТИ В КОРИДОР';
-  ws.getCell(12, 2).fill = converged ? GREEN_FILL : RED_FILL;
+  let statusText = converged ? 'СХОДИМОСТЬ ДОСТИГНУТА' : 'НЕ УДАЛОСЬ ВОЙТИ В КОРИДОР';
+  let statusFillResult = converged ? GREEN_FILL : RED_FILL;
+  if (!converged && info.market_price_recommendation) {
+    statusText = 'РЫНОЧНАЯ ЦЕНА — требуется обоснование';
+    statusFillResult = BLUE_FILL;
+  }
+  ws.getCell(12, 2).value = statusText;
+  ws.getCell(12, 2).fill = statusFillResult;
   ws.getCell(12, 2).font = BOLD_FONT;
   applyBorderToRange(ws, 12, 1, 12, 6);
+
+  // Row 13: Рекомендация по рыночной цене (если не сходится)
+  if (!converged && info.market_price_recommendation) {
+    const unitLabel = controlUnit.toLowerCase().includes('кв') || controlUnit.toLowerCase().includes('м2') ? 'м²' :
+                     controlUnit.toLowerCase().includes('пог') || controlUnit.toLowerCase().includes('мп') ? 'м.п.' : 'шт';
+    ws.getCell(13, 1).value = 'Рекомендуемая рыночная цена';
+    ws.getCell(13, 1).font = { bold: true, color: { argb: 'FF2E75B6' } };
+    ws.getCell(13, 2).value = info.market_price_recommendation;
+    ws.getCell(13, 2).numFmt = NUM_FMT_RUB;
+    ws.getCell(13, 2).font = { bold: true, size: 12, color: { argb: 'FF2E75B6' } };
+    ws.getCell(13, 3).value = `руб/${unitLabel}`;
+    ws.getCell(13, 4).value = 'Себестоимость материалов и операций превышает контрольную цену';
+    ws.getCell(13, 4).alignment = { wrapText: true };
+    mergeCells(ws, 'D13:F13');
+    applyBorderToRange(ws, 13, 1, 13, 6);
+  }
 
   // Row 14: Параметры после оптимизации
   mergeCells(ws, 'A14:F14');

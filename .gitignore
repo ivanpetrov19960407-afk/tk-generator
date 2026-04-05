@@ -4,3 +4,4 @@ output/*.pdf
 *.pdf
 .DS_Store
 data/Vizualizitsiia.pdf
+output/

@@ -7,7 +7,7 @@ const { mapOperations } = require('./operations-mapper');
 const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
 const { buildXlsx } = require('./xlsx-builder');
-const { optimizeRKM, getControlUnit, getCalcPrice } = require('./optimizer');
+const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode } = require('./optimizer');
 const rates = require('../../data/rkm_rates.json');
 
 /**
@@ -56,15 +56,25 @@ async function generateRKM(product, outputDir, options = {}) {
       control_unit: product.control_unit || 'шт',
       converged: optResult.converged,
       stage: optResult.stage,
-      log: optResult.log
+      log: optResult.log,
+      area_mode: optResult.area_mode || null,
+      market_price_recommendation: optResult.market_price_recommendation || null
     };
+
+    if (optResult.area_mode) {
+      console.log(`  [ПЛОЩАДНОЙ РЕЖИМ] Виртуальное изделие: ${optResult.area_mode.virtualDims.length}×${optResult.area_mode.virtualDims.width}×${optResult.area_mode.virtualDims.thickness}мм, ${optResult.area_mode.virtualQty} шт`);
+    }
 
     if (optResult.converged) {
       workProduct = optResult.optimized_product;
       console.log(`  [ОПТИМИЗАЦИЯ] Сходимость достигнута на этапе ${optResult.stage}`);
     } else {
       workProduct = optResult.optimized_product;
-      console.warn(`  [ОПТИМИЗАЦИЯ] Не удалось войти в коридор \u00b115%`);
+      if (optResult.market_price_recommendation) {
+        console.warn(`  [РЫНОЧНАЯ ЦЕНА] Рекомендуемая цена: ${optResult.market_price_recommendation.toFixed(2)} руб`);
+      } else {
+        console.warn(`  [ОПТИМИЗАЦИЯ] Не удалось войти в коридор \u00b115%`);
+      }
     }
     optResult.log.forEach(l => console.log(`    ${l}`));
   }
