@@ -21,10 +21,11 @@ const args = minimist(process.argv.slice(2), {
     o: 'output',
     h: 'help'
   },
-  boolean: ['rkm'],
+  boolean: ['rkm', 'optimize'],
   default: {
     output: 'output/',
-    rkm: false
+    rkm: false,
+    optimize: false
   }
 });
 
@@ -35,13 +36,14 @@ function printHelp() {
 ╚════════════════════════════════════════════════╝
 
 Использование:
-  node src/index.js --input <файл> [--output <папка>] [--rkm]
+  node src/index.js --input <файл> [--output <папка>] [--rkm] [--optimize]
 
 Параметры:
-  -i, --input   Входной файл (JSON или XLSX)     [обязательный]
-  -o, --output  Папка для сгенерированных файлов  [по умолчанию: output/]
-      --rkm     Генерировать РКМ (расчётно-калькуляционную ведомость)
-  -h, --help    Показать справку
+  -i, --input    Входной файл (JSON или XLSX)     [обязательный]
+  -o, --output   Папка для сгенерированных файлов  [по умолчанию: output/]
+      --rkm      Генерировать РКМ (расчётно-калькуляционную ведомость)
+      --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
+  -h, --help     Показать справку
 
 Примеры:
   # Один продукт (JSON)
@@ -52,6 +54,9 @@ function printHelp() {
 
   # Из Excel файла
   node src/index.js --input examples/sample_input.xlsx --output output/
+
+  # РКМ с обратной калькуляцией по контрольным ценам
+  node src/index.js --input examples/full_album_batch.json --rkm --optimize --output output/
 
 Поддерживаемые фактуры:
   - лощение
@@ -177,19 +182,36 @@ async function main() {
 
   // === Генерация РКМ (если --rkm) ===
   if (args.rkm) {
-    console.log('\n=== Генерация РКМ ===');
+    const doOptimize = args.optimize;
+    console.log('\n=== Генерация РКМ ===' + (doOptimize ? ' (с обратной калькуляцией)' : ''));
     let rkmOk = 0;
     let rkmFail = 0;
+    let rkmConverged = 0;
+    let rkmNotConverged = 0;
+    let rkmNoPrice = 0;
+
     for (const product of products) {
       try {
-        const result = await generateRKM(product, outputDir);
+        const result = await generateRKM(product, outputDir, { optimize: doOptimize });
         rkmOk++;
+        if (doOptimize) {
+          if (!product.control_price) {
+            rkmNoPrice++;
+          } else if (result.converged) {
+            rkmConverged++;
+          } else {
+            rkmNotConverged++;
+          }
+        }
       } catch (err) {
         rkmFail++;
         console.error(`[RKM] Ошибка для поз.${product.tk_number}: ${err.message}`);
       }
     }
     console.log(`\n✓ РКМ: ${rkmOk} из ${products.length} файлов` + (rkmFail ? ` (ошибки: ${rkmFail})` : ''));
+    if (doOptimize) {
+      console.log(`  Оптимизация: ✅ сходимость ${rkmConverged}, ❌ не вошли в коридор ${rkmNotConverged}` + (rkmNoPrice ? `, без контрольной цены ${rkmNoPrice}` : ''));
+    }
   }
 
   console.log('\n========== ГОТОВО ==========');

@@ -37,7 +37,7 @@ function mergeCells(ws, range) {
  * ALL calculated cells use Excel formulas referencing other sheets,
  * exactly matching the reference template structure.
  */
-async function buildXlsx(product, geometry, operations, materials, transport, overheads) {
+async function buildXlsx(product, geometry, operations, materials, transport, overheads, optimizerInfo) {
   const wb = new ExcelJS.Workbook();
   wb.creator = 'TK-Generator / RKM Module';
   wb.created = new Date();
@@ -52,6 +52,11 @@ async function buildXlsx(product, geometry, operations, materials, transport, ov
   buildTransportSheet(wb, product, overheads);
   buildTotalSheet(wb, overheads, geometry, operations);
   buildReferenceSheet(wb);
+
+  // Лист Сверка — добавляется только при наличии контрольной цены и данных оптимизации
+  if (optimizerInfo && optimizerInfo.control_price) {
+    buildSverkaSheet(wb, product, overheads, geometry, optimizerInfo);
+  }
 
   return wb;
 }
@@ -1037,6 +1042,213 @@ function buildReferenceSheet(wb) {
   ['простая прямоугольная', 'фигурная с радиусами', 'сегментная радиусная', 'объёмная с профилем'].forEach((v, i) => {
     ws.getCell(4 + i, 4).value = v;
   });
+}
+
+// ===== Sheet 11: Сверка =====
+// Лист сопоставления расчётной и контрольной цены
+const GREEN_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC6EFCE' } };
+const RED_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC7CE' } };
+const ORANGE_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFEB9C' } };
+const SVERKA_HEADER_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+const SVERKA_HEADER_FONT = { bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+
+function buildSverkaSheet(wb, product, overheads, geometry, info) {
+  const ws = wb.addWorksheet('Сверка');
+  setColWidths(ws, [40, 22, 22, 22, 16, 45]);
+
+  const vd = '\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435';
+  const itogo = '\u0418\u0422\u041E\u0413\u041E';
+
+  // Row 1: title
+  mergeCells(ws, 'A1:F1');
+  ws.getCell('A1').value = 'СВЕРКА: РАСЧЁТНАЯ vs КОНТРОЛЬНАЯ ЦЕНА';
+  ws.getCell('A1').font = { bold: true, size: 14, color: { argb: 'FF1F4E79' } };
+
+  // Row 2: description
+  mergeCells(ws, 'A2:F2');
+  ws.getCell('A2').value = 'Допустимый коридор отклонения: \u00b115% от контрольной цены. Цена не должна превышать контрольную.';
+  ws.getCell('A2').font = { italic: true, size: 10 };
+
+  // Row 4: headers
+  const headers = ['Показатель', 'Расчётная', 'Контрольная', 'Отклонение, %', 'Статус', 'Комментарий'];
+  headers.forEach((h, i) => {
+    const cell = ws.getCell(4, i + 1);
+    cell.value = h;
+    cell.font = SVERKA_HEADER_FONT;
+    cell.fill = SVERKA_HEADER_FILL;
+    cell.border = THIN_BORDER;
+    cell.alignment = { horizontal: 'center', wrapText: true };
+  });
+  ws.getRow(4).height = 25;
+
+  const controlPrice = info.control_price;
+  const controlUnit = info.control_unit || 'шт';
+  const converged = info.converged;
+  const stage = info.stage;
+
+  // Определяем какую цену сравниваем
+  let calcLabel, calcFormula, ctrlLabel;
+  const unitLower = controlUnit.toLowerCase().replace(/\./g, '').trim();
+
+  if (unitLower.includes('кв') || unitLower.includes('м2') || unitLower.includes('м\u00B2')) {
+    calcLabel = 'Цена за 1 м\u00B2 с НДС, руб';
+    ctrlLabel = 'Контрольная цена за 1 м\u00B2 с НДС, руб';
+    calcFormula = `${itogo}!$B$18`; // row 18 = Стоимость 1 м² с НДС
+  } else if (unitLower.includes('пог') || unitLower.includes('мп') || unitLower.includes('мп')) {
+    calcLabel = 'Цена за 1 м.п. с НДС, руб';
+    ctrlLabel = 'Контрольная цена за 1 м.п. с НДС, руб';
+    calcFormula = `${itogo}!$B$20`; // row 20 = Стоимость 1 м.п. с НДС
+  } else {
+    calcLabel = 'Цена за 1 шт. с НДС, руб';
+    ctrlLabel = 'Контрольная цена за 1 шт. с НДС, руб';
+    calcFormula = `${itogo}!$B$16`; // row 16 = Стоимость 1 шт. с НДС
+  }
+
+  // Row 5: Расчётная цена
+  ws.getCell(5, 1).value = calcLabel;
+  ws.getCell(5, 1).font = BOLD_FONT;
+  ws.getCell(5, 2).value = { formula: calcFormula };
+  ws.getCell(5, 2).numFmt = NUM_FMT_RUB;
+  ws.getCell(5, 3).value = '';
+  applyBorderToRange(ws, 5, 1, 5, 6);
+
+  // Row 6: Контрольная цена
+  ws.getCell(6, 1).value = ctrlLabel;
+  ws.getCell(6, 1).font = BOLD_FONT;
+  ws.getCell(6, 3).value = controlPrice;
+  ws.getCell(6, 3).numFmt = NUM_FMT_RUB;
+  ws.getCell(6, 3).fill = YELLOW_FILL;
+  applyBorderToRange(ws, 6, 1, 6, 6);
+
+  // Row 7: Отклонение = (calc - ctrl) / ctrl * 100
+  ws.getCell(7, 1).value = 'ОТКЛОНЕНИЕ';
+  ws.getCell(7, 1).font = { bold: true, size: 12 };
+  ws.getCell(7, 2).value = { formula: calcFormula };
+  ws.getCell(7, 2).numFmt = NUM_FMT_RUB;
+  ws.getCell(7, 3).value = controlPrice;
+  ws.getCell(7, 3).numFmt = NUM_FMT_RUB;
+  // D7: отклонение %
+  ws.getCell(7, 4).value = { formula: 'IF(C7=0,"-",(B7-C7)/C7*100)' };
+  ws.getCell(7, 4).numFmt = '0.0';
+  // E7: статус (Excel формула)
+  ws.getCell(7, 5).value = { formula: 'IF(ABS(D7)<=15,"✅ OK",IF(ABS(D7)<=20,"\u26A0\uFE0F Близко","\u274C Превышение"))' };
+  ws.getCell(7, 5).alignment = { horizontal: 'center' };
+  ws.getCell(7, 6).value = { formula: 'IF(D7>15,"Расчётная цена выше контрольной — требуется коррекция",IF(D7<-15,"Расчётная цена значительно ниже контрольной","В коридоре"))' };
+  ws.getCell(7, 6).alignment = { wrapText: true };
+  applyBorderToRange(ws, 7, 1, 7, 6);
+
+  // Условное форматирование строки 7 на основе статического результата оптимизации
+  const statusFill = converged ? GREEN_FILL : RED_FILL;
+  ws.getCell(7, 5).fill = statusFill;
+  ws.getRow(7).height = 22;
+
+  // Row 9: Секция детализации
+  mergeCells(ws, 'A9:F9');
+  ws.getCell('A9').value = 'ДЕТАЛИЗАЦИЯ ОПТИМИЗАЦИИ';
+  ws.getCell('A9').font = { bold: true, size: 11, color: { argb: 'FF1F4E79' } };
+
+  // Row 10: Единица измерения
+  ws.getCell(10, 1).value = 'Единица измерения контрольной цены';
+  ws.getCell(10, 2).value = controlUnit;
+  applyBorderToRange(ws, 10, 1, 10, 6);
+
+  // Row 11: Этап оптимизации
+  const stageNames = {
+    0: 'Без оптимизации (уже в коридоре)',
+    2: 'Size-based масштабирование',
+    3: 'Итеративный подбор норм',
+    4: 'Подстройка накладных/прибыли',
+    5: 'Подбор k_reject / коэфф. брака'
+  };
+  ws.getCell(11, 1).value = 'Этап оптимизации';
+  ws.getCell(11, 2).value = stageNames[stage] || `Этап ${stage}`;
+  applyBorderToRange(ws, 11, 1, 11, 6);
+
+  // Row 12: Результат
+  ws.getCell(12, 1).value = 'Результат оптимизации';
+  ws.getCell(12, 2).value = converged ? 'СХОДИМОСТЬ ДОСТИГНУТА' : 'НЕ УДАЛОСЬ ВОЙТИ В КОРИДОР';
+  ws.getCell(12, 2).fill = converged ? GREEN_FILL : RED_FILL;
+  ws.getCell(12, 2).font = BOLD_FONT;
+  applyBorderToRange(ws, 12, 1, 12, 6);
+
+  // Row 14: Параметры после оптимизации
+  mergeCells(ws, 'A14:F14');
+  ws.getCell('A14').value = 'ПАРАМЕТРЫ ПОСЛЕ ОПТИМИЗАЦИИ';
+  ws.getCell('A14').font = { bold: true, size: 11, color: { argb: 'FF1F4E79' } };
+
+  let detailRow = 15;
+
+  // k_reject
+  ws.getCell(detailRow, 1).value = 'Коэффициент отбора/брака k_reject';
+  ws.getCell(detailRow, 2).value = (product.rkm && product.rkm.k_reject) || 1.4;
+  applyBorderToRange(ws, detailRow, 1, detailRow, 6);
+  detailRow++;
+
+  // Накладные
+  const ohOverrides = (product.rkm && product.rkm.overrides_overheads) || {};
+  const ohLabels = {
+    'nakladnye_ot_FOT': 'Накладные (% от ФОТ)',
+    'pribyl_ot_sebestoimosti': 'Прибыль (% от себестоимости)',
+    'rezerv_tekh_riskov': 'Резерв на технологические риски (%)'
+  };
+  for (const [key, label] of Object.entries(ohLabels)) {
+    const val = ohOverrides[key] !== undefined ? ohOverrides[key] : rates.overheads[key];
+    const isOverridden = ohOverrides[key] !== undefined;
+    ws.getCell(detailRow, 1).value = label;
+    ws.getCell(detailRow, 2).value = `${(val * 100).toFixed(1)}%`;
+    if (isOverridden) {
+      ws.getCell(detailRow, 3).value = `было: ${(rates.overheads[key] * 100).toFixed(1)}%`;
+      ws.getCell(detailRow, 2).fill = ORANGE_FILL;
+    }
+    applyBorderToRange(ws, detailRow, 1, detailRow, 6);
+    detailRow++;
+  }
+
+  // Row: Стоимость по компонентам (ссылки на ИТОГО)
+  detailRow++;
+  mergeCells(ws, `A${detailRow}:F${detailRow}`);
+  ws.getCell(detailRow, 1).value = 'СТРУКТУРА СТОИМОСТИ (ссылки на лист ИТОГО)';
+  ws.getCell(detailRow, 1).font = { bold: true, size: 11, color: { argb: 'FF1F4E79' } };
+  detailRow++;
+
+  const costRows = [
+    ['Материалы', `${itogo}!$B$5`],
+    ['Операции', `${itogo}!$B$6`],
+    ['Накладные', `${itogo}!$B$7`],
+    ['Резерв', `${itogo}!$B$8`],
+    ['Прибыль', `${itogo}!$B$9`],
+    ['Логистика', `${itogo}!$B$11`],
+    ['НДС', `${itogo}!$B$13`],
+    ['ИТОГО с НДС', `${itogo}!$B$14`],
+  ];
+
+  costRows.forEach(([label, ref]) => {
+    ws.getCell(detailRow, 1).value = label;
+    ws.getCell(detailRow, 2).value = { formula: ref };
+    ws.getCell(detailRow, 2).numFmt = NUM_FMT_RUB;
+    if (label === 'ИТОГО с НДС') {
+      ws.getCell(detailRow, 1).font = BOLD_FONT;
+      ws.getCell(detailRow, 2).font = BOLD_FONT;
+    }
+    applyBorderToRange(ws, detailRow, 1, detailRow, 6);
+    detailRow++;
+  });
+
+  // Лог оптимизации
+  if (info.log && info.log.length > 0) {
+    detailRow++;
+    mergeCells(ws, `A${detailRow}:F${detailRow}`);
+    ws.getCell(detailRow, 1).value = 'ЛОГ ОПТИМИЗАЦИИ';
+    ws.getCell(detailRow, 1).font = { bold: true, size: 11, color: { argb: 'FF1F4E79' } };
+    detailRow++;
+
+    info.log.forEach(line => {
+      mergeCells(ws, `A${detailRow}:F${detailRow}`);
+      ws.getCell(detailRow, 1).value = line;
+      ws.getCell(detailRow, 1).font = { size: 9, color: { argb: 'FF555555' } };
+      detailRow++;
+    });
+  }
 }
 
 module.exports = { buildXlsx };

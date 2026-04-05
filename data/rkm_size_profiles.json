@@ -1,0 +1,123 @@
+{
+  "_comment": "Профили масштабирования норм времени по объёму/площади/сложности изделия. Эталон — длинномерная ступень 5150×410×150мм (V_ref=0.3167 м³). Для каждой операции: alpha — доля постоянной части (настройка/переналадка), (1-alpha) — переменная, пропорциональная size_ratio.",
+
+  "reference_product": {
+    "V_ref_m3": 0.316725,
+    "area_ref_m2": 2.1115,
+    "length_ref_m": 5.15,
+    "thickness_ref_m": 0.15,
+    "description": "Ступень фигурная 5150×410×150, гранит Жалгыз, бучардирование+лощение"
+  },
+
+  "operation_alpha": {
+    "_comment": "alpha = доля постоянной части нормы (настройка, переналадка, разовые действия). Остаток (1-alpha) масштабируется по size_ratio. Чем больше alpha — тем меньше норма зависит от размера.",
+    "1":  0.40,
+    "2":  0.35,
+    "3":  0.50,
+    "4":  0.30,
+    "5":  0.15,
+    "6":  0.40,
+    "7":  0.15,
+    "8":  0.15,
+    "9":  0.40,
+    "10": 0.60,
+    "11": 0.15,
+    "12": 0.25,
+    "13": 0.15,
+    "14": 0.20,
+    "15": 0.20,
+    "16": 0.30,
+    "17": 0.10,
+    "18": 0.40,
+    "19": 0.20,
+    "20": 0.50,
+    "21": 0.10,
+    "22": 0.20,
+    "23": 0.35,
+    "24": 0.35,
+    "25": 0.40,
+    "26": 0.25,
+    "27": 0.25,
+    "28": 0.30
+  },
+
+  "size_ratio_method": {
+    "_comment": "Метод расчёта size_ratio для разных операций. volume — по объёму (V/V_ref), area — по площади верхней грани (A/A_ref), length — по длине (L/L_ref). Каждая группа операций масштабируется по наиболее релевантной величине.",
+    "by_volume":  [1, 2, 4, 5, 6, 7, 9, 12, 23, 25, 26, 27, 28],
+    "by_area":    [8, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24],
+    "by_length":  [3, 10, 13]
+  },
+
+  "complexity_multipliers": {
+    "_comment": "Множитель сложности, применяется поверх size_ratio. Влияет на переменную часть нормы.",
+    "simple":     0.70,
+    "profile":    1.00,
+    "radial":     1.15,
+    "segmented":  1.10,
+    "figured":    1.20,
+    "volumetric": 1.25
+  },
+
+  "material_price_profiles": {
+    "_comment": "Цены расходников по категориям изделий: small (плитка ≤0.01 м³), medium (0.01–0.05 м³), large (0.05–0.2 м³), xlarge (>0.2 м³)",
+    "small": {
+      "diamond_discs": 3000,
+      "diamond_milling_heads": 2500,
+      "bush_hammer_heads_price": 8500,
+      "abrasives": 1500,
+      "coolant_chemistry": 300,
+      "protective_materials": 200,
+      "packaging": 2000,
+      "marking": 400,
+      "ppe": 200
+    },
+    "medium": {
+      "diamond_discs": 5000,
+      "diamond_milling_heads": 4000,
+      "bush_hammer_heads_price": 8500,
+      "abrasives": 3500,
+      "coolant_chemistry": 600,
+      "protective_materials": 400,
+      "packaging": 5000,
+      "marking": 800,
+      "ppe": 400
+    },
+    "large": {
+      "diamond_discs": 8000,
+      "diamond_milling_heads": 6500,
+      "bush_hammer_heads_price": 8500,
+      "abrasives": 5500,
+      "coolant_chemistry": 1000,
+      "protective_materials": 600,
+      "packaging": 12000,
+      "marking": 1200,
+      "ppe": 500
+    },
+    "xlarge": {
+      "diamond_discs": 10000,
+      "diamond_milling_heads": 8000,
+      "bush_hammer_heads_price": 8500,
+      "abrasives": 6500,
+      "coolant_chemistry": 1200,
+      "protective_materials": 800,
+      "packaging": 18000,
+      "marking": 1500,
+      "ppe": 600
+    }
+  },
+
+  "k_reject_by_size": {
+    "_comment": "Коэффициент брака/отбора зависит от размера: мелкие — меньше брака, крупные/длинномер — больше",
+    "small":  1.20,
+    "medium": 1.30,
+    "large":  1.40,
+    "xlarge": 1.80
+  },
+
+  "overhead_tuning_ranges": {
+    "_comment": "Допустимые диапазоны для тонкой подстройки накладных (применяются на последнем этапе оптимизации, если size-based калькуляция не попала в коридор)",
+    "nakladnye_ot_FOT":         { "min": 1.20, "max": 1.73, "default": 1.73 },
+    "pribyl_ot_sebestoimosti":   { "min": 0.15, "max": 0.34, "default": 0.34 },
+    "rezerv_tekh_riskov":        { "min": 0.03, "max": 0.08, "default": 0.08 }
+  }
+}

@@ -166,6 +166,7 @@ for (let i = 1; i < rows.length; i++) {
   const dimsRaw = (row[3] || '').toString();
   const unit = (row[4] || '').toString();
   const qtyRaw = row[5];
+  const controlPriceRaw = row[6]; // Колонка G — контрольная цена за ед.изм. с НДС
   
   const dims = parseDimensions(dimsRaw);
   if (!dims) {
@@ -179,7 +180,16 @@ for (let i = 1; i < rows.length; i++) {
   const k_reject = determineKReject(dims, fullName);
   const qty_pieces = calcPieces(qtyRaw, unit, dims);
   
-  products.push({
+  // Парсим контрольную цену (может быть число или строка с пробелами/запятыми)
+  let control_price = null;
+  if (controlPriceRaw !== undefined && controlPriceRaw !== null && controlPriceRaw !== '') {
+    const parsed = parseFloat(String(controlPriceRaw).replace(/\s/g, '').replace(',', '.'));
+    if (!isNaN(parsed) && parsed > 0) {
+      control_price = parsed;
+    }
+  }
+
+  const product = {
     tk_number: no,
     name: fullName.substring(0, 200),
     short_name: shortName(no, dims),
@@ -188,6 +198,7 @@ for (let i = 1; i < rows.length; i++) {
     texture: texture,
     quantity: `${qtyRaw} ${unit}`,
     quantity_pieces: qty_pieces,
+    control_unit: unit, // единица измерения для сверки с контрольной ценой
     edges: 'калибровка по всем сторонам, фаски 5мм',
     geometry_type: determineGeometry(fullName),
     category: '1',
@@ -214,7 +225,14 @@ for (let i = 1; i < rows.length; i++) {
         ppe: 600
       }
     }
-  });
+  };
+
+  // Добавляем контрольную цену если есть
+  if (control_price !== null) {
+    product.control_price = control_price;
+  }
+
+  products.push(product);
 }
 
 const output = { products };
@@ -240,3 +258,13 @@ products.forEach(p => {
 });
 console.log('\nПо фактуре:');
 Object.entries(byTex).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => console.log(`  ${k}: ${v}`));
+
+// Summary: control prices
+const withPrice = products.filter(p => p.control_price);
+console.log(`\nКонтрольные цены: ${withPrice.length} из ${products.length} позиций`);
+if (withPrice.length > 0) {
+  console.log('  Примеры:');
+  withPrice.slice(0, 5).forEach(p => {
+    console.log(`    Поз.${p.tk_number}: ${p.control_price.toFixed(2)} руб/${p.control_unit || 'ед'}`);
+  });
+}

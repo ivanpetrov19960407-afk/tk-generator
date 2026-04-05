@@ -7,6 +7,7 @@ const { mapOperations } = require('./operations-mapper');
 const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
 const { buildXlsx } = require('./xlsx-builder');
+const { optimizeRKM, getControlUnit, getCalcPrice } = require('./optimizer');
 const rates = require('../../data/rkm_rates.json');
 
 /**
@@ -33,48 +34,96 @@ function calcTransport(product, overheadData) {
 
 /**
  * Main RKM generator function.
+ * @param {Object} product - параметры изделия
+ * @param {string} outputDir - папка для выходных файлов
+ * @param {Object} options - { optimize: false } — включить обратную калькуляцию
  */
-async function generateRKM(product, outputDir) {
+async function generateRKM(product, outputDir, options = {}) {
+  const doOptimize = options.optimize && product.control_price;
   console.log(`\n[RKM] Генерация РКМ для: ${product.name || 'изделие'}`);
+  if (doOptimize) {
+    console.log(`  [ОПТИМИЗАЦИЯ] Контрольная цена: ${product.control_price} руб`);
+  }
 
-  // 1. Calculate geometry
-  const geometry = calcGeometry(product);
+  // === Оптимизация ===
+  let optimizerInfo = null;
+  let workProduct = product;
+
+  if (doOptimize) {
+    const optResult = optimizeRKM(product, product.control_price, { tolerance: 0.15 });
+    optimizerInfo = {
+      control_price: product.control_price,
+      control_unit: product.control_unit || 'шт',
+      converged: optResult.converged,
+      stage: optResult.stage,
+      log: optResult.log
+    };
+
+    if (optResult.converged) {
+      workProduct = optResult.optimized_product;
+      console.log(`  [ОПТИМИЗАЦИЯ] Сходимость достигнута на этапе ${optResult.stage}`);
+    } else {
+      workProduct = optResult.optimized_product;
+      console.warn(`  [ОПТИМИЗАЦИЯ] Не удалось войти в коридор \u00b115%`);
+    }
+    optResult.log.forEach(l => console.log(`    ${l}`));
+  }
+
+  // === Основной расчёт ===
+  // 1. Geometry
+  const geometry = calcGeometry(workProduct);
   console.log(`  Геометрия: V_net=${geometry.V_net.toFixed(6)} м³, масса=${geometry.mass_piece.toFixed(2)} кг`);
   console.log(`  Потребность сырья: ${geometry.raw_need_batch.toFixed(6)} м³, стоимость: ${geometry.raw_cost_batch.toFixed(2)} руб`);
 
-  // 2. Map operations
-  const operations = mapOperations(product, geometry);
+  // 2. Operations
+  const operations = mapOperations(workProduct, geometry);
   console.log(`  Операций: ${operations.rows.length}, прямые затраты: ${operations.totals.itogo_pryamye.toFixed(2)} руб`);
 
-  // 3. Calculate materials
-  const materials = calcMaterials(product, geometry);
+  // 3. Materials
+  const materials = calcMaterials(workProduct, geometry);
   console.log(`  Материалы: ${materials.total.toFixed(2)} руб`);
 
-  // 4. Calculate overheads (without transport first to get itogo_production)
-  // We need a two-pass approach: first compute production total, then transport (which depends on it)
+  // 4. Overheads (two-pass: first without transport, then with)
+  // Применяем переопределения накладных если они есть
+  const origOH = { ...rates.overheads };
+  const ohOverrides = (workProduct.rkm && workProduct.rkm.overrides_overheads) || {};
+  for (const [k, v] of Object.entries(ohOverrides)) {
+    if (v !== undefined) rates.overheads[k] = v;
+  }
+
   const tempTransport = { total: 0 };
   const tempOverheads = calcOverheads(materials, operations, tempTransport, geometry);
 
-  // 5. Calculate transport (depends on itogo_production for insurance)
-  const transport = calcTransport(product, tempOverheads);
+  // 5. Transport
+  const transport = calcTransport(workProduct, tempOverheads);
   console.log(`  Логистика: ${transport.total.toFixed(2)} руб`);
 
-  // 6. Final overheads with transport
+  // 6. Final overheads
   const overheads = calcOverheads(materials, operations, transport, geometry);
+
+  // Восстанавливаем оригинальные настройки накладных
+  Object.assign(rates.overheads, origOH);
+
   console.log(`  ИТОГО без НДС: ${overheads.itogo_bez_NDS.toFixed(2)} руб`);
   console.log(`  НДС: ${overheads.NDS.toFixed(2)} руб`);
   console.log(`  ИТОГО с НДС: ${overheads.itogo_s_NDS.toFixed(2)} руб`);
 
+  if (doOptimize) {
+    const ctrlUnit = getControlUnit(workProduct);
+    const calcPrice = getCalcPrice(overheads, ctrlUnit);
+    const ratio = calcPrice / product.control_price;
+    console.log(`  [СВЕРКА] Расчёт: ${calcPrice.toFixed(2)}, Контроль: ${product.control_price.toFixed(2)}, Отклонение: ${((ratio - 1) * 100).toFixed(1)}%`);
+  }
+
   // 7. Build Excel
-  const wb = await buildXlsx(product, geometry, operations, materials, transport, overheads);
+  const wb = await buildXlsx(workProduct, geometry, operations, materials, transport, overheads, optimizerInfo);
 
   // 8. Save
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // Use short_name or tk_number for filename (full name is too long)
-  const shortId = product.short_name || `pos_${String(product.tk_number || 0).padStart(2, '0')}`;
+  const shortId = workProduct.short_name || `pos_${String(workProduct.tk_number || 0).padStart(2, '0')}`;
   const fileName = `RKM_${shortId}.xlsx`;
   const filePath = path.join(outputDir, fileName);
 
@@ -84,6 +133,8 @@ async function generateRKM(product, outputDir) {
   return {
     success: true,
     file: filePath,
+    optimized: doOptimize || false,
+    converged: optimizerInfo ? optimizerInfo.converged : null,
     summary: {
       materials: materials.total,
       operations: operations.totals.itogo_pryamye,
@@ -91,9 +142,10 @@ async function generateRKM(product, outputDir) {
       itogo_bez_NDS: overheads.itogo_bez_NDS,
       itogo_s_NDS: overheads.itogo_s_NDS,
       per_piece_s_NDS: overheads.per_piece_s_NDS,
-      per_m2_s_NDS: overheads.per_m2_s_NDS
+      per_m2_s_NDS: overheads.per_m2_s_NDS,
+      control_price: product.control_price || null
     }
   };
 }
 
-module.exports = { generateRKM };
+module.exports = { generateRKM, calcTransport };
