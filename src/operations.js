@@ -31,7 +31,10 @@ const TEMPLATE_PRODUCTS = {
     batchArea: '14,1',
     batchMassTotal: 986,    // 29 × 34 kg
     quantity: '14,1 кв.м.',
-    edgesText: 'фаски 5мм по четырём сторонам'
+    edgesText: 'фаски 5мм по четырём сторонам',
+    // Толщины слэбов в шаблоне (для замены)
+    slabThicknessRange: [35, 40],  // "~35--40 мм"
+    slabAllowance: 10               // припуск на калибровку
   },
   'рельефная_матовая': {
     dims: '430×430×98',
@@ -47,7 +50,9 @@ const TEMPLATE_PRODUCTS = {
     batchPieces: 16,
     batchArea: null,
     quantity: null,
-    edgesText: null
+    edgesText: null,
+    slabThicknessRange: [105, 115],  // "105--115 мм"
+    slabAllowance: 17
   },
   'бучардирование_лощение': {
     dims: '600×300×20',
@@ -69,7 +74,9 @@ const TEMPLATE_PRODUCTS = {
     batchPieces: null,
     batchArea: null,
     quantity: null,
-    edgesText: null
+    edgesText: null,
+    slabThicknessRange: [25, 28],  // "~25--28 мм"
+    slabAllowance: 8
   }
 };
 
@@ -167,6 +174,51 @@ function parametrize(text, product, textureKey) {
   
   // Замена коммерческого имени камня
   text = text.replace(/Delikato light/g, newMaterial);
+
+  // 4a-extra. Replace standalone product thickness (e.g., "20 мм" → "150 мм")
+  if (tpl.thickness && tpl.thickness !== dims.thickness) {
+    const tT = tpl.thickness;
+    const nT = dims.thickness;
+    // "толщин* ... NN мм" — с возможными словами между (финальная толщина, при толщине, толщиной)
+    text = text.replace(new RegExp('(толщин\\w*[^.]*?)\\b' + tT + '\\s*мм', 'g'), (match, prefix) => {
+      // Don't replace if it's about slab thickness (already handled by 4b)
+      if (prefix.includes('слэб') || prefix.includes('слябы')) return match;
+      return prefix + nT + ' мм';
+    });
+    // "до NN мм" (калибровка до)
+    text = text.replace(new RegExp('(до)\\s+' + tT + '\\s*мм', 'g'), '$1 ' + nT + ' мм');
+    // "всего NN мм"
+    text = text.replace(new RegExp('(всего)\\s+' + tT + '\\s*мм', 'g'), '$1 ' + nT + ' мм');
+    // "при NN мм" 
+    text = text.replace(new RegExp('(при)\\s+' + tT + '\\s*мм', 'g'), '$1 ' + nT + ' мм');
+    // Standalone "NN мм" after specific context words indicating it's about product thickness
+    text = text.replace(new RegExp('(ультратонк\\w*[^.]*?)\\(' + tT + '\\s*мм\\)', 'g'), '$1(' + nT + ' мм)');
+    text = text.replace(new RegExp('(\\()' + tT + '\\s*мм(\\))', 'g'), '$1' + nT + ' мм$2');
+  }
+
+  // 4b. Replace slab thickness ("~35--40 мм" → "толщина изделия + припуск")
+  if (tpl.slabThicknessRange) {
+    const [tplMin, tplMax] = tpl.slabThicknessRange;
+    const actualT = dims.thickness;
+    const allowance = tpl.slabAllowance || 10;
+    const newSlabMin = actualT + Math.round(allowance * 0.5);
+    const newSlabMax = actualT + allowance;
+    
+    // Заменяем разные паттерны: "~35--40 мм", "35\u201440 мм", "\\~35--40"
+    const slabRegex = new RegExp(
+      `\\\\?~?${tplMin}\\s*[-\u2014\u2013]+\\s*${tplMax}\\s*мм`, 'g'
+    );
+    text = text.replace(slabRegex, `~${newSlabMin}--${newSlabMax} мм`);
+    
+    // Также единичные упоминания: "~40 мм" → "~{newSlabMax} мм" (около слэбов)
+    const slabSingleMax = new RegExp(`\\\\?~${tplMax}\\s*мм`, 'g');
+    text = text.replace(slabSingleMax, `~${newSlabMax} мм`);
+    const slabSingleMin = new RegExp(`\\\\?~${tplMin}\\s*мм`, 'g');
+    text = text.replace(slabSingleMin, `~${newSlabMin} мм`);
+    
+    // Заменяем толщину слэба без тильды: "28 мм" в контексте слэбов
+    text = text.replace(new RegExp(`${tplMax}\\s*мм`, 'g'), `${newSlabMax} мм`);
+  }
 
   // 5. Replace density if it appears in context
   //    e.g., "~1600 кг/м³" → "~2700 кг/м³" or "~2700 кг/м³" → new density
