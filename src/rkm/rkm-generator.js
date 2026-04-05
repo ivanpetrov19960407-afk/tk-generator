@@ -73,8 +73,9 @@ async function generateRKM(product, outputDir) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const safeName = (product.name || 'product').replace(/[^\w\u0400-\u04FF]/g, '_');
-  const fileName = `RKM_${safeName}_${geometry.L_mm}x${geometry.W_mm}x${geometry.T_mm}.xlsx`;
+  // Use short_name or tk_number for filename (full name is too long)
+  const shortId = product.short_name || `pos_${String(product.tk_number || 0).padStart(2, '0')}`;
+  const fileName = `RKM_${shortId}.xlsx`;
   const filePath = path.join(outputDir, fileName);
 
   await wb.xlsx.writeFile(filePath);

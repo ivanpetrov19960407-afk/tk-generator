@@ -1,0 +1,4052 @@
+{
+  "products": [
+    {
+      "tk_number": 1,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из на",
+      "short_name": "pos_01_2500x410x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 410,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "25 шт",
+      "quantity_pieces": 25,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 2,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_02_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "601.8 кв.м.",
+      "quantity_pieces": 3344,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 3,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуально",
+      "short_name": "pos_03_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт",
+      "quantity_pieces": 75,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 4,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное  из полнотелого натурального камня с толщиной t=160, с радиусом от R510, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн",
+      "short_name": "pos_04_695x695x160",
+      "dimensions": {
+        "length": 695,
+        "width": 695,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 5,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=65,  из полнотелого натурального камня с толщиной t=160, с радиусом от R510, с калибровкой и полировкой торцевых частей изделия",
+      "short_name": "pos_05_690x690x160",
+      "dimensions": {
+        "length": 690,
+        "width": 690,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 6,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с кантом сложной конфигурации: с радиусом канта  R=45, шириной канта 115мм,   из полнотелого натурального камня с толщиной t=225, с   радиусом из",
+      "short_name": "pos_06_630x630x225",
+      "dimensions": {
+        "length": 630,
+        "width": 630,
+        "thickness": 225
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 7,
+      "name": "Изделие индивидуальное объемное, радиусное  из полнотелого натурального камня с толщиной t=170, с радиусом R=70, с калибровкой и полировкой торцевых частей изделия: сложной конфигурации, с ручной дора",
+      "short_name": "pos_07_1700x170x135",
+      "dimensions": {
+        "length": 1700,
+        "width": 170,
+        "thickness": 135
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт",
+      "quantity_pieces": 75,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 8,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_08_1000x250x100",
+      "dimensions": {
+        "length": 1000,
+        "width": 250,
+        "thickness": 100
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "720 шт",
+      "quantity_pieces": 720,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 9,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х100х80, калибровка по обоим сторонам 200 и по обеим сторонам 100, со шлифовкой по всем четырем сторонам и ручной ",
+      "short_name": "pos_09_200x100x80",
+      "dimensions": {
+        "length": 200,
+        "width": 100,
+        "thickness": 80
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "324 кв.м.",
+      "quantity_pieces": 16200,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 10,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х200х80, калибровка по четырем сторонам 200, со шлифовкой по всем четырем сторонам и ручной доработкой поверхносте",
+      "short_name": "pos_10_200x200x80",
+      "dimensions": {
+        "length": 200,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "396 кв.м.",
+      "quantity_pieces": 9900,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 11,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_11_650x207x207",
+      "dimensions": {
+        "length": 650,
+        "width": 207,
+        "thickness": 207
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "176 шт",
+      "quantity_pieces": 176,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 12,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из на",
+      "short_name": "pos_12_650x400x60",
+      "dimensions": {
+        "length": 650,
+        "width": 400,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт",
+      "quantity_pieces": 80,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 13,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального из",
+      "short_name": "pos_13_570x570x135",
+      "dimensions": {
+        "length": 570,
+        "width": 570,
+        "thickness": 135
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "20 шт",
+      "quantity_pieces": 20,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 14,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального из",
+      "short_name": "pos_14_550x550x215",
+      "dimensions": {
+        "length": 550,
+        "width": 550,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт",
+      "quantity_pieces": 80,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 15,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_15_1700x376x133",
+      "dimensions": {
+        "length": 1700,
+        "width": 376,
+        "thickness": 133
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт",
+      "quantity_pieces": 37,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 16,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_16_1700x300x215",
+      "dimensions": {
+        "length": 1700,
+        "width": 300,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт",
+      "quantity_pieces": 37,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 17,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное из полнотелого натурального камня с толщиной t=98, с радиусом от R425°, лощеной фактуры, с калибровкой и полировкой торцевых частей изделия: облиц",
+      "short_name": "pos_17_430x430x98",
+      "dimensions": {
+        "length": 430,
+        "width": 430,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 18,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=30°, из полнотелого натурального камня с толщиной t=75, с радиусом от 425°, лощеной фактуры, с калибровкой и полировкой торцевы",
+      "short_name": "pos_18_425x425x75",
+      "dimensions": {
+        "length": 425,
+        "width": 425,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 19,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 70мм с двухрадиусным кантом R=38° и R=42°, из полнотелого натурального камня с толщиной t",
+      "short_name": "pos_19_390x390x105",
+      "dimensions": {
+        "length": 390,
+        "width": 390,
+        "thickness": 105
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 20,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 10мм с радиусом канта R=10°, из полнотелого натурального камня с толщиной t=66мм, с радиу",
+      "short_name": "pos_20_320x320x66",
+      "dimensions": {
+        "length": 320,
+        "width": 320,
+        "thickness": 66
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 21,
+      "name": "Изделие индивидуальное объемное, П-образное, из монолитного блока с толщиной t=90, лощеной фактуры, с калибровкой и полировкой всех частей изделия: деталь 1 — основание пилястры, сложной конфигурации,",
+      "short_name": "pos_21_730x240x90",
+      "dimensions": {
+        "length": 730,
+        "width": 240,
+        "thickness": 90
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "volume",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 22,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиусом R=10 и основанием профиля хонет; центральный кант - криволинейного реза проф",
+      "short_name": "pos_22_240x228x56",
+      "dimensions": {
+        "length": 240,
+        "width": 228,
+        "thickness": 56
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "44 шт.",
+      "quantity_pieces": 44,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 23,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиусом R=10 и основанием профиля хонет; центральный кант - криволинейного реза проф",
+      "short_name": "pos_23_730x228x56",
+      "dimensions": {
+        "length": 730,
+        "width": 228,
+        "thickness": 56
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 24,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из ",
+      "short_name": "pos_24_1960x300x60",
+      "dimensions": {
+        "length": 1960,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 25,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_25_1000x300x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт",
+      "quantity_pieces": 4,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 26,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_26_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 27,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_27_1000x600x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "2 шт",
+      "quantity_pieces": 2,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 28,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_28_2200x600x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 29,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_29_2200x400x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 400,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 30,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_30_1000x300x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт/",
+      "quantity_pieces": 51,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 31,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_31_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт",
+      "quantity_pieces": 51,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 32,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_32_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "56 шт",
+      "quantity_pieces": 56,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 33,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_33_1610x800x30",
+      "dimensions": {
+        "length": 1610,
+        "width": 800,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 34,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_34_1800x825x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 825,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "3 шт",
+      "quantity_pieces": 3,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 35,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_35_1700x80x30",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "53 шт",
+      "quantity_pieces": 53,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 36,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_36_600x300x20",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 20
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "4.65 кв.м.",
+      "quantity_pieces": 26,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 37,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_37_1800x950x60",
+      "dimensions": {
+        "length": 1800,
+        "width": 950,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 38,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мр",
+      "short_name": "pos_38_700x700x30",
+      "dimensions": {
+        "length": 700,
+        "width": 700,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1252.1 кв.м.",
+      "quantity_pieces": 2556,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 39,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_39_1290x300x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт",
+      "quantity_pieces": 22,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 40,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_40_1290x120x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт",
+      "quantity_pieces": 22,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 41,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_41_1650x300x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт",
+      "quantity_pieces": 35,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 42,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_42_1650x120x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт",
+      "quantity_pieces": 35,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 43,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_43_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт",
+      "quantity_pieces": 17,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 44,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_44_1500x120x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт",
+      "quantity_pieces": 17,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 45,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_45_1800x300x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт",
+      "quantity_pieces": 15,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 46,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_46_1800x120x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт",
+      "quantity_pieces": 15,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 47,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_47_1200x300x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 48,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_48_1200x120x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 49,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_49_2200x300x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт",
+      "quantity_pieces": 27,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 50,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_50_2200x120x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт",
+      "quantity_pieces": 27,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 51,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_51_2600x300x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт",
+      "quantity_pieces": 9,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 52,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_52_2600x120x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт",
+      "quantity_pieces": 9,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 53,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мр",
+      "short_name": "pos_53_600x600x30",
+      "dimensions": {
+        "length": 600,
+        "width": 600,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "122.6 кв.м.",
+      "quantity_pieces": 341,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 54,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_54_590x190x165",
+      "dimensions": {
+        "length": 590,
+        "width": 190,
+        "thickness": 165
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "48 шт",
+      "quantity_pieces": 48,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 55,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_55_590x165x98",
+      "dimensions": {
+        "length": 590,
+        "width": 165,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 56,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_56_590x205x205",
+      "dimensions": {
+        "length": 590,
+        "width": 205,
+        "thickness": 205
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт",
+      "quantity_pieces": 4,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 57,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_57_590x350x165",
+      "dimensions": {
+        "length": 590,
+        "width": 350,
+        "thickness": 165
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 58,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_58_590x270x260",
+      "dimensions": {
+        "length": 590,
+        "width": 270,
+        "thickness": 260
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 59,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_59_1700x239x235",
+      "dimensions": {
+        "length": 1700,
+        "width": 239,
+        "thickness": 235
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 60,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_60_1700x235x75",
+      "dimensions": {
+        "length": 1700,
+        "width": 235,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 61,
+      "name": "Изделие индивидуальное, сегментное, архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из ",
+      "short_name": "pos_61_2500x390x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 62,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_62_2165x390x150",
+      "dimensions": {
+        "length": 2165,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "62 шт",
+      "quantity_pieces": 62,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 63,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_63_2650x390x150",
+      "dimensions": {
+        "length": 2650,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 64,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_64_900x400x80",
+      "dimensions": {
+        "length": 900,
+        "width": 400,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "120 шт",
+      "quantity_pieces": 120,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 65,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_65_500x500x80",
+      "dimensions": {
+        "length": 500,
+        "width": 500,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "30 шт",
+      "quantity_pieces": 30,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 66,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_66_1700x120x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 120,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27.7 м.пог.",
+      "quantity_pieces": 17,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 67,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_67_1500x355x50",
+      "dimensions": {
+        "length": 1500,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 68,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_68_1500x85x20",
+      "dimensions": {
+        "length": 1500,
+        "width": 85,
+        "thickness": 20
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 69,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуально",
+      "short_name": "pos_69_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "230 пог.м.",
+      "quantity_pieces": 136,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 70,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_70_1850x470x80",
+      "dimensions": {
+        "length": 1850,
+        "width": 470,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 71,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_71_1600x200x80",
+      "dimensions": {
+        "length": 1600,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 72,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_72_1655x200x80",
+      "dimensions": {
+        "length": 1655,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт",
+      "quantity_pieces": 5,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 73,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_73_2280x1135x40",
+      "dimensions": {
+        "length": 2280,
+        "width": 1135,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт",
+      "quantity_pieces": 5,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 74,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натур",
+      "short_name": "pos_74_495x90x50",
+      "dimensions": {
+        "length": 495,
+        "width": 90,
+        "thickness": 50
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 75,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натур",
+      "short_name": "pos_75_1655x410x90",
+      "dimensions": {
+        "length": 1655,
+        "width": 410,
+        "thickness": 90
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 76,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, объемное, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изгот",
+      "short_name": "pos_76_480x90x75",
+      "dimensions": {
+        "length": 480,
+        "width": 90,
+        "thickness": 75
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 77,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из нату",
+      "short_name": "pos_77_1380x225x80",
+      "dimensions": {
+        "length": 1380,
+        "width": 225,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 78,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_78_1255x255x80",
+      "dimensions": {
+        "length": 1255,
+        "width": 255,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 79,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_79_2360x1255x40",
+      "dimensions": {
+        "length": 2360,
+        "width": 1255,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "3 шт",
+      "quantity_pieces": 3,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 80,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из",
+      "short_name": "pos_80_1700x75x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 75,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "27.7 м.пог.",
+      "quantity_pieces": 17,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 81,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из на",
+      "short_name": "pos_81_1500x650x150",
+      "dimensions": {
+        "length": 1500,
+        "width": 650,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 82,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_82_1200x370x150",
+      "dimensions": {
+        "length": 1200,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "16 шт",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 83,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержан",
+      "short_name": "pos_83_1300x370x150",
+      "dimensions": {
+        "length": 1300,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "8 шт",
+      "quantity_pieces": 8,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 84,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_84_1050x355x50",
+      "dimensions": {
+        "length": 1050,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт",
+      "quantity_pieces": 36,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 85,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_85_1050x85x30",
+      "dimensions": {
+        "length": 1050,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт",
+      "quantity_pieces": 36,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 86,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_86_1200x355x50",
+      "dimensions": {
+        "length": 1200,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт",
+      "quantity_pieces": 54,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 87,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_87_1200x85x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт",
+      "quantity_pieces": 54,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 88,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального ",
+      "short_name": "pos_88_1300x355x50",
+      "dimensions": {
+        "length": 1300,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт",
+      "quantity_pieces": 38,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 89,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигура",
+      "short_name": "pos_89_1300x85x30",
+      "dimensions": {
+        "length": 1300,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт",
+      "quantity_pieces": 38,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 90,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_90_1500x1250x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 1250,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 91,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального ка",
+      "short_name": "pos_91_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "350 кв.м.",
+      "quantity_pieces": 1945,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    },
+    {
+      "tk_number": 92,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мр",
+      "short_name": "pos_92_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "371.2 кв.м.",
+      "quantity_pieces": 2063,
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      }
+    }
+  ]
+}
