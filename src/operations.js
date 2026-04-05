@@ -130,7 +130,42 @@ function parametrize(text, product, textureKey) {
     text = text.replace(tpl.twoDRegex, newTwoD);
   }
 
-  // 4. Replace material commercial name
+  // 4. Replace material commercial name AND rock type (порода)
+  //    Шаблоны захардкожены как "мрамора Delikato light" — нужно заменять и породу
+  const materialType = (product.material.type || 'мрамор').toLowerCase();
+  
+  // Маппинг падежей: мрамор → гранит / известняк / габбро-диабаз
+  const rockForms = {
+    'мрамор':       { 'мрамора': 'materialGEN', 'мрамору': 'materialDAT', 'мрамором': 'materialINS', 'мраморе': 'materialPRP', 'мрамор': 'materialNOM' },
+    'гранит':       { gen: 'гранита', dat: 'граниту', ins: 'гранитом', prp: 'граните', nom: 'гранит' },
+    'известняк':    { gen: 'известняка', dat: 'известняку', ins: 'известняком', prp: 'известняке', nom: 'известняк' },
+    'габбро-диабаз': { gen: 'габбро-диабаза', dat: 'габбро-диабазу', ins: 'габбро-диабазом', prp: 'габбро-диабазе', nom: 'габбро-диабаз' }
+  };
+  
+  const targetRock = rockForms[materialType] || rockForms['гранит'];
+  
+  // Замена падежных форм "мрамора" → "гранита" и т.д. (строчные + заглавные)
+  const replacePair = (pattern, replacement) => {
+    text = text.replace(new RegExp(pattern, 'g'), replacement);
+    // Заглавная буква
+    const capPattern = pattern.charAt(0).toUpperCase() + pattern.slice(1);
+    const capReplacement = replacement.charAt(0).toUpperCase() + replacement.slice(1);
+    text = text.replace(new RegExp(capPattern, 'g'), capReplacement);
+  };
+  replacePair('мрамора', targetRock.gen);
+  replacePair('мрамору', targetRock.dat);
+  replacePair('мрамором', targetRock.ins);
+  replacePair('мраморе', targetRock.prp);
+  // мрамор (именительный) — не захватывая мрамора/мрамору/мрамором/мраморе/мраморн
+  text = text.replace(/мрамор(?![ауеон])/g, targetRock.nom);
+  text = text.replace(/Мрамор(?![ауеон])/g, targetRock.nom.charAt(0).toUpperCase() + targetRock.nom.slice(1));
+  // мраморная → каменная (только если не мрамор)
+  if (materialType !== 'мрамор') {
+    text = text.replace(/мраморн/g, 'каменн');
+    text = text.replace(/Мраморн/g, 'Каменн');
+  }
+  
+  // Замена коммерческого имени камня
   text = text.replace(/Delikato light/g, newMaterial);
 
   // 5. Replace density if it appears in context
