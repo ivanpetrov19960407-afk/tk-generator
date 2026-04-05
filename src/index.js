@@ -165,32 +165,34 @@ async function main() {
   
   console.log(`Найдено изделий: ${products.length}`);
 
+  // === Генерация ТК+МК (всегда) ===
+  console.log('\n=== Генерация ТК+МК ===');
+  const results = await generateBatch(products, outputDir);
+  const failed = results.filter(r => !r.success);
+  if (failed.length > 0) {
+    console.warn(`\n⚠ ${failed.length} ТК не сгенерированы (см. ошибки выше)`);
+  }
+  const successTK = results.filter(r => r.success).length;
+  console.log(`\n✓ ТК+МК: ${successTK} из ${products.length} файлов`);
+
+  // === Генерация РКМ (если --rkm) ===
   if (args.rkm) {
-    // RKM generation mode
-    console.log('\nРежим: генерация РКМ');
+    console.log('\n=== Генерация РКМ ===');
+    let rkmOk = 0;
+    let rkmFail = 0;
     for (const product of products) {
       try {
         const result = await generateRKM(product, outputDir);
-        console.log(`\n[RKM] Итого:`);
-        console.log(`  Материалы: ${result.summary.materials.toFixed(2)} руб`);
-        console.log(`  Операции: ${result.summary.operations.toFixed(2)} руб`);
-        console.log(`  Логистика: ${result.summary.logistics.toFixed(2)} руб`);
-        console.log(`  ИТОГО с НДС: ${result.summary.itogo_s_NDS.toFixed(2)} руб`);
+        rkmOk++;
       } catch (err) {
-        console.error(`[RKM] Ошибка для ${product.name}: ${err.message}`);
-        console.error(err.stack);
-        process.exit(1);
+        rkmFail++;
+        console.error(`[RKM] Ошибка для поз.${product.tk_number}: ${err.message}`);
       }
     }
-    return;
+    console.log(`\n✓ РКМ: ${rkmOk} из ${products.length} файлов` + (rkmFail ? ` (ошибки: ${rkmFail})` : ''));
   }
 
-  const results = await generateBatch(products, outputDir);
-
-  const failed = results.filter(r => !r.success);
-  if (failed.length > 0) {
-    process.exit(1);
-  }
+  console.log('\n========== ГОТОВО ==========');
 }
 
 main().catch(err => {
