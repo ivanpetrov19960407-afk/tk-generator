@@ -28,11 +28,8 @@ function analyzeEquipment(product) {
       note: `ширина ${dims.width} мм ≤ ${jc.limits.max_width} мм, толщина ${dims.thickness} мм ≤ ${jc.limits.max_height} мм`
     };
   } else {
-    applicable['JC-1010'] = { fits: false };
-    const reasons = [];
-    if (dims.width > jc.limits.max_width) reasons.push(`ширина ${dims.width} мм > лимита ${jc.limits.max_width} мм`);
-    if (dims.thickness > jc.limits.max_height) reasons.push(`толщина ${dims.thickness} мм > лимита ${jc.limits.max_height} мм`);
-    warnings.push(`ВНИМАНИЕ: Калибровальный станок JC-1010 НЕ ПРИМЕНИМ для данного изделия: ${reasons.join('; ')}. Требуется альтернативный маршрут калибровки.`);
+    applicable['JC-1010'] = { fits: false, adapted: true };
+    // No warning — operation texts are adapted in parametrize() to use alternative equipment
   }
 
   // SPG1200-12: Polishing — max width 1200mm, max height 50mm
@@ -43,11 +40,8 @@ function analyzeEquipment(product) {
       note: `ширина ${dims.width} мм ≤ ${spg.limits.max_width} мм, толщина ${dims.thickness} мм ≤ ${spg.limits.max_height} мм`
     };
   } else {
-    applicable['SPG1200-12'] = { fits: false };
-    const reasons = [];
-    if (dims.width > spg.limits.max_width) reasons.push(`ширина ${dims.width} мм > лимита ${spg.limits.max_width} мм`);
-    if (dims.thickness > spg.limits.max_height) reasons.push(`толщина ${dims.thickness} мм > лимита ${spg.limits.max_height} мм`);
-    warnings.push(`ВНИМАНИЕ: Полировальная машина SPG1200-12 НЕ ПРИМЕНИМА: ${reasons.join('; ')}. Лощение выполняется только на ZLMS 2600.`);
+    applicable['SPG1200-12'] = { fits: false, adapted: true };
+    // No warning — operation texts are adapted in parametrize() to use ZLMS 2600 only
   }
 
   // SQC600-4D: Cutting — max depth 180mm, disc 600mm
@@ -58,8 +52,8 @@ function analyzeEquipment(product) {
       note: `толщина ${dims.thickness} мм ≤ макс. глубины реза ${sqc.limits.max_depth} мм`
     };
   } else {
-    applicable['SQC600-4D'] = { fits: false };
-    warnings.push(`ВНИМАНИЕ: Мостовой станок SQC600-4D: толщина ${dims.thickness} мм > макс. глубины реза ${sqc.limits.max_depth} мм.`);
+    applicable['SQC600-4D'] = { fits: false, adapted: true };
+    // No warning — operation texts are adapted in parametrize() to use ЧПУ
   }
 
   // DWSG-22AX-6P: Wire saw — max 450mm
@@ -109,7 +103,12 @@ function buildEquipmentListText(product) {
   if (applicable['JC-1010'].fits) {
     lines.push(`--- Калибровальный станок JC-1010 | макс. ширина обработки 1000 мм --- калибровка толщины плит (ширина плиты ${dims.width} мм --- в пределах лимита)`);
   } else {
-    lines.push(`--- Калибровальный станок JC-1010 | макс. ширина обработки 1000 мм --- НЕ ПРИМЕНИМ для данного изделия (ширина ${dims.width} мм)`);
+    // Adapted: show alternative equipment instead of НЕ ПРИМЕНИМ
+    if (dims.thickness > 180) {
+      lines.push(`--- Фрезерный ЧПУ/портал --- калибровка плоскостей методом фрезерования (JC-1010 не применяется: толщина ${dims.thickness} мм > 50 мм)`);
+    } else {
+      lines.push(`--- Мостовой станок SQC600-4D --- калибровка плоскостей методом контрольного пропиливания (JC-1010 не применяется: толщина ${dims.thickness} мм > 50 мм)`);
+    }
   }
 
   lines.push(`--- Полировальные станки ZLMS 2600 (×2) | рабочая зона 2600×900 мм --- лощение лицевых поверхностей`);
@@ -117,7 +116,8 @@ function buildEquipmentListText(product) {
   if (applicable['SPG1200-12'].fits) {
     lines.push(`--- Автоматическая полировальная машина SPG1200-12 | макс. ширина 1200 мм, макс. высота 50 мм --- применима для данного изделия (высота ${dims.thickness} мм < 50 мм, ширина ${dims.width} мм < 1200 мм)`);
   } else {
-    lines.push(`--- Автоматическая полировальная машина SPG1200-12 | макс. ширина 1200 мм, макс. высота 50 мм --- НЕ ПРИМЕНИМА для данного изделия`);
+    // Adapted: SPG replaced by ZLMS 2600 in operation texts, no НЕ ПРИМЕНИМА
+    lines.push(`--- Лощение выполняется только на ZLMS 2600 (SPG1200-12 не применяется: толщина ${dims.thickness} мм > 50 мм)`);
   }
 
   lines.push(`--- Компрессор D316Y | рабочее давление 0,8–1,0 МПа --- питание пневмоинструмента (ручная шлифовка фасок, зачистка, доводка)`);
