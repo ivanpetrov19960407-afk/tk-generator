@@ -159,22 +159,23 @@ function parametrize(text, product, textureKey) {
   const targetRock = rockForms[materialType] || rockForms['гранит'];
   
   // Замена падежных форм "мрамора" → "гранита" и т.д. (строчные + заглавные)
-  const replacePair = (pattern, replacement) => {
-    text = text.replace(new RegExp(pattern, 'g'), replacement);
-    // Заглавная буква
-    const capPattern = pattern.charAt(0).toUpperCase() + pattern.slice(1);
-    const capReplacement = replacement.charAt(0).toUpperCase() + replacement.slice(1);
-    text = text.replace(new RegExp(capPattern, 'g'), capReplacement);
-  };
-  replacePair('мрамора', targetRock.gen);
-  replacePair('мрамору', targetRock.dat);
-  replacePair('мрамором', targetRock.ins);
-  replacePair('мраморе', targetRock.prp);
-  // мрамор (именительный) — не захватывая мрамора/мрамору/мрамором/мраморе/мраморн
-  text = text.replace(/мрамор(?![ауеон])/g, targetRock.nom);
-  text = text.replace(/Мрамор(?![ауеон])/g, targetRock.nom.charAt(0).toUpperCase() + targetRock.nom.slice(1));
-  // мраморная → каменная (только если не мрамор)
+  // Пропускаем если материал = мрамор (шаблон уже написан для мрамора, замена не нужна)
   if (materialType !== 'мрамор') {
+    const replacePair = (pattern, replacement) => {
+      text = text.replace(new RegExp(pattern, 'g'), replacement);
+      // Заглавная буква
+      const capPattern = pattern.charAt(0).toUpperCase() + pattern.slice(1);
+      const capReplacement = replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      text = text.replace(new RegExp(capPattern, 'g'), capReplacement);
+    };
+    replacePair('мрамора', targetRock.gen);
+    replacePair('мрамору', targetRock.dat);
+    replacePair('мрамором', targetRock.ins);
+    replacePair('мраморе', targetRock.prp);
+    // мрамор (именительный) — не захватывая мрамора/мрамору/мрамором/мраморе/мраморн
+    text = text.replace(/мрамор(?![ауеон])/g, targetRock.nom);
+    text = text.replace(/Мрамор(?![ауеон])/g, targetRock.nom.charAt(0).toUpperCase() + targetRock.nom.slice(1));
+    // мраморная → каменная
     text = text.replace(/мраморн/g, 'каменн');
     text = text.replace(/Мраморн/g, 'Каменн');
   }
