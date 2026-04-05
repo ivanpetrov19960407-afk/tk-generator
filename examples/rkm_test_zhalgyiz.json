@@ -1,0 +1,35 @@
+{
+  "name": "Ступень фигурная",
+  "short_name": "ступень_жалгыз",
+  "dimensions": { "length": 5150, "width": 410, "thickness": 150 },
+  "material": { "type": "гранит", "name": "Жалгыз", "density": 2700 },
+  "texture": "бучардирование_лощение",
+  "quantity_pieces": 1,
+  "geometry_type": "figured",
+  "category": "1",
+  "rkm": {
+    "block_price": 160000,
+    "k_reject": 1.8,
+    "complexity": "длинномер",
+    "transport": {
+      "distance_km": 940,
+      "tariff_rub_km": 120,
+      "trips": 1,
+      "loading": 25000,
+      "unloading": 35000,
+      "insurance_pct": 0.005
+    },
+    "material_prices": {
+      "diamond_discs": 10000,
+      "diamond_milling_heads": 8000,
+      "bush_hammer_heads_price": 8500,
+      "abrasives": 6500,
+      "coolant_chemistry": 1200,
+      "protective_materials": 800,
+      "packaging": 18000,
+      "marking": 1500,
+      "ppe": 600
+    },
+    "norms_override": {}
+  }
+}

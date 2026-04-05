@@ -13,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
 const { generateBatch } = require('./generator');
+const { generateRKM } = require('./rkm/rkm-generator');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -20,8 +21,10 @@ const args = minimist(process.argv.slice(2), {
     o: 'output',
     h: 'help'
   },
+  boolean: ['rkm'],
   default: {
-    output: 'output/'
+    output: 'output/',
+    rkm: false
   }
 });
 
@@ -32,11 +35,12 @@ function printHelp() {
 ╚════════════════════════════════════════════════╝
 
 Использование:
-  node src/index.js --input <файл> [--output <папка>]
+  node src/index.js --input <файл> [--output <папка>] [--rkm]
 
 Параметры:
   -i, --input   Входной файл (JSON или XLSX)     [обязательный]
   -o, --output  Папка для сгенерированных файлов  [по умолчанию: output/]
+      --rkm     Генерировать РКМ (расчётно-калькуляционную ведомость)
   -h, --help    Показать справку
 
 Примеры:
@@ -160,9 +164,29 @@ async function main() {
   }
   
   console.log(`Найдено изделий: ${products.length}`);
-  
+
+  if (args.rkm) {
+    // RKM generation mode
+    console.log('\nРежим: генерация РКМ');
+    for (const product of products) {
+      try {
+        const result = await generateRKM(product, outputDir);
+        console.log(`\n[RKM] Итого:`);
+        console.log(`  Материалы: ${result.summary.materials.toFixed(2)} руб`);
+        console.log(`  Операции: ${result.summary.operations.toFixed(2)} руб`);
+        console.log(`  Логистика: ${result.summary.logistics.toFixed(2)} руб`);
+        console.log(`  ИТОГО с НДС: ${result.summary.itogo_s_NDS.toFixed(2)} руб`);
+      } catch (err) {
+        console.error(`[RKM] Ошибка для ${product.name}: ${err.message}`);
+        console.error(err.stack);
+        process.exit(1);
+      }
+    }
+    return;
+  }
+
   const results = await generateBatch(products, outputDir);
-  
+
   const failed = results.filter(r => !r.success);
   if (failed.length > 0) {
     process.exit(1);
