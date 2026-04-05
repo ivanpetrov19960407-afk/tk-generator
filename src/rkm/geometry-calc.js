@@ -24,11 +24,10 @@ function calcGeometry(product) {
   const k_reject = rkm.k_reject || rates.materials_prices.k_reject['стандарт'];
   const k_reserve = rates.materials_prices.k_reserve;
 
-  // Block price
+  // Block price: сначала ищем по имени камня в справочнике, потом override из rkm.block_price
   const materialName = product.material && product.material.name;
-  const blockPrice = rkm.block_price
-    || (materialName && rates.materials_prices.blocks[materialName])
-    || 160000;
+  const blockPriceFromRef = materialName && rates.materials_prices.blocks[materialName];
+  const blockPrice = rkm.block_price || blockPriceFromRef || 170200;
 
   // Volume
   const V_net = L * W * T;

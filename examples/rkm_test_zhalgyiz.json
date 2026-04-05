@@ -8,7 +8,6 @@
   "geometry_type": "figured",
   "category": "1",
   "rkm": {
-    "block_price": 160000,
     "k_reject": 1.8,
     "complexity": "длинномер",
     "transport": {
