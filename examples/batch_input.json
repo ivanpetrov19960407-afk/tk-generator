@@ -1,0 +1,94 @@
+{
+  "products": [
+    {
+      "tk_number": 1,
+      "name": "Плита напольная",
+      "short_name": "plita_napolnaya",
+      "dimensions": {
+        "length": 700,
+        "width": 700,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "14,1 кв.м.",
+      "quantity_pieces": 29,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь, внутренняя отделка"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "стандартная",
+      "date": "02 апреля 2026 г."
+    },
+    {
+      "tk_number": 2,
+      "name": "Сегмент радиусный",
+      "short_name": "segment_radiusny",
+      "dimensions": {
+        "length": 430,
+        "width": 430,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Bianco Carrara",
+        "density": 2710
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "2,96 кв.м.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам, радиусная обработка",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Собор Казанской Божией Матери",
+        "years": "1798–1808 гг.",
+        "address": "г. Казань, ул. Баумана, д. 5",
+        "project": "Реставрация интерьера"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "02 апреля 2026 г."
+    },
+    {
+      "tk_number": 3,
+      "name": "Плита облицовочная",
+      "short_name": "plita_oblitsovochnaya",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 20
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Crema Marfil",
+        "density": 2680
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10,8 кв.м.",
+      "quantity_pieces": 60,
+      "edges": "фаски 3мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Мечеть Кул-Шариф",
+        "years": "1996–2005 гг.",
+        "address": "г. Казань, Кремль",
+        "project": "Реставрация фасада"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "усиленная",
+      "date": "02 апреля 2026 г."
+    }
+  ]
+}

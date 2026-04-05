@@ -1,0 +1,144 @@
+{
+  "SPG1200-12": {
+    "name": "Автоматическая полировальная машина SPG1200-12",
+    "short": "SPG1200-12",
+    "limits": {
+      "max_width": 1200,
+      "max_height": 50
+    },
+    "description": "Макс. ширина обработки 1200 мм, макс. высота 50 мм"
+  },
+  "SQC600-4D": {
+    "name": "Мостовые станки SQC600-4D (×2)",
+    "short": "SQC600-4D",
+    "limits": {
+      "max_depth": 180,
+      "disc_diameter": 600
+    },
+    "description": "Макс. глубина реза 180 мм, диаметр диска 600 мм"
+  },
+  "DWSG-22AX-6P": {
+    "name": "Канатный станок DWSG-22AX-6P",
+    "short": "DWSG-22AX-6P",
+    "limits": {
+      "max_cut_size": 450
+    },
+    "description": "Макс. размер реза заготовки не более 450 мм"
+  },
+  "ZLMS2600": {
+    "name": "Полировальные станки ZLMS 2600 (×2)",
+    "short": "ZLMS 2600",
+    "limits": {
+      "arm_radius": 2600,
+      "max_zone": "2600×900 мм"
+    },
+    "description": "Радиус вылета 2600 мм, макс. зона ручной полировки 2600×900 мм"
+  },
+  "SQC2200": {
+    "name": "Станок резки SQC2200",
+    "short": "SQC2200",
+    "limits": {
+      "max_disc": 2200
+    },
+    "description": "Линейка для разных габаритов; макс. диаметр диска до 2200 мм"
+  },
+  "JC-1010": {
+    "name": "Калибровальный станок JC-1010",
+    "short": "JC-1010",
+    "limits": {
+      "max_width": 1000,
+      "max_height": 50
+    },
+    "description": "Макс. ширина обработки 1000 мм"
+  },
+  "RH23": {
+    "name": "Погрузчик RH23",
+    "short": "RH23",
+    "limits": {
+      "capacity_t": 23
+    },
+    "description": "Грузоподъёмность: 23 тонны"
+  },
+  "crane": {
+    "name": "Краны мостовые",
+    "short": "Мостовой кран 5–16 т",
+    "limits": {
+      "capacity_t_min": 5,
+      "capacity_t_max": 16
+    },
+    "description": "Грузоподъёмность: от 5 до 16 тонн"
+  },
+  "telfer": {
+    "name": "Тельферы и электротали",
+    "short": "Тельфер/электроталь 5–16 т",
+    "limits": {
+      "capacity_t_min": 5,
+      "capacity_t_max": 16
+    },
+    "description": "Грузоподъёмность: от 5 до 16 тонн"
+  },
+  "water_system": {
+    "name": "Система водоочистки (×2)",
+    "short": "Система водоочистки",
+    "limits": {
+      "flow_rate_lpm": 1000,
+      "total_flow_lpm": 2000
+    },
+    "description": "Производительность: 1000 л/мин на каждую (суммарно 2000 л/мин)"
+  },
+  "D316Y": {
+    "name": "Компрессор D316Y",
+    "short": "D316Y",
+    "limits": {
+      "pressure_mpa": "0.8–1.0"
+    },
+    "description": "Рабочее давление: 0,8–1,0 МПа"
+  },
+  "sitrak": {
+    "name": "Тягачи Sitrak C7H",
+    "short": "Sitrak C7H",
+    "limits": {
+      "gross_weight_t": 44
+    },
+    "description": "Полная масса автопоезда: до 44 т"
+  },
+  "maz_tractor": {
+    "name": "Тягачи МАЗ-6430С9 (×2)",
+    "short": "МАЗ-6430С9",
+    "limits": {
+      "saddle_load_t": 22.5
+    },
+    "description": "Допустимая нагрузка на седло: до 22,5 т"
+  },
+  "politrans": {
+    "name": "Сортиментовозы Политранс (×3)",
+    "short": "Политранс",
+    "limits": {
+      "capacity_t_min": 30,
+      "capacity_t_max": 40
+    },
+    "description": "Грузоподъёмность: 30–40 т"
+  },
+  "maz_trailer": {
+    "name": "Полуприцепы МАЗ (×2)",
+    "short": "Полуприцеп МАЗ",
+    "description": "Грузовые платформы общего назначения"
+  },
+  "forklift": {
+    "name": "Автопогрузчик вилочный",
+    "short": "Автопогрузчик вилочный",
+    "limits": {
+      "capacity_t_min": 1.5,
+      "capacity_t_max": 5
+    },
+    "description": "Грузоподъёмность: 1,5–5 т"
+  },
+  "trolley": {
+    "name": "Троллеи (Шинопровод)",
+    "short": "Троллеи",
+    "limits": {
+      "current_A": [50, 80]
+    },
+    "description": "Допустимая токовая нагрузка: 50А и 80А"
+  }
+}
