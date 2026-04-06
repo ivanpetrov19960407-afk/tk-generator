@@ -6,6 +6,8 @@ const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
 const rates = require('../../data/rkm_rates.json');
 const sizeProfiles = require('../../data/rkm_size_profiles.json');
+// Fix: загружаем norms один раз на уровне модуля, а не внутри функций/циклов
+const norms = require('../../data/rkm_norms.json');
 
 // ============================================================
 // КОНСТАНТЫ И УТИЛИТЫ
@@ -130,33 +132,38 @@ function calcPass(product, overheadOverrides) {
     }
   }
 
-  const geometry = calcGeometry(product);
-  const operations = mapOperations(product, geometry);
-  const materials = calcMaterials(product, geometry);
+  // Fix: try/finally гарантирует восстановление rates.overheads даже при ошибке
+  try {
+    const geometry = calcGeometry(product);
+    const operations = mapOperations(product, geometry);
+    const materials = calcMaterials(product, geometry);
 
-  const rkm = product.rkm || {};
-  const tr = rkm.transport || {};
-  const tempTransport = { total: 0 };
-  const tempOH = calcOverheads(materials, operations, tempTransport, geometry);
+    const rkm = product.rkm || {};
+    const tr = rkm.transport || {};
+    const tempTransport = { total: 0 };
+    const tempOH = calcOverheads(materials, operations, tempTransport, geometry);
 
-  const distance = tr.distance_km || 940;
-  const tariff = tr.tariff_rub_km || 120;
-  const trips = tr.trips || 1;
-  const loading = tr.loading || 25000;
-  const unloading = tr.unloading || 35000;
-  const insurance_pct = tr.insurance_pct || 0.005;
+    const distance = tr.distance_km || 940;
+    const tariff = tr.tariff_rub_km || 120;
+    const trips = tr.trips || 1;
+    const loading = tr.loading || 25000;
+    const unloading = tr.unloading || 35000;
+    const insurance_pct = tr.insurance_pct || 0.005;
 
-  const perevozka = distance * tariff * trips;
-  const insurance_val = tempOH.itogo_production * insurance_pct;
-  const transport = { distance, tariff, trips, loading, unloading, insurance_pct, perevozka, insurance_val, total: perevozka + loading + unloading + insurance_val };
+    const perevozka = distance * tariff * trips;
+    const insurance_val = tempOH.itogo_production * insurance_pct;
+    const transport = { distance, tariff, trips, loading, unloading, insurance_pct, perevozka, insurance_val, total: perevozka + loading + unloading + insurance_val };
 
-  const overheads = calcOverheads(materials, operations, transport, geometry);
-  Object.assign(rates.overheads, origOH);
+    const overheads = calcOverheads(materials, operations, transport, geometry);
 
-  return { geometry, operations, materials, transport, overheads,
-    per_piece_s_NDS: overheads.per_piece_s_NDS,
-    per_m2_s_NDS: overheads.per_m2_s_NDS,
-    per_mp_s_NDS: overheads.per_mp_s_NDS };
+    return { geometry, operations, materials, transport, overheads,
+      per_piece_s_NDS: overheads.per_piece_s_NDS,
+      per_m2_s_NDS: overheads.per_m2_s_NDS,
+      per_mp_s_NDS: overheads.per_mp_s_NDS };
+  } finally {
+    // Всегда восстанавливаем оригинальные накладные, даже при исключении
+    Object.assign(rates.overheads, origOH);
+  }
 }
 
 // ============================================================
@@ -180,7 +187,6 @@ function calcAdjustedNorm(opNo, baseNorm, geometry, complexityType, qty, areaMod
 }
 
 function buildSizeBasedOverrides(product, geometry, areaMode) {
-  const norms = require('../../data/rkm_norms.json');
   const ct = product.geometry_type || 'profile';
   const qty = product.quantity_pieces || 1;
   const overrides = {};
@@ -283,7 +289,6 @@ function optimizeRKM(product, controlPrice, options = {}) {
   }
 
   // --- ЭТАП 3: Бинарный поиск по глобальному множителю норм ---
-  const norms = require('../../data/rkm_norms.json');
   const sizeOverrides = deepClone(opt.rkm.norms_override);
 
   let loM = 0.01, hiM = 20.0;

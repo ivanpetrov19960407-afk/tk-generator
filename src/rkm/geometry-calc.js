@@ -25,8 +25,19 @@ function calcGeometry(product) {
   const k_reserve = rates.materials_prices.k_reserve;
 
   // Block price: сначала ищем по имени камня в справочнике, потом override из rkm.block_price
+  // Fix: нормализация имени камня — пробелы/подчёркивания трактуются одинаково,
+  // т.к. в rkm_rates.json ключи с подчёркиваниями, а во входных данных могут быть пробелы
   const materialName = product.material && product.material.name;
-  const blockPriceFromRef = materialName && rates.materials_prices.blocks[materialName];
+  let blockPriceFromRef = materialName && rates.materials_prices.blocks[materialName];
+  if (!blockPriceFromRef && materialName) {
+    const normalizedInput = materialName.replace(/[\s_]+/g, '_').toLowerCase();
+    for (const [key, price] of Object.entries(rates.materials_prices.blocks)) {
+      if (key.replace(/[\s_]+/g, '_').toLowerCase() === normalizedInput) {
+        blockPriceFromRef = price;
+        break;
+      }
+    }
+  }
   const blockPrice = rkm.block_price || blockPriceFromRef || 170200;
 
   // Volume
