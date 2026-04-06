@@ -75,7 +75,18 @@ function parseExcelInput(filePath) {
   const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet);
   
+  // Fix: допустимые единицы контрольной цены для РКМ
+  const VALID_CONTROL_UNITS = ['шт', 'м²', 'м.п.'];
+
   return rows.map((row, i) => {
+    // Fix: парсинг и валидация control_unit из Excel
+    const rawUnit = row['control_unit'] || row['Единица'] || row['Ед.'] || row['ед.изм.'] || null;
+    let control_unit = rawUnit ? String(rawUnit).trim() : null;
+    if (control_unit && !VALID_CONTROL_UNITS.includes(control_unit)) {
+      console.warn(`[Excel] Позиция ${i + 1}: неизвестная control_unit "${control_unit}", используется "шт" по умолчанию`);
+      control_unit = 'шт';
+    }
+
     // Map Excel columns to product spec
     return {
       tk_number: row['tk_number'] || row['№'] || (i + 1),
@@ -94,6 +105,7 @@ function parseExcelInput(filePath) {
       texture: row['texture'] || row['Фактура'] || 'лощение',
       quantity: row['quantity'] || row['Объём'] || null,
       quantity_pieces: row['quantity_pieces'] || row['Штук'] ? Number(row['quantity_pieces'] || row['Штук']) : null,
+      control_unit: control_unit,
       edges: row['edges'] || row['Кромки'] || null,
       geometry_type: row['geometry_type'] || row['Геометрия'] || 'simple',
       object: row['object_name'] ? {

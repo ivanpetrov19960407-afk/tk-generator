@@ -3,6 +3,10 @@
 const rates = require('../../data/rkm_rates.json');
 const norms = require('../../data/rkm_norms.json');
 
+// Fix: whitelist допустимых значений applies_when —
+// неизвестные значения пропускаются с предупреждением вместо тихого включения в расчёт
+const KNOWN_APPLIES_WHEN = new Set(['always', 'бучардирование', 'термообработка', 'полировка']);
+
 /**
  * Map operations from norms to RKM table rows.
  * Filters by texture, calculates FOT, insurance, machine costs, energy.
@@ -19,6 +23,12 @@ function mapOperations(product, geometry) {
   const rows = [];
 
   for (const op of norms.operations) {
+    // Fix: проверка applies_when по whitelist — неизвестные условия пропускаются
+    if (op.applies_when && !KNOWN_APPLIES_WHEN.has(op.applies_when)) {
+      console.warn(`[operations-mapper] Операция №${op.no} "${op.name}": неизвестное applies_when="${op.applies_when}", пропущена`);
+      continue;
+    }
+
     // Filter by applies_when
     if (op.applies_when === 'бучардирование' && !hasBucharda) continue;
 
