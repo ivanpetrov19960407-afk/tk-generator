@@ -461,14 +461,24 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
     const headingText = `ОПЕРАЦИЯ №${op.number}. ${op.title.toUpperCase()}`;
     allChildren.push(makeOperationHeading(headingText));
     
-    // Operation body text — strip the first line if it repeats the operation title
+    // Operation body text — strip the header lines that repeat the operation title.
+    // The text starts with "ОПЕРАЦИЯ №N. Title" which may span multiple lines
+    // (e.g., "ОПЕРАЦИЯ №8. Раскрой ... НА\nМОСТОВОМ СТАНКЕ SQC600-4D")
+    // We strip all lines until the first empty line or a line starting with **
     let bodyText = op.text;
-    const firstLineEnd = bodyText.indexOf('\n');
-    if (firstLineEnd > 0) {
-      const firstLine = bodyText.substring(0, firstLineEnd).trim().toUpperCase();
-      if (firstLine.includes('ОПЕРАЦИЯ') && firstLine.includes('№')) {
-        bodyText = bodyText.substring(firstLineEnd + 1);
+    const lines = bodyText.split('\n');
+    const firstLine = (lines[0] || '').trim().toUpperCase();
+    if (firstLine.includes('ОПЕРАЦИЯ') && firstLine.includes('№')) {
+      // Remove header lines: from line 0 until first empty line or line starting with **
+      let startIdx = 1;
+      while (startIdx < lines.length) {
+        const ln = lines[startIdx].trim();
+        if (ln === '' || ln.startsWith('**')) break;
+        // If this line looks like body text (starts with a sentence), keep it
+        if (ln.length > 60 && !ln.match(/^[A-ZА-ЯЁ\d\(\)\/ —,.:;+≥×]+$/)) break;
+        startIdx++;
       }
+      bodyText = lines.slice(startIdx).join('\n');
     }
     const opParas = textToParagraphs(bodyText);
     allChildren.push(...opParas);
@@ -480,7 +490,7 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   allChildren.push(new Paragraph({ children: [new PageBreak()] }));
   
   // --- Sections 7-13 ---
-  for (const num of ['7', '8', '9', '10', '11', '12', '13']) {
+  for (const num of ['7', '8', '9', '10', '11']) {
     if (sections[num]) {
       const sectionParas = textToParagraphs(sections[num]);
       allChildren.push(...sectionParas);
