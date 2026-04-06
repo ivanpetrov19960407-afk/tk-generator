@@ -93,6 +93,10 @@ async function generateRKM(product, outputDir, options = {}) {
   // к реальному продукту (без подмены размеров)
   if (!doOptimize && areaMode) {
     workProduct = deepClone(product); // клон с РЕАЛЬНЫМИ размерами
+    // Установить quantity_pieces из areaMode если не задано
+    if (!workProduct.quantity_pieces && areaMode.quantityPieces) {
+      workProduct.quantity_pieces = areaMode.quantityPieces;
+    }
     const realGeometry = calcGeometry(workProduct);
     const V_net = realGeometry.V_net;
     const qty = workProduct.quantity_pieces || 1;

@@ -266,6 +266,11 @@ function optimizeRKM(product, controlPrice, options = {}) {
   let workProduct = product;
 
   if (areaMode) {
+    // Установить quantity_pieces если не задано (критично для корректного расчёта геометрии)
+    if (!product.quantity_pieces && areaMode.quantityPieces) {
+      product.quantity_pieces = areaMode.quantityPieces;
+      workProduct = product;
+    }
     const dims = areaMode.originalDims;
     log.push(`[Площадной режим] Единица: ${controlUnit === 'm2' ? 'кв.м.' : 'пог.м.'}`);
     log.push(`  Реальное изделие: ${dims.length}×${dims.width}×${dims.thickness}мм, ${product.quantity_pieces} шт (≈${areaMode.totalArea.toFixed(1)} м²)`);

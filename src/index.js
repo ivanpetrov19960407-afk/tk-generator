@@ -202,7 +202,19 @@ function parseExcelInput(filePath) {
       quantity: measurement_type === 'area' && quantity != null ? `${quantity} м²`
         : measurement_type === 'length' && quantity != null ? `${quantity} м.п.`
         : null,
-      quantity_pieces: measurement_type === 'count' && quantity != null ? quantity : null,
+      quantity_pieces: (() => {
+        if (measurement_type === 'count' && quantity != null) return quantity;
+        if (quantity == null || !dimensions.length || !dimensions.width) return null;
+        if (measurement_type === 'area') {
+          const pieceArea_m2 = (dimensions.length / 1000) * (dimensions.width / 1000);
+          return pieceArea_m2 > 0 ? Math.ceil(quantity / pieceArea_m2) : null;
+        }
+        if (measurement_type === 'length') {
+          const pieceLen_m = dimensions.length / 1000;
+          return pieceLen_m > 0 ? Math.ceil(quantity / pieceLen_m) : null;
+        }
+        return null;
+      })(),
       control_unit: control_unit,
       measurement_type: measurement_type,
       control_price: control_price,
