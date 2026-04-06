@@ -85,7 +85,7 @@ function findCol(row, ...patterns) {
 function parseDimensions(dimStr, nameText) {
   if (!dimStr) return { length: 0, width: 0, thickness: 0 };
   const cleaned = String(dimStr).replace(/мм$/i, '').trim();
-  const parts = cleaned.split(/[хxХX]/);
+  const parts = cleaned.split(/[хxХX]/).map(p => p.replace(/^[^0-9.]+/, ''));
   let thickness = parseFloat(parts[2]) || 0;
 
   if (!thickness && parts.length === 2 && nameText) {
