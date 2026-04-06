@@ -114,13 +114,30 @@ function parseDimensions(dimStr, nameText) {
  */
 function extractMaterial(nameText) {
   if (!nameText) return { type: 'мрамор', name: 'unknown' };
-  const matMatch = String(nameText).match(/Материал\s*[—–\-:]\s*(.+?)(?:[;,]|$)/i);
+  const text = String(nameText);
+
+  // Сначала проверяем габбро-диабаз (у него нет слова "Материал" в названии)
+  if (text.toLowerCase().includes('габбро')) {
+    return { type: 'габбро-диабаз', name: 'Габбро-диабаз Нинимяки' };
+  }
+
+  // Fallback: ищем известные названия камня в тексте (даже без слова "Материал")
+  const lc = text.toLowerCase();
+  if (lc.includes('жалгыз')) return { type: 'гранит', name: 'гранит м-ния Жалгыз' };
+  if (lc.includes('delikato')) return { type: 'мрамор', name: 'мрамор Delikato light' };
+  if (lc.includes('fatima') || lc.includes('фатима')) return { type: 'известняк', name: 'мраморизированный известняк Fatima' };
+
+  // Извлекаем материал: отсекаем "Обработка" и др. хвосты
+  const matMatch = text.match(/Материал\s*[—–\-:]\s*(.+?)(?:[;,]|\s+Обработка|$)/i);
   if (!matMatch) return { type: 'мрамор', name: 'unknown' };
-  const materialName = matMatch[1].trim();
-  // Detect type from first word of material name
-  const knownTypes = ['гранит', 'мрамор', 'известняк', 'травертин', 'песчаник', 'оникс', 'габбро', 'кварцит'];
+  let materialName = matMatch[1].trim();
+
+  // Detect type from first word
+  const knownTypes = ['гранит', 'мрамор', 'известняк', 'мраморизированный', 'травертин', 'песчаник', 'оникс', 'габбро', 'кварцит'];
   const firstWord = materialName.split(/\s/)[0].toLowerCase();
-  const materialType = knownTypes.find(t => firstWord.startsWith(t)) || 'мрамор';
+  let materialType = knownTypes.find(t => firstWord.startsWith(t)) || 'мрамор';
+  if (materialType === 'мраморизированный') materialType = 'известняк';
+
   return { type: materialType, name: materialName };
 }
 

@@ -24,20 +24,45 @@ function calcGeometry(product) {
   const k_reject = rkm.k_reject || rates.materials_prices.k_reject['стандарт'];
   const k_reserve = rates.materials_prices.k_reserve;
 
-  // Block price: сначала ищем по имени камня в справочнике, потом override из rkm.block_price
-  // Fix: нормализация имени камня — пробелы/подчёркивания трактуются одинаково,
-  // т.к. в rkm_rates.json ключи с подчёркиваниями, а во входных данных могут быть пробелы
-  const materialName = product.material && product.material.name;
-  let blockPriceFromRef = materialName && rates.materials_prices.blocks[materialName];
-  if (!blockPriceFromRef && materialName) {
-    const normalizedInput = materialName.replace(/[\s_]+/g, '_').toLowerCase();
+  // Block price: нечёткий поиск по имени камня в справочнике
+  const materialName = (product.material && product.material.name) || '';
+  const materialType = (product.material && product.material.type) || '';
+  let blockPriceFromRef = null;
+
+  // 1. Точное совпадение
+  blockPriceFromRef = rates.materials_prices.blocks[materialName] || null;
+
+  // 2. Нормализованное совпадение (пробелы/подчёркивания)
+  if (!blockPriceFromRef) {
+    const norm = materialName.replace(/[\s_]+/g, '_').toLowerCase();
     for (const [key, price] of Object.entries(rates.materials_prices.blocks)) {
-      if (key.replace(/[\s_]+/g, '_').toLowerCase() === normalizedInput) {
-        blockPriceFromRef = price;
-        break;
+      if (key.replace(/[\s_]+/g, '_').toLowerCase() === norm) {
+        blockPriceFromRef = price; break;
       }
     }
   }
+
+  // 3. Поиск по ключевому слову (Деликато, Жалгыз, Fatima, Габбро)
+  if (!blockPriceFromRef) {
+    const lc = materialName.toLowerCase();
+    if (lc.includes('delikato') || lc.includes('деликато')) {
+      blockPriceFromRef = rates.materials_prices.blocks['Delikato_light'];
+    } else if (lc.includes('жалгыз')) {
+      blockPriceFromRef = rates.materials_prices.blocks['Жалгыз'];
+    } else if (lc.includes('fatima') || lc.includes('фатима')) {
+      blockPriceFromRef = rates.materials_prices.blocks['Fatima'];
+    } else if (lc.includes('габбро')) {
+      blockPriceFromRef = rates.materials_prices.blocks['Габбро-диабаз_Нинимяки'];
+    }
+  }
+
+  // 4. Fallback по типу материала
+  if (!blockPriceFromRef && materialType) {
+    const typeLc = materialType.toLowerCase();
+    if (typeLc.includes('габбро')) blockPriceFromRef = rates.materials_prices.blocks['Габбро-диабаз_Нинимяки'];
+    else if (typeLc.includes('известняк')) blockPriceFromRef = rates.materials_prices.blocks['Fatima'];
+  }
+
   const blockPrice = rkm.block_price || blockPriceFromRef || 170200;
 
   // Volume
