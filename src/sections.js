@@ -21,25 +21,25 @@ const MATERIAL_PROPERTIES = {
     structure: 'мелко- и среднезернистая',
     color: 'светло-бежевый, кремовый с тонкими прожилками',
     quartzNote: 'содержит значительно меньше кварца, чем гранит, однако общецеховые меры профилактики силикоза применяются',
-    density_note: 'нижняя консервативная оценка'
+    density_note: 'нижней консервативной оценкой'
   },
   'м-ния Жалгыз': {
     structure: 'мелко- и среднезернистая, массивная',
     color: 'серо-розовый с тёмными вкраплениями',
     quartzNote: 'содержит кварц (~25-30%), требуется строгое соблюдение мер профилактики силикоза (FFP3/СИЗОД, влажная резка, промышленная вентиляция)',
-    density_note: 'среднее для данного месторождения'
+    density_note: 'средним значением для данного месторождения'
   },
   'Fatima (Португалия)': {
     structure: 'мелко-среднезернистая, плотная',
     color: 'бежево-серый, тёплый кремовый с характерными прожилками',
     quartzNote: 'содержит минимальное количество кварца (мраморизированный известняк), однако общецеховые меры профилактики силикоза применяются',
-    density_note: 'типичная для мраморизированных известняков Португалии'
+    density_note: 'типичной для мраморизированных известняков Португалии'
   },
   'Габбро-диабаз': {
     structure: 'мелкозернистая, массивная',
     color: 'чёрный с зеленоватым оттенком',
     quartzNote: 'практически не содержит свободного кварца, однако общецеховые меры профилактики силикоза применяются',
-    density_note: 'высокая плотность'
+    density_note: 'характерной для данной породы'
   }
 };
 
@@ -58,7 +58,7 @@ function getMaterialProps(product) {
       structure: 'среднезернистая',
       color: 'серый',
       quartzNote: 'содержит кварц, требуется соблюдение мер профилактики силикоза (FFP2+, влажная резка, промышленная вентиляция)',
-      density_note: ''
+      density_note: 'расчётной оценкой'
     };
   }
   // Default (marble-like)
@@ -66,7 +66,7 @@ function getMaterialProps(product) {
     structure: 'мелко- и среднезернистая',
     color: 'светлый',
     quartzNote: 'содержит значительно меньше кварца, чем гранит, однако общецеховые меры профилактики силикоза применяются',
-    density_note: ''
+    density_note: 'расчётной оценкой'
   };
 }
 
@@ -224,6 +224,8 @@ function getMaterialTypeName(type) {
     'мрамор': 'Мрамор',
     'гранит': 'Гранит',
     'известняк': 'Известняк',
+    'мраморизированный известняк': 'Мраморизированный известняк',
+    'габбро-диабаз': 'Габбро-диабаз',
     'травертин': 'Травертин',
     'оникс': 'Оникс',
     'песчаник': 'Песчаник',
@@ -231,6 +233,25 @@ function getMaterialTypeName(type) {
   };
   if (!type) return type || '';
   return types[type.toLowerCase()] || type;
+}
+
+/**
+ * Get genitive form of the material type name (e.g. "мрамора", "гранита")
+ */
+function getMaterialTypeGenitive(type) {
+  const genitives = {
+    'мрамор': 'мрамора',
+    'гранит': 'гранита',
+    'известняк': 'известняка',
+    'мраморизированный известняк': 'мраморизированного известняка',
+    'габбро-диабаз': 'габбро-диабаза',
+    'травертин': 'травертина',
+    'оникс': 'оникса',
+    'песчаник': 'песчаника',
+    'сланец': 'сланца'
+  };
+  if (!type) return type || '';
+  return genitives[type.toLowerCase()] || type;
 }
 
 /**
@@ -438,18 +459,10 @@ function customizeSection2(text, product) {
   );
 
   // Bug 3 fix: Replace hardcoded material color and structure
+  // Match "Структура: мелко- и среднезернистая." with possible newline after colon
   text = text.replace(
     /Структура:\s*мелко- и среднезернистая\./,
     `Структура: ${matProps.structure}.`
-  );
-  text = text.replace(
-    /Структура:\s*\n?мелко- и среднезернистая\./,
-    `Структура: ${matProps.structure}.`
-  );
-  // Handle case where "Структура:" is followed by text without period
-  text = text.replace(
-    /Структура:\s*мелко- и среднезернистая/,
-    `Структура: ${matProps.structure}`
   );
   text = text.replace(
     /Цвет: светло-бежевый, кремовый с тонкими\s*прожилками/,
@@ -582,9 +595,11 @@ function customizeSection8(text, product) {
   const matTypeName = getMaterialTypeName(product.material.type);
   const matName = product.material.name;
 
-  // Replace "мрамор Delikato light содержит значительно меньше кварца, чем гранит, общецеховые..."
+  // Replace the entire quartz/silicosis intro sentence.
+  // After parametrize(), the text may already have "гранит м-ния Жалгыз" instead of "мрамор Delikato light".
+  // Use a flexible regex to match any material name variant.
   text = text.replace(
-    /Несмотря на то что мрамор Delikato light содержит значительно меньше\s*кварца, чем гранит, общецеховые/s,
+    /Несмотря на то что .+?содержит значительно меньше\s*кварца, чем гранит, общецеховые/s,
     `${matTypeName} ${matName} ${matProps.quartzNote}. Общецеховые`
   );
 
@@ -637,16 +652,15 @@ function customizeSection12(text, product) {
   const matTypeName = getMaterialTypeName(product.material.type);
   const matName = product.material.name;
 
-  // Bug 5 fix: Replace hardcoded density 1600 with actual product density
-  // Template: "Плотность блока мрамора Delikato light принята \~1600 кг/м³ ... нижней консервативной оценкой"
+  // Bug 5 fix: Replace hardcoded density 1600 with actual product density.
+  // The template text has pandoc quoting with "\~" and line continuations ("\n> "),
+  // so we use a very flexible regex with /s flag (dot matches newline).
+  // After parametrize, the text may say "гранита м-ния Жалгыз" instead of "мрамора Delikato light"
+  // and density may still be 1600 (parametrize can't match across \n>).
+  const matTypeGen = getMaterialTypeGenitive(product.material.type);
   text = text.replace(
-    /Плотность блока мрамора Delikato light принята\s*\\?~?\s*1600\s*кг\/м³[^.]*нижней\s*консервативной оценкой/s,
-    `Плотность блока ${matTypeName.toLowerCase()} ${matName} принята ~${density} кг/м³ (расчётная масса блока ~${blockMassT} т), что является ${matProps.density_note || 'расчётной оценкой'}`
-  );
-  // Also handle already-parametrized density values (in case parametrize already replaced 1600)
-  text = text.replace(
-    /Плотность блока [а-яёА-ЯЁ\s]+ принята\s*\\?~?\s*\d+\s*кг\/м³[^.]*нижней\s*консервативной оценкой/s,
-    `Плотность блока ${matTypeName.toLowerCase()} ${matName} принята ~${density} кг/м³ (расчётная масса блока ~${blockMassT} т), что является ${matProps.density_note || 'расчётной оценкой'}`
+    /Плотность блока .+?принята[\s>\\~]*\d+[\s>]*кг\/м³.+?консервативной оценкой/s,
+    `Плотность блока ${matTypeGen} ${matName} принята ~${density} кг/м³ (расчётная масса блока ~${blockMassT} т), что является ${matProps.density_note || 'расчётной оценкой'}`
   );
 
   // Update JC-1010 assumption
@@ -695,7 +709,7 @@ function buildAllSections(product) {
   };
   
   // Build sections 1-5, 7-13
-  for (const num of ['1', '2', '3', '4', '5', '7', '8', '9', '10', '11']) {
+  for (const num of ['1', '2', '3', '4', '5', '7', '8', '9', '10', '11', '12', '13']) {
     result.sections[num] = buildSection(num, product);
   }
   
