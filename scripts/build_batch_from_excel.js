@@ -16,6 +16,7 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const { normalizeUnit, validateUnitConsistency, checkPriceDeviation } = require('../src/utils/unit-normalizer');
 
 const inputFile = process.argv[2];
 const outputFile = process.argv[3] || 'examples/full_album_batch.json';
@@ -121,23 +122,26 @@ function determineGeometry(name) {
   return 'simple';
 }
 
-// Calculate quantity_pieces from area-based quantities
-function calcPieces(qty, unit, dims) {
+// Calculate quantity_pieces from area-based quantities using measurement_type
+function calcPieces(qty, measurementType, dims) {
   if (!qty || !dims) return Math.max(1, Math.round(qty || 1));
-  const unitLower = (unit || '').toLowerCase().replace(/[.]/g, '');
-  
-  if (unitLower.includes('кв') || unitLower.includes('м2') || unitLower.includes('м²')) {
+
+  if (measurementType === 'area') {
     // Convert m² to pieces
     const pieceArea = (dims.length / 1000) * (dims.width / 1000);
     if (pieceArea > 0) return Math.ceil(qty / pieceArea);
   }
-  if (unitLower.includes('пог') || unitLower.includes('м.п') || unitLower.includes('мп')) {
+  if (measurementType === 'length') {
     // Convert m.p. to pieces
     const pieceLength = dims.length / 1000;
     if (pieceLength > 0) return Math.ceil(qty / pieceLength);
   }
-  
-  // шт, шт. — direct
+  if (measurementType === 'count') {
+    return Math.max(1, Math.round(qty));
+  }
+
+  // unknown — не делаем молчаливый fallback, возвращаем как есть с предупреждением
+  console.warn(`  ПРЕДУПРЕЖДЕНИЕ: measurement_type="${measurementType}" — расчёт qty_pieces может быть некорректным`);
   return Math.max(1, Math.round(qty));
 }
 
@@ -178,7 +182,11 @@ for (let i = 1; i < rows.length; i++) {
   const material = detectMaterial(fullName);
   const texture = normalizeTexture(textureRaw);
   const k_reject = determineKReject(dims, fullName);
-  const qty_pieces = calcPieces(qtyRaw, unit, dims);
+
+  // Нормализация единицы измерения
+  const { unit: normalizedUnit, measurement_type } = normalizeUnit(unit);
+  validateUnitConsistency(normalizedUnit, measurement_type, `Поз.${no}`);
+  const qty_pieces = calcPieces(qtyRaw, measurement_type, dims);
   
   // Парсим контрольную цену (может быть число или строка с пробелами/запятыми)
   let control_price = null;
@@ -196,9 +204,10 @@ for (let i = 1; i < rows.length; i++) {
     dimensions: dims,
     material: material,
     texture: texture,
-    quantity: `${qtyRaw} ${unit}`,
+    quantity: `${qtyRaw} ${normalizedUnit || unit}`,
     quantity_pieces: qty_pieces,
-    control_unit: unit, // единица измерения для сверки с контрольной ценой
+    control_unit: normalizedUnit || unit, // нормализованная единица измерения
+    measurement_type: measurement_type, // "area" | "length" | "count" | "unknown"
     edges: 'калибровка по всем сторонам, фаски 5мм',
     geometry_type: determineGeometry(fullName),
     category: '1',
@@ -230,6 +239,11 @@ for (let i = 1; i < rows.length; i++) {
   // Добавляем контрольную цену если есть
   if (control_price !== null) {
     product.control_price = control_price;
+  }
+
+  // Sanity-проверка: measurement_type = "unknown" → предупреждение
+  if (measurement_type === 'unknown') {
+    console.warn(`  ПРЕДУПРЕЖДЕНИЕ Поз.${no}: единица "${unit}" не распознана (measurement_type=unknown). Проверьте данные.`);
   }
 
   products.push(product);

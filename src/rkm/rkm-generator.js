@@ -8,6 +8,7 @@ const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
 const { buildXlsx } = require('./xlsx-builder');
 const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode, buildSizeBasedOverrides, buildSizeBasedMaterialPrices, getSizeBasedKReject } = require('./optimizer');
+const { checkPriceDeviation } = require('../utils/unit-normalizer');
 const rates = require('../../data/rkm_rates.json');
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
@@ -153,6 +154,8 @@ async function generateRKM(product, outputDir, options = {}) {
     const calcPrice = getCalcPrice(overheads, ctrlUnit);
     const ratio = calcPrice / product.control_price;
     console.log(`  [СВЕРКА] Расчёт: ${calcPrice.toFixed(2)}, Контроль: ${product.control_price.toFixed(2)}, Отклонение: ${((ratio - 1) * 100).toFixed(1)}%`);
+    // Sanity-проверка: расчётная цена не должна отклоняться от контрольной более чем в 10 раз
+    checkPriceDeviation(calcPrice, product.control_price, product.control_unit || 'ед', `Поз.${product.tk_number}`);
   }
 
   // 7. Build Excel

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "generate": "node src/index.js",
-    "test": "node src/index.js --input examples/batch_input.json --output output/"
+    "test": "node tests/unit-normalizer.test.js",
+    "test:generate": "node src/index.js --input examples/batch_input.json --output output/"
   },
   "keywords": [
     "технологическая карта",

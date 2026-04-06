@@ -14,6 +14,7 @@ const path = require('path');
 const minimist = require('minimist');
 const { generateBatch } = require('./generator');
 const { generateRKM } = require('./rkm/rkm-generator');
+const { normalizeUnit, validateUnitConsistency } = require('./utils/unit-normalizer');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -147,15 +148,13 @@ function mapTexture(textureStr) {
 }
 
 /**
- * Normalize unit of measurement to internal codes
+ * Normalize unit of measurement to internal codes.
+ * Returns { unit, measurement_type }.
+ * НЕ делает молчаливый fallback в "шт" — при нераспознанной единице
+ * measurement_type = "unknown".
  */
 function mapControlUnit(unitStr) {
-  if (!unitStr) return null;
-  const s = String(unitStr).trim().toLowerCase();
-  if (s === 'шт' || s === 'шт.') return 'шт';
-  if (s === 'кв.м.' || s === 'кв. м.' || s === 'кв.м' || s === 'м²' || s === 'м2') return 'м²';
-  if (s === 'м.п.' || s === 'п.м.' || s === 'м.п' || s === 'п.м') return 'м.п.';
-  return 'шт';
+  return normalizeUnit(unitStr);
 }
 
 /**
@@ -181,10 +180,13 @@ function parseExcelInput(filePath) {
 
     const dimensions = parseDimensions(dimStr, nameText);
     const material = extractMaterial(nameText);
-    const control_unit = mapControlUnit(unitStr);
+    const { unit: control_unit, measurement_type } = mapControlUnit(unitStr);
     const texture = mapTexture(textureStr);
     const control_price = price != null ? Number(price) : null;
     const quantity = qty != null ? Number(qty) : null;
+
+    // Sanity-проверка согласованности единицы
+    validateUnitConsistency(control_unit, measurement_type, `Поз.${rowNum || (i + 1)}`);
 
     return {
       tk_number: rowNum || (i + 1),
@@ -197,11 +199,12 @@ function parseExcelInput(filePath) {
         density: 2700
       },
       texture: texture,
-      quantity: control_unit === 'м²' && quantity != null ? `${quantity} м²`
-        : control_unit === 'м.п.' && quantity != null ? `${quantity} м.п.`
+      quantity: measurement_type === 'area' && quantity != null ? `${quantity} м²`
+        : measurement_type === 'length' && quantity != null ? `${quantity} м.п.`
         : null,
-      quantity_pieces: control_unit === 'шт' && quantity != null ? quantity : null,
+      quantity_pieces: measurement_type === 'count' && quantity != null ? quantity : null,
       control_unit: control_unit,
+      measurement_type: measurement_type,
       control_price: control_price,
       edges: null,
       geometry_type: 'simple',

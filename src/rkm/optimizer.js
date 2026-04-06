@@ -4,6 +4,7 @@ const { calcGeometry } = require('./geometry-calc');
 const { mapOperations } = require('./operations-mapper');
 const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
+const { normalizeUnit } = require('../utils/unit-normalizer');
 const rates = require('../../data/rkm_rates.json');
 const sizeProfiles = require('../../data/rkm_size_profiles.json');
 // Fix: загружаем norms один раз на уровне модуля, а не внутри функций/циклов
@@ -48,10 +49,32 @@ function calcSerialFactor(qty, areaMode) {
 }
 
 function getControlUnit(product) {
-  const unit = (product.control_unit || product.unit || 'шт').toLowerCase().replace(/\./g, '').trim();
-  if (unit.includes('кв') || unit.includes('м2') || unit === 'квм') return 'm2';
-  if (unit.includes('пог') || unit.includes('мп') || unit.includes('погм')) return 'mp';
-  return 'piece';
+  // Если measurement_type уже определён ранее — используем его напрямую
+  if (product.measurement_type) {
+    switch (product.measurement_type) {
+      case 'area':   return 'm2';
+      case 'length': return 'mp';
+      case 'count':  return 'piece';
+      // 'unknown' — НЕ fallback в piece, логируем предупреждение
+      default:
+        console.warn(`[getControlUnit] measurement_type="${product.measurement_type}" для "${product.name || 'изделие'}" — используется piece (проверьте единицу)`);
+        return 'piece';
+    }
+  }
+
+  // Fallback: нормализуем control_unit через словарь
+  const rawUnit = product.control_unit || product.unit || '';
+  const { measurement_type } = normalizeUnit(rawUnit);
+  switch (measurement_type) {
+    case 'area':   return 'm2';
+    case 'length': return 'mp';
+    case 'count':  return 'piece';
+    default:
+      if (rawUnit) {
+        console.warn(`[getControlUnit] Нераспознанная единица "${rawUnit}" для "${product.name || 'изделие'}" — используется piece`);
+      }
+      return 'piece';
+  }
 }
 
 function getCalcPrice(result, controlUnit) {
