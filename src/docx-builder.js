@@ -40,6 +40,7 @@ function parseMarkdownToRuns(text) {
   if (!text) return [new TextRun({ text: '', font: FONT, size: BODY_SIZE })];
   
   // Pre-process: clean artifacts
+  text = text.replace(/\*\*\*/g, '');  // Remove *** artifacts
   text = text.replace(/\{\.underline\}/g, '');
   text = text.replace(/\]\{/g, '');  // leftover pandoc
   text = text.replace(/\\~/g, '~');
@@ -479,7 +480,7 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   allChildren.push(new Paragraph({ children: [new PageBreak()] }));
   
   // --- Sections 7-13 ---
-  for (const num of ['7', '8', '9', '10', '11']) {
+  for (const num of ['7', '8', '9', '10', '11', '12', '13']) {
     if (sections[num]) {
       const sectionParas = textToParagraphs(sections[num]);
       allChildren.push(...sectionParas);

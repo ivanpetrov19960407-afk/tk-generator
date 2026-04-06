@@ -508,12 +508,16 @@ function cleanTitle(title) {
   // Remove {.underline} artifacts
   title = title.replace(/\]\{\.underline\}/g, '');
   title = title.replace(/\{\.underline\}/g, '');
+  // Remove *** artifacts
+  title = title.replace(/\*\*\*/g, '');
   // Remove trailing markdown bold markers
   title = title.replace(/\*+$/g, '');
   // Remove leading/trailing **
   title = title.replace(/^\*+|\*+$/g, '');
   // Remove trailing ---
   title = title.replace(/\s*---\s*$/, '');
+  // Replace internal " --- " with " — "
+  title = title.replace(/\s*---\s*/g, ' — ');
   // Clean whitespace
   title = title.trim();
   return title;
