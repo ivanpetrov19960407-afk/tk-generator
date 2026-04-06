@@ -1,0 +1,2704 @@
+{
+  "products": [
+    {
+      "tk_number": 1,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержа",
+      "short_name": "prostup_2500x410x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 410,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "25 шт.",
+      "quantity_pieces": 25,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 2,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_ploshchadki_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "601.8 кв.м.",
+      "quantity_pieces": 3343,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 3,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости",
+      "short_name": "izdeliye_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мраморизированный известняк",
+        "name": "Fatima (Португалия)",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт.",
+      "quantity_pieces": 75,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 4,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное  из полнотелого натурального камня с толщиной t=160, с радиусом от",
+      "short_name": "baza_kolonn_695x695x160",
+      "dimensions": {
+        "length": 695,
+        "width": 695,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 5,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=65,  из полнотелого натурального камня с толщин",
+      "short_name": "baza_kolonn_690x690x160",
+      "dimensions": {
+        "length": 690,
+        "width": 690,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 6,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с кантом сложной конфигурации: с радиусом канта  R=45, шириной ка",
+      "short_name": "baza_kolonn_630x630x225",
+      "dimensions": {
+        "length": 630,
+        "width": 630,
+        "thickness": 225
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 7,
+      "name": "Изделие индивидуальное объемное, радиусное  из полнотелого натурального камня с толщиной t=170, с радиусом R=70, с калиб",
+      "short_name": "obyemnoye_1700x135x170",
+      "dimensions": {
+        "length": 1700,
+        "width": 135,
+        "thickness": 170
+      },
+      "material": {
+        "type": "мраморизированный известняк",
+        "name": "Fatima (Португалия)",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт.",
+      "quantity_pieces": 75,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 8,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "izdeliye_1000x250x100",
+      "dimensions": {
+        "length": 1000,
+        "width": 250,
+        "thickness": 100
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Габбро-диабаз",
+        "density": 3000
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "720 шт.",
+      "quantity_pieces": 720,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 9,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х100х80, калибровка по обоим сторо",
+      "short_name": "bruschatka_200x100x80",
+      "dimensions": {
+        "length": 200,
+        "width": 100,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Габбро-диабаз",
+        "density": 3000
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "324 кв.м.",
+      "quantity_pieces": 16200,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 32018-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 10,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х200х80, калибровка по четырем сто",
+      "short_name": "bruschatka_200x200x80",
+      "dimensions": {
+        "length": 200,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Габбро-диабаз",
+        "density": 3000
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "396 кв.м.",
+      "quantity_pieces": 9900,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 32018-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 11,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_207x207x650",
+      "dimensions": {
+        "length": 207,
+        "width": 207,
+        "thickness": 650
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "176 шт.",
+      "quantity_pieces": 176,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 12,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории с подбором по оттенку и зернистости с минимальным содерж",
+      "short_name": "plita_oblitsovochnaya_400x650x60",
+      "dimensions": {
+        "length": 400,
+        "width": 650,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт.",
+      "quantity_pieces": 80,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 13,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с ми",
+      "short_name": "segment_570x570x135",
+      "dimensions": {
+        "length": 570,
+        "width": 570,
+        "thickness": 135
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "20 шт.",
+      "quantity_pieces": 20,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 14,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с ми",
+      "short_name": "plita_oblitsovochnaya_550x550x215",
+      "dimensions": {
+        "length": 550,
+        "width": 550,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт.",
+      "quantity_pieces": 80,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 15,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "poruchen_1700x376x133",
+      "dimensions": {
+        "length": 1700,
+        "width": 376,
+        "thickness": 133
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт.",
+      "quantity_pieces": 37,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 16,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_1700x300x215",
+      "dimensions": {
+        "length": 1700,
+        "width": 300,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт.",
+      "quantity_pieces": 37,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 17,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное из полнотелого натурального камня с толщиной t=98, с радиусом от R",
+      "short_name": "baza_kolonn_430x430x98",
+      "dimensions": {
+        "length": 430,
+        "width": 430,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 18,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=30°, из полнотелого натурального камня с толщин",
+      "short_name": "baza_kolonn_425x425x75",
+      "dimensions": {
+        "length": 425,
+        "width": 425,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 19,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 70мм с дв",
+      "short_name": "baza_kolonn_390x390x105",
+      "dimensions": {
+        "length": 390,
+        "width": 390,
+        "thickness": 105
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 20,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 10мм с ра",
+      "short_name": "baza_kolonn_320x320x66",
+      "dimensions": {
+        "length": 320,
+        "width": 320,
+        "thickness": 66
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 21,
+      "name": "Изделие индивидуальное объемное, П-образное, из монолитного блока с толщиной t=90, лощеной фактуры, с калибровкой и поли",
+      "short_name": "pilyastra_730x240x90",
+      "dimensions": {
+        "length": 730,
+        "width": 240,
+        "thickness": 90
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "p_shaped",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 22,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиу",
+      "short_name": "pilyastra_240x56x228",
+      "dimensions": {
+        "length": 240,
+        "width": 56,
+        "thickness": 228
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "44 шт.",
+      "quantity_pieces": 44,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 23,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиу",
+      "short_name": "pilyastra_730x56x228",
+      "dimensions": {
+        "length": 730,
+        "width": 56,
+        "thickness": 228
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 24,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории, с подбором по оттенку и зернистости с минимальным содер",
+      "short_name": "prostup_1960x300x60",
+      "dimensions": {
+        "length": 1960,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 25,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1000x300x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт.",
+      "quantity_pieces": 4,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 26,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт.",
+      "quantity_pieces": 32,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 27,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1000x600x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "2 шт.",
+      "quantity_pieces": 2,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 28,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2200x600x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт.",
+      "quantity_pieces": 1,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 29,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2200x400x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 400,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт.",
+      "quantity_pieces": 1,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 30,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1000x300x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт.",
+      "quantity_pieces": 51,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 31,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт.",
+      "quantity_pieces": 51,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 32,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "56 шт.",
+      "quantity_pieces": 56,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 33,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1610x800x30",
+      "dimensions": {
+        "length": 1610,
+        "width": 800,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 34,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1800x825x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 825,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "3 шт.",
+      "quantity_pieces": 3,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 35,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1700x80x30",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "53 шт.",
+      "quantity_pieces": 53,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 36,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_ploshchadki_600x300x20",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 20
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "4.65 кв.м.",
+      "quantity_pieces": 26,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 37,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_ploshchadki_1800x950x60",
+      "dimensions": {
+        "length": 1800,
+        "width": 950,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "32 шт.",
+      "quantity_pieces": 32,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 38,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_napolnaya_700x700x30",
+      "dimensions": {
+        "length": 700,
+        "width": 700,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1252.1 кв.м.",
+      "quantity_pieces": 2555,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 39,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1290x300x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 40,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1290x120x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 41,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1650x300x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт.",
+      "quantity_pieces": 35,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 42,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1650x120x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт.",
+      "quantity_pieces": 35,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 43,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт.",
+      "quantity_pieces": 17,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 44,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1500x120x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт.",
+      "quantity_pieces": 17,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 45,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1800x300x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт.",
+      "quantity_pieces": 15,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 46,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1800x120x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт.",
+      "quantity_pieces": 15,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 47,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1200x300x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт.",
+      "quantity_pieces": 32,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 48,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1200x120x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт.",
+      "quantity_pieces": 32,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 49,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2200x300x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт.",
+      "quantity_pieces": 27,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 50,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_2200x120x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт.",
+      "quantity_pieces": 27,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 51,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2600x300x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт.",
+      "quantity_pieces": 9,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 52,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_2600x120x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт.",
+      "quantity_pieces": 9,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 53,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_napolnaya_600x600x30",
+      "dimensions": {
+        "length": 600,
+        "width": 600,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "122.6 кв.м.",
+      "quantity_pieces": 341,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 54,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_190x165x590",
+      "dimensions": {
+        "length": 190,
+        "width": 165,
+        "thickness": 590
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "48 шт.",
+      "quantity_pieces": 48,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 55,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_98x165x590",
+      "dimensions": {
+        "length": 98,
+        "width": 165,
+        "thickness": 590
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 56,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_205x205x590",
+      "dimensions": {
+        "length": 205,
+        "width": 205,
+        "thickness": 590
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт.",
+      "quantity_pieces": 4,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 57,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_350x165x590",
+      "dimensions": {
+        "length": 350,
+        "width": 165,
+        "thickness": 590
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт.",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 58,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_270x260x590",
+      "dimensions": {
+        "length": 270,
+        "width": 260,
+        "thickness": 590
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт.",
+      "quantity_pieces": 1,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 59,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "poruchen_1700x239x235",
+      "dimensions": {
+        "length": 1700,
+        "width": 239,
+        "thickness": 235
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 60,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "balyasina_1700x235x75",
+      "dimensions": {
+        "length": 1700,
+        "width": 235,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 61,
+      "name": "Изделие индивидуальное, сегментное, архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содер",
+      "short_name": "prostup_2500x390x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт.",
+      "quantity_pieces": 24,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 62,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2165x390x150",
+      "dimensions": {
+        "length": 2165,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "62 шт.",
+      "quantity_pieces": 62,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 63,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_2650x390x150",
+      "dimensions": {
+        "length": 2650,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт.",
+      "quantity_pieces": 12,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 64,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "izdeliye_900x400x80",
+      "dimensions": {
+        "length": 900,
+        "width": 400,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "120 шт.",
+      "quantity_pieces": 120,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 65,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "izdeliye_500x500x80",
+      "dimensions": {
+        "length": 500,
+        "width": 500,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "30 шт.",
+      "quantity_pieces": 30,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 66,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "poruchen_1700x120x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 120,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "лощение",
+      "quantity": "27.7 пог.м.",
+      "quantity_pieces": 16,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 67,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1500x355x50",
+      "dimensions": {
+        "length": 1500,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт.",
+      "quantity_pieces": 24,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 68,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1500x85x20",
+      "dimensions": {
+        "length": 1500,
+        "width": 85,
+        "thickness": 20
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт.",
+      "quantity_pieces": 24,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 69,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости",
+      "short_name": "izdeliye_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мраморизированный известняк",
+        "name": "Fatima (Португалия)",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "230 пог.м.",
+      "quantity_pieces": 135,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 70,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "segment_1850x470x80",
+      "dimensions": {
+        "length": 1850,
+        "width": 470,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 71,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "segment_1600x200x80",
+      "dimensions": {
+        "length": 1600,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт.",
+      "quantity_pieces": 10,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 72,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "segment_1655x200x80",
+      "dimensions": {
+        "length": 1655,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт.",
+      "quantity_pieces": 5,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 73,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "obyemnoye_2280x1135x40",
+      "dimensions": {
+        "length": 2280,
+        "width": 1135,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт.",
+      "quantity_pieces": 5,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 74,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержани",
+      "short_name": "baza_kolonn_495x50x90",
+      "dimensions": {
+        "length": 495,
+        "width": 50,
+        "thickness": 90
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 75,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержани",
+      "short_name": "obyemnoye_1655x410x90",
+      "dimensions": {
+        "length": 1655,
+        "width": 410,
+        "thickness": 90
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 76,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, объемное, калиброванное с подбором по оттенку и зернистости с миним",
+      "short_name": "obyemnoye_480x75x90",
+      "dimensions": {
+        "length": 480,
+        "width": 75,
+        "thickness": 90
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 77,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержан",
+      "short_name": "segment_1380x225x80",
+      "dimensions": {
+        "length": 1380,
+        "width": 225,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт.",
+      "quantity_pieces": 12,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 78,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "izdeliye_1255x255x80",
+      "dimensions": {
+        "length": 1255,
+        "width": 255,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 79,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_ploshchadki_2360x1255x40",
+      "dimensions": {
+        "length": 2360,
+        "width": 1255,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "3 шт.",
+      "quantity_pieces": 3,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 80,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным сод",
+      "short_name": "obyemnoye_1700x75x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 75,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "м-ния Жалгыз",
+        "density": 2620
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "27.7 пог.м.",
+      "quantity_pieces": 16,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "усиленная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 81,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержа",
+      "short_name": "prostup_650x1500x150",
+      "dimensions": {
+        "length": 650,
+        "width": 1500,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт.",
+      "quantity_pieces": 12,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 82,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1200x370x150",
+      "dimensions": {
+        "length": 1200,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 83,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с Изделие индивидуальное архитек",
+      "short_name": "prostup_1300x370x150",
+      "dimensions": {
+        "length": 1300,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "8 шт.",
+      "quantity_pieces": 8,
+      "edges": "калибровка по всем сторонам",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 84,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1050x355x50",
+      "dimensions": {
+        "length": 1050,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт.",
+      "quantity_pieces": 36,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 85,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1050x85x30",
+      "dimensions": {
+        "length": 1050,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт.",
+      "quantity_pieces": 36,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 86,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1200x355x50",
+      "dimensions": {
+        "length": 1200,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт.",
+      "quantity_pieces": 54,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 87,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1200x85x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт.",
+      "quantity_pieces": 54,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 88,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и ",
+      "short_name": "prostup_1300x355x50",
+      "dimensions": {
+        "length": 1300,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт.",
+      "quantity_pieces": 38,
+      "edges": "профильные канты по описанию",
+      "geometry_type": "profile",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 89,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "prostup_1300x85x30",
+      "dimensions": {
+        "length": 1300,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт.",
+      "quantity_pieces": 38,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "radial",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 23342-2012",
+      "packaging": "индивидуальная",
+      "date": "05 апреля 2026 г."
+    },
+    {
+      "tk_number": 90,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и м",
+      "short_name": "plita_ploshchadki_1250x1500x30",
+      "dimensions": {
+        "length": 1250,
+        "width": 1500,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт.",
+      "quantity_pieces": 6,
+      "edges": "фаски 5мм по четырём сторонам",
+      "geometry_type": "simple",
+      "object": {
+        "name": "Церковь Николы Тульского",
+        "years": "1806–1816 гг.",
+        "address": "г. Казань, ул. Большая Красная, д. 3",
+        "project": "Тульский монастырь"
+      },
+      "category": "1",
+      "gost_primary": "ГОСТ 9480-2024",
+      "packaging": "стандартная",
+      "date": "05 апреля 2026 г."
+    }
+  ]
+}

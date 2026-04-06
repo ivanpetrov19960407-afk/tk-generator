@@ -188,8 +188,18 @@ function customizeSection2(text, product) {
   
   // Replace stone type references  
   if (product.material.type !== 'мрамор') {
-    text = text.replace(/мрамор(?!а)/g, product.material.type);
-    text = text.replace(/мрамора/g, product.material.type + 'а');
+    const rockForms = {
+      'гранит':       { gen: 'гранита', nom: 'гранит' },
+      'известняк':    { gen: 'известняка', nom: 'известняк' },
+      'габбро-диабаз': { gen: 'габбро-диабаза', nom: 'габбро-диабаз' },
+      'мраморизированный известняк': { gen: 'мраморизированного известняка', nom: 'мраморизированный известняк' }
+    };
+    const matType = product.material.type.toLowerCase();
+    const forms = rockForms[matType] || { gen: matType + 'а', nom: matType };
+    text = text.replace(/мрамор(?!а)/g, forms.nom);
+    text = text.replace(/мрамора/g, forms.gen);
+    text = text.replace(/Мрамор(?!а)/g, forms.nom.charAt(0).toUpperCase() + forms.nom.slice(1));
+    text = text.replace(/Мрамора/g, forms.gen.charAt(0).toUpperCase() + forms.gen.slice(1));
   }
   
   return text;
@@ -259,8 +269,16 @@ function customizeSection5(text, product) {
  */
 function customizeSection7(text, product) {
   if (product.material.type !== 'мрамор') {
-    text = text.replace(/мрамора/g, product.material.type + 'а');
-    text = text.replace(/мрамор\b/g, product.material.type);
+    const rockForms = {
+      'гранит':       { gen: 'гранита', nom: 'гранит' },
+      'известняк':    { gen: 'известняка', nom: 'известняк' },
+      'габбро-диабаз': { gen: 'габбро-диабаза', nom: 'габбро-диабаз' },
+      'мраморизированный известняк': { gen: 'мраморизированного известняка', nom: 'мраморизированный известняк' }
+    };
+    const matType = product.material.type.toLowerCase();
+    const forms = rockForms[matType] || { gen: matType + 'а', nom: matType };
+    text = text.replace(/мрамора/g, forms.gen);
+    text = text.replace(/мрамор\b/g, forms.nom);
   }
   return text;
 }
