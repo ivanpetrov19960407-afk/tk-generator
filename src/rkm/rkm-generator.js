@@ -57,7 +57,7 @@ async function generateRKM(product, outputDir, options = {}) {
   let workProduct = product;
 
   if (doOptimize) {
-    const optResult = optimizeRKM(product, product.control_price, { tolerance: 0.15 });
+    const optResult = optimizeRKM(product, product.control_price, { tolerance: 0.10 });
     optimizerInfo = {
       control_price: product.control_price,
       control_unit: product.control_unit || 'шт',

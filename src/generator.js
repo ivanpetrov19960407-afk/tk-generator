@@ -125,7 +125,7 @@ async function generateDocument(product, outputDir) {
   
   // 2. Build sections
   const sectionData = buildAllSections(product);
-  console.log(`  → Разделы 1-5, 7-13 сгенерированы`);
+  console.log(`  → Разделы 1-5, 7-11 сгенерированы`);
   
   // 3. Build MK
   const mkHeader = buildMKHeader(product);

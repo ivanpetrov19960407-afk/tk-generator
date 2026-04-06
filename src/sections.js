@@ -199,40 +199,54 @@ function customizeSection2(text, product) {
  * Section 5 — customize operation list for operations 17-20
  */
 function customizeSection5(text, product) {
+  // Pre-process: join lines that were split mid-sentence for ops 17-20
+  // Join "НЕ\n> ПРИМЕНЯЕТСЯ" to single line
+  text = text.replace(/НЕ\n>\s*ПРИМЕНЯЕТСЯ/g, 'НЕ ПРИМЕНЯЕТСЯ');
+  text = text.replace(/НЕ\nПРИМЕНЯЕТСЯ/g, 'НЕ ПРИМЕНЯЕТСЯ');
+  // Join split operation lines where the continuation contains "НЕ ПРИМЕНЯЕТСЯ"
+  // e.g., "Подготовка к бучардированию (маскирование зон\n> лощения) --- НЕ ПРИМЕНЯЕТСЯ"
+  text = text.replace(/(Операция\s*№\s*(?:17|18|19|20)[^\n]*)\n>\s*([^\n]*НЕ ПРИМЕНЯЕТСЯ)/g, '$1 $2');
+
   if (product.texture === 'лощение') {
-    // Keep "НЕ ПРИМЕНЯЕТСЯ" for ops 17-20
+    // Remove lines for operations 17-20 entirely (they are not applicable for лощение)
+    text = text.split('\n').filter(line => {
+      if (/Операция\s*№\s*(17|18|19|20)\b/.test(line)) return false;
+      if (line.includes('НЕ ПРИМЕНЯЕТСЯ')) return false;
+      return true;
+    }).join('\n');
+    text = text.replace(/\n{3,}/g, '\n\n');
   } else if (product.texture === 'бучардирование_лощение') {
     text = text.replace(
-      /Подготовка к бучардированию.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Подготовка к бучардированию.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Подготовка к бучардированию (маскирование зон лощения)'
     );
     text = text.replace(
-      /Бучардирование поверхности.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Бучардирование поверхности.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Бучардирование поверхности (архитектурная 1 кат.)'
     );
     text = text.replace(
-      /Контроль качества бучардирования.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Контроль качества бучардирования.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Контроль качества бучардирования'
     );
     text = text.replace(
-      /Доводка после бучардирования.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Доводка после бучардирования.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Доводка после бучардирования'
     );
   } else if (product.texture === 'рельефная_матовая') {
     text = text.replace(
-      /Подготовка к бучардированию.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Подготовка к бучардированию.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Подготовка к рельефной матовой обработке (маскирование зон полировки торцев)'
     );
     text = text.replace(
-      /Бучардирование поверхности.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Бучардирование поверхности.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Нанесение рельефной матовой фактуры на лицевую поверхность'
     );
     text = text.replace(
-      /Контроль качества бучардирования.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Контроль качества бучардирования.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Контроль качества рельефной матовой фактуры'
     );
     text = text.replace(
-      /Доводка после бучардирования.*?--- НЕ ПРИМЕНЯЕТСЯ/,
+      /Доводка после бучардирования.*?---\s*НЕ ПРИМЕНЯЕТСЯ/,
       'Доводка рельефной матовой фактуры (выравнивание зон, устранение переходов)'
     );
   }
@@ -265,7 +279,7 @@ function customizeSection10(text, product) {
   if (eqStart !== -1 && eqEnd !== -1) {
     const before = text.substring(0, eqStart);
     const after = text.substring(eqEnd);
-    text = before + '10.1. Оборудование (EQUIPMENT_LIST)\n\n' + equipText + '\n\n' + after;
+    text = before + '10.1. Оборудование\n\n' + equipText + '\n\n' + after;
   }
   
   return text;
@@ -325,7 +339,7 @@ function buildAllSections(product) {
   };
   
   // Build sections 1-5, 7-13
-  for (const num of ['1', '2', '3', '4', '5', '7', '8', '9', '10', '11', '12', '13']) {
+  for (const num of ['1', '2', '3', '4', '5', '7', '8', '9', '10', '11']) {
     result.sections[num] = buildSection(num, product);
   }
   

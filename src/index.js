@@ -176,7 +176,7 @@ function parseExcelInput(filePath) {
     const dimStr = findCol(row, 'Габаритные размеры', 'Габарит', 'размер');
     const unitStr = findCol(row, 'Ед. изм', 'Ед.изм', 'ед. изм', 'control_unit', 'Единица');
     const qty = findCol(row, 'Кол-во', 'Кол во', 'quantity', 'Количество');
-    const price = findCol(row, 'Цена за ед', 'Цена', 'control_price', 'цена');
+    const price = findCol(row, 'Цена за ед', 'Контрольные цен', 'Цена', 'control_price', 'цена', 'цен');
 
     const dimensions = parseDimensions(dimStr, nameText);
     const material = extractMaterial(nameText);

@@ -31,7 +31,7 @@ const MK_OPERATIONS = [
     equipment: 'Мостовой кран (при кантовании)',
     executor: 'Мастер цеха; диспетчер; разнорабочий',
     control: 'Геометрия блока (рулетка); наличие документов; отсутствие структурного брака',
-    notes: 'Природные fissures, pitting --- не брак'
+    notes: 'Природные природные микротрещины, каверны --- не брак'
   },
   {
     num: 3,
@@ -295,7 +295,7 @@ function buildMKHeader(product) {
   const texture = product.texture;
   
   const textureDescs = {
-    'лощение': 'Трудозатраты не нормированы.\n\nОперации №17–20 --- НЕ ПРИМЕНЯЮТСЯ (бучардирование не предусмотрено техническим заданием).',
+    'лощение': 'Трудозатраты не нормированы.',
     'рельефная_матовая': 'Трудозатраты не нормированы.\n\nОперации №17–20 --- рельефная матовая обработка.',
     'бучардирование_лощение': 'Трудозатраты не нормированы.\n\nОперации №17–20 --- бучардирование с последующим лощением.'
   };
@@ -326,7 +326,11 @@ function buildMKTableData(product) {
   };
   const packagingNote = packagingNotes[product.packaging] || 'Тара по ТЗ';
   
-  const rows = MK_OPERATIONS.map(op => {
+  const rows = MK_OPERATIONS.filter(op => {
+    // Skip non-applicable operations (ops 17-20 for лощение texture)
+    if (op.num >= 17 && op.num <= 20 && texture === 'лощение') return false;
+    return true;
+  }).map(op => {
     let name = resolveField(op, 'name', texture);
     let equipment = resolveField(op, 'equipment', texture);
     let control = resolveField(op, 'control', texture);

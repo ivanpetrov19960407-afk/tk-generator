@@ -365,9 +365,9 @@ function buildMKTable(rows) {
   const thinBorder = { style: BorderStyle.SINGLE, size: 1, color: '000000' };
   const allBorders = { top: thinBorder, bottom: thinBorder, left: thinBorder, right: thinBorder };
   
-  // Column widths: №(600), Наименование(2200), Оборудование(1600), Исполнитель(1800), Контроль(1800), Примечания(1638)
-  const colWidths = [600, 2200, 1600, 1800, 1800, 1638];
-  
+  // Column widths: №(600), Наименование(2800), Оборудование(1800), Исполнитель(2200), Контроль(2238)
+  const colWidths = [600, 2800, 1800, 2200, 2238];
+
   // Header row
   const headerRow = new TableRow({
     tableHeader: true,
@@ -376,11 +376,10 @@ function buildMKTable(rows) {
       makeCell('Наименование операции', colWidths[1], allBorders, true),
       makeCell('Оборудование', colWidths[2], allBorders, true),
       makeCell('Исполнитель', colWidths[3], allBorders, true),
-      makeCell('Контроль', colWidths[4], allBorders, true),
-      makeCell('Примечания', colWidths[5], allBorders, true)
+      makeCell('Контроль', colWidths[4], allBorders, true)
     ]
   });
-  
+
   // Data rows
   const dataRows = rows.map(row => {
     return new TableRow({
@@ -389,8 +388,7 @@ function buildMKTable(rows) {
         makeCell(row.name, colWidths[1], allBorders, false),
         makeCell(row.equipment, colWidths[2], allBorders, false),
         makeCell(row.executor, colWidths[3], allBorders, false),
-        makeCell(row.control, colWidths[4], allBorders, false),
-        makeCell(row.notes, colWidths[5], allBorders, false)
+        makeCell(row.control, colWidths[4], allBorders, false)
       ]
     });
   });
@@ -455,6 +453,9 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   allChildren.push(new Paragraph({ spacing: { after: 120 }, children: [] }));
   
   for (const op of operations) {
+    // Skip non-applicable operations entirely
+    if (op.isNotApplicable) continue;
+
     // Operation heading
     const headingText = `ОПЕРАЦИЯ №${op.number}. ${op.title.toUpperCase()}`;
     allChildren.push(makeOperationHeading(headingText));
@@ -478,7 +479,7 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   allChildren.push(new Paragraph({ children: [new PageBreak()] }));
   
   // --- Sections 7-13 ---
-  for (const num of ['7', '8', '9', '10', '11', '12', '13']) {
+  for (const num of ['7', '8', '9', '10', '11']) {
     if (sections[num]) {
       const sectionParas = textToParagraphs(sections[num]);
       allChildren.push(...sectionParas);
