@@ -469,13 +469,7 @@ function customizeSection2(text, product) {
     `Цвет: ${matProps.color}`
   );
 
-  // Bug 4 fix: Replace the ВАЖНОЕ ПРИМЕЧАНИЕ quartz paragraph
-  // Original: "Мрамор Delikato light содержит значительно меньше кварца, чем гранит, однако..."
-  // This becomes nonsensical for granite. Use material-specific quartzNote.
-  text = text.replace(
-    /ВАЖНОЕ ПРИМЕЧАНИЕ:.*?(?:СанПиН 1\.2\.3685-21 как обязательные цеховые меры\.?|обязательные цеховые меры\.?)/s,
-    `ВАЖНОЕ ПРИМЕЧАНИЕ: ${matTypeName} ${matName} ${matProps.quartzNote} на всех операциях механической обработки (влажная резка, полумаски-респираторы FFP2+ при обработке, влажная уборка пыли) в соответствии с СанПиН 1.2.3685-21 как обязательные цеховые меры.`
-  );
+  // ВАЖНОЕ ПРИМЕЧАНИЕ removed from section 2 template — quartz info covered in section 8
 
   // Replace stone type references (whole-word only to protect "мраморизированный")
   if (product.material.type !== 'мрамор') {
