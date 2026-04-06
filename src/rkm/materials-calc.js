@@ -10,6 +10,7 @@ function calcMaterials(product, geometry, unitLabel) {
   const texture = (product.texture || '').toLowerCase();
   const hasBucharda = texture.includes('бучардирование');
   const ul = unitLabel || 'шт';
+  const isLong = geometry.L_mm >= 1500;
 
   // Bush-hammer heads: resource per head depends on piece size
   // Large pieces (area_top >= 1 m²) wear heads faster → 5 m²/head
@@ -30,11 +31,11 @@ function calcMaterials(product, geometry, unitLabel) {
       doc: 'КП/счет поставщика',
       norm: 'ТЗ; расчет объема сырья',
       formula: 'V_партии = V_net\u00D7k_allow\u00D7k_reject\u00D7k_reserve',
-      comment: 'Коэф. отбора/брака учитывает отбор и повышенный брак длинномера (>5 м).'
+      comment: isLong ? 'Коэф. отбора/брака учитывает отбор и повышенный брак длинномера (>5 м).' : 'Коэф. отбора/брака учитывает отбор и повышенный брак.'
     },
     {
       no: 2,
-      name: 'Алмазные диски/канат (износ на распиловку длинномера)',
+      name: isLong ? 'Алмазные диски/канат (износ на распиловку длинномера)' : 'Алмазные диски/канат (износ на распиловку)',
       unit: 'компл',
       qty_val: 1,
       price: mp.diamond_discs || 10000,
@@ -52,7 +53,7 @@ function calcMaterials(product, geometry, unitLabel) {
       doc: 'КП поставщика',
       norm: 'внутр. норма износа',
       formula: '1 компл на партию',
-      comment: 'Повышенный риск сколов и перегрева на длине >5 м.'
+      comment: isLong ? 'Повышенный риск сколов и перегрева на длине >5 м.' : 'Износ инструмента при фрезеровке/профилировании.'
     },
     {
       no: 4,
@@ -100,14 +101,14 @@ function calcMaterials(product, geometry, unitLabel) {
     },
     {
       no: 8,
-      name: 'Усиленная упаковка длинномера: деревянный короб, подкладки, амортизаторы, уголки',
+      name: isLong ? 'Усиленная упаковка длинномера: деревянный короб, подкладки, амортизаторы, уголки' : 'Упаковка: тара, прокладки, амортизаторы, уголки',
       unit: 'компл',
       qty_val: qty,
       price: mp.packaging || 18000,
       doc: 'КП/смета тары',
       norm: 'по чертежу упаковки',
       formula: `1 короб/${ul}`,
-      comment: 'Длина изделия требует усиления и распорок.'
+      comment: isLong ? 'Длина изделия требует усиления и распорок.' : 'Упаковка для транспортировки партии.'
     },
     {
       no: 9,

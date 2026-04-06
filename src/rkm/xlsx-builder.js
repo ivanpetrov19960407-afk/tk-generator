@@ -52,22 +52,20 @@ async function buildXlsx(product, geometry, operations, materials, transport, ov
   const isAreaUnit = controlUnit.includes('кв') || controlUnit.includes('м2');
   const isLinearUnit = controlUnit.includes('пог') || controlUnit.includes('мп');
   const unitLabel = isAreaUnit ? 'м²' : isLinearUnit ? 'м.п.' : 'шт.';
+  const isLong = geometry.L_mm >= 1500;
 
   buildTitleSheet(wb, product, geometry, displayProduct, unitLabel);
   buildInstructionSheet(wb);
-  buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel);
+  buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel, isLong);
   buildGeometrySheet(wb, geometry);
   buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel);
-  const opRowStart = buildOperationsSheet(wb, operations, unitLabel);
+  const opRowStart = buildOperationsSheet(wb, operations, unitLabel, isLong);
   buildOverheadSheet(wb, overheads, operations);
-  buildTransportSheet(wb, product, overheads);
+  buildTransportSheet(wb, product, overheads, isLong);
   buildTotalSheet(wb, overheads, geometry, operations, unitLabel);
   buildReferenceSheet(wb);
 
-  // Лист Сверка — добавляется только при наличии контрольной цены и данных оптимизации
-  if (optimizerInfo && optimizerInfo.control_price) {
-    buildSverkaSheet(wb, displayProduct, overheads, geometry, optimizerInfo);
-  }
+  // Лист Сверка — отключён (не включается в итоговые документы)
 
   return wb;
 }
@@ -191,7 +189,7 @@ function buildInstructionSheet(wb) {
 
 // ===== Sheet 3: Вводные_данные =====
 // Reference: merged cells, correct row positions matching template
-function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel) {
+function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel, isLong) {
   const ws = wb.addWorksheet('Вводные_данные');
   setColWidths(ws, [35, 40, 50, 40, 18, 30, 18, 15, 15, 15]);
 
@@ -288,7 +286,7 @@ function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel) {
   const laborKeys = Object.keys(rates.labor);
   const equipKeys = Object.keys(rates.equipment);
   const equipNotes = [
-    'рез длинномера, учет износа дисков',
+    isLong ? 'рез длинномера, учет износа дисков' : 'распиловка, учет износа дисков',
     'калибровка плоскостей, толщина 150 мм',
     'контур/карман/капельник',
     'профиль R25 на длине 5,15 м',
@@ -640,7 +638,7 @@ function buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel) {
 
 // ===== Sheet 6: Операции =====
 // Reference: ALL calculated columns use Excel formulas with VLOOKUP
-function buildOperationsSheet(wb, operations, unitLabel) {
+function buildOperationsSheet(wb, operations, unitLabel, isLong) {
   const ws = wb.addWorksheet('Операции');
   setColWidths(ws, [4, 35, 40, 30, 25, 25, 18, 10, 12, 12, 14, 14, 10, 12, 12, 14, 10, 10, 12, 14, 35]);
 
@@ -651,7 +649,9 @@ function buildOperationsSheet(wb, operations, unitLabel) {
 
   // Row 2: merged A2:J2
   mergeCells(ws, 'A2:J2');
-  ws.getCell('A2').value = 'Трудозатраты нормированы по операциям. Машинное время включает переналадку и простои из-за длинномера.';
+  ws.getCell('A2').value = isLong
+    ? 'Трудозатраты нормированы по операциям. Машинное время включает переналадку и простои из-за длинномера.'
+    : 'Трудозатраты нормированы по операциям. Машинное время включает переналадку и межоперационные простои.';
 
   // Header row 4
   const headers = [
@@ -846,7 +846,7 @@ function buildOverheadSheet(wb, oh, operations) {
 
 // ===== Sheet 8: Транспорт =====
 // Reference: formulas for calculated rows, страхование = Накладные_и_прибыль!$B$13*B10
-function buildTransportSheet(wb, product, oh) {
+function buildTransportSheet(wb, product, oh, isLong) {
   const ws = wb.addWorksheet('Транспорт');
   setColWidths(ws, [50, 22, 40, 15, 15, 15, 15, 15, 15, 15]);
 
@@ -880,10 +880,10 @@ function buildTransportSheet(wb, product, oh) {
 
   const inputRows = [
     ['Расстояние, км', distance, 'дорожное расстояние'],
-    ['Кол-во рейсов', trips, 'выделенный автомобиль под длинномер'],
-    ['Тариф, руб/км (длинномер/выделенный транспорт)', tariff, 'редактируемый параметр'],
+    ['Кол-во рейсов', trips, isLong ? 'выделенный автомобиль под длинномер' : 'автомобиль для перевозки партии'],
+    [isLong ? 'Тариф, руб/км (длинномер/выделенный транспорт)' : 'Тариф, руб/км (выделенный транспорт)', tariff, 'редактируемый параметр'],
     ['Погрузка (кран/манипулятор), руб', loading, 'кран, стропальщики, время'],
-    ['Разгрузка (кран/манипулятор), руб', unloading, 'длинномер, работа с такелажем'],
+    ['Разгрузка (кран/манипулятор), руб', unloading, isLong ? 'длинномер, работа с такелажем' : 'работа с такелажем'],
     ['Страхование/ответственность перевозчика, % от стоимости', insurance_pct, 'страховой тариф'],
   ];
 
