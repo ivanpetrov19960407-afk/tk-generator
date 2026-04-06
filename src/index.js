@@ -82,14 +82,28 @@ function findCol(row, ...patterns) {
  * Parse dimensions string like "2500х410х150мм" into {length, width, thickness}
  * Handles both Russian "х" (U+0445) and Latin "x"
  */
-function parseDimensions(dimStr) {
+function parseDimensions(dimStr, nameText) {
   if (!dimStr) return { length: 0, width: 0, thickness: 0 };
   const cleaned = String(dimStr).replace(/мм$/i, '').trim();
   const parts = cleaned.split(/[хxХX]/);
+  let thickness = parseFloat(parts[2]) || 0;
+
+  if (!thickness && parts.length === 2 && nameText) {
+    // Try extracting thickness from Наименование text
+    const txt = String(nameText);
+    const m = txt.match(/толщин\w*\s*t?\s*=?\s*(\d+)/i) || txt.match(/t\s*=\s*(\d+)/i);
+    if (m) {
+      thickness = parseFloat(m[1]);
+    } else {
+      thickness = 30;
+      console.warn(`[WARN] Поз. "${dimStr}": толщина не найдена, используется 30мм по умолчанию`);
+    }
+  }
+
   return {
     length: parseFloat(parts[0]) || 0,
     width: parseFloat(parts[1]) || 0,
-    thickness: parseFloat(parts[2]) || 0
+    thickness: thickness
   };
 }
 
@@ -116,17 +130,20 @@ function extractMaterial(nameText) {
 function mapTexture(textureStr) {
   if (!textureStr) return 'лощение';
   const s = String(textureStr).trim().toLowerCase();
-  const textureMap = {
-    'бучардирование, лощение': 'бучардирование_лощение',
-    'бучардирование лощение': 'бучардирование_лощение',
-    'лощение': 'лощение',
-    'рельефная матовая': 'рельефная_матовая',
-    'рельефная, матовая': 'рельефная_матовая',
-    'полировка': 'полировка'
-  };
-  if (textureMap[s]) return textureMap[s];
-  // Fallback: normalize by replacing spaces/commas with underscores
-  return s.replace(/[\s,]+/g, '_');
+
+  const hasBuch = s.includes('бучардирование');
+  const hasLosh = s.includes('лощение');
+  const hasRelief = s.includes('рельефная');
+  const hasMat = s.includes('матовая');
+
+  if (hasBuch && hasLosh) return 'бучардирование_лощение';
+  if (hasBuch) return 'бучардирование_лощение'; // бучардирование alone defaults to combo
+  if (hasRelief || hasMat) return 'рельефная_матовая';
+  if (hasLosh) return 'лощение';
+  if (s.includes('полировка')) return 'полировка';
+
+  // Fallback: normalize by replacing separators with underscores
+  return s.replace(/[\s,+]+/g, '_');
 }
 
 /**
@@ -162,7 +179,7 @@ function parseExcelInput(filePath) {
     const qty = findCol(row, 'Кол-во', 'Кол во', 'quantity', 'Количество');
     const price = findCol(row, 'Цена за ед', 'Цена', 'control_price', 'цена');
 
-    const dimensions = parseDimensions(dimStr);
+    const dimensions = parseDimensions(dimStr, nameText);
     const material = extractMaterial(nameText);
     const control_unit = mapControlUnit(unitStr);
     const texture = mapTexture(textureStr);
