@@ -18,6 +18,15 @@ function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
  */
 function calcTransport(product, overheadData) {
   const tr = (product.rkm && product.rkm.transport) || {};
+
+  // Если логистика явно отключена для позиции (transport.skip = true)
+  if (tr.skip) {
+    return {
+      distance: 0, tariff: 0, trips: 0, loading: 0, unloading: 0, insurance_pct: 0,
+      perevozka: 0, insurance_val: 0, total: 0
+    };
+  }
+
   const distance = tr.distance_km || 940;
   const tariff = tr.tariff_rub_km || 120;
   const trips = tr.trips || 1;
@@ -198,4 +207,46 @@ async function generateRKM(product, outputDir, options = {}) {
   };
 }
 
-module.exports = { generateRKM, calcTransport };
+/**
+ * Pre-calculate production cost (without transport) for a product.
+ * Used for proportional logistics distribution across batch.
+ */
+function calcProductionCost(product) {
+  const { calcGeometry: cg } = require('./geometry-calc');
+  const { mapOperations: mo } = require('./operations-mapper');
+  const { calcMaterials: cm } = require('./materials-calc');
+  const { calcOverheads: co } = require('./overhead-calc');
+  const { detectAreaMode: dam, buildSizeBasedOverrides: bso, buildSizeBasedMaterialPrices: bsmp, getSizeBasedKReject: gskr } = require('./optimizer');
+
+  const workProduct = deepClone(product);
+  const areaMode = dam(workProduct);
+  if (areaMode && !workProduct.quantity_pieces && areaMode.quantityPieces) {
+    workProduct.quantity_pieces = areaMode.quantityPieces;
+  }
+
+  if (areaMode) {
+    const realGeo = cg(workProduct);
+    const V_net = realGeo.V_net;
+    const qty = workProduct.quantity_pieces || 1;
+    if (!workProduct.rkm) workProduct.rkm = {};
+    workProduct.rkm.norms_override = bso(workProduct, realGeo, areaMode);
+    workProduct.rkm.material_prices = { ...(workProduct.rkm.material_prices || {}), ...bsmp(V_net, qty) };
+    if (!product.rkm || !product.rkm.k_reject) {
+      workProduct.rkm.k_reject = gskr(V_net);
+    }
+  }
+
+  const geometry = cg(workProduct);
+  const operations = mo(workProduct, geometry);
+  const unitLabel = areaMode ? (areaMode.controlUnit === 'm2' ? 'м²' : 'м.п.') : 'шт';
+  const materials = cm(workProduct, geometry, unitLabel);
+  const tempTransport = { total: 0 };
+  const overheads = co(materials, operations, tempTransport, geometry);
+
+  return {
+    itogo_production: overheads.itogo_production,
+    mass_batch: geometry.mass_batch
+  };
+}
+
+module.exports = { generateRKM, calcTransport, calcProductionCost };

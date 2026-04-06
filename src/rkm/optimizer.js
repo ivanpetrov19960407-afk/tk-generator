@@ -166,16 +166,21 @@ function calcPass(product, overheadOverrides) {
     const tempTransport = { total: 0 };
     const tempOH = calcOverheads(materials, operations, tempTransport, geometry);
 
-    const distance = tr.distance_km || 940;
-    const tariff = tr.tariff_rub_km || 120;
-    const trips = tr.trips || 1;
-    const loading = tr.loading || 25000;
-    const unloading = tr.unloading || 35000;
-    const insurance_pct = tr.insurance_pct || 0.005;
-
-    const perevozka = distance * tariff * trips;
-    const insurance_val = tempOH.itogo_production * insurance_pct;
-    const transport = { distance, tariff, trips, loading, unloading, insurance_pct, perevozka, insurance_val, total: perevozka + loading + unloading + insurance_val };
+    let transport;
+    if (tr.skip) {
+      // Логистика отключена для этой позиции
+      transport = { distance: 0, tariff: 0, trips: 0, loading: 0, unloading: 0, insurance_pct: 0, perevozka: 0, insurance_val: 0, total: 0 };
+    } else {
+      const distance = tr.distance_km || 940;
+      const tariff = tr.tariff_rub_km || 120;
+      const trips = tr.trips || 1;
+      const loading = tr.loading || 25000;
+      const unloading = tr.unloading || 35000;
+      const insurance_pct = tr.insurance_pct || 0.005;
+      const perevozka = distance * tariff * trips;
+      const insurance_val = tempOH.itogo_production * insurance_pct;
+      transport = { distance, tariff, trips, loading, unloading, insurance_pct, perevozka, insurance_val, total: perevozka + loading + unloading + insurance_val };
+    }
 
     const overheads = calcOverheads(materials, operations, transport, geometry);
 

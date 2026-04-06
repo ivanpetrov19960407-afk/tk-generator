@@ -168,7 +168,7 @@ function parseExcelInput(filePath) {
   const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet);
 
-  return rows.map((row, i) => {
+  const products = rows.map((row, i) => {
     // Read columns with flexible matching
     const rowNum = findCol(row, '№п/п', '№', 'п/п');
     const nameText = findCol(row, 'Наименование', 'name', 'Название', 'Изделие');
@@ -227,6 +227,18 @@ function parseExcelInput(filePath) {
       date: null
     };
   });
+
+  // Логистика посчитана отдельно для позиций #36, #28, #29, #27, #30
+  const SKIP_TRANSPORT = new Set([36, 28, 29, 27, 30]);
+  for (const p of products) {
+    if (SKIP_TRANSPORT.has(p.tk_number)) {
+      if (!p.rkm) p.rkm = {};
+      if (!p.rkm.transport) p.rkm.transport = {};
+      p.rkm.transport.skip = true;
+    }
+  }
+
+  return products;
 }
 
 /**
