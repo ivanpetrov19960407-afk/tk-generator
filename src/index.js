@@ -66,7 +66,84 @@ function printHelp() {
 }
 
 /**
+ * Find a column value by flexible header matching (partial, case-insensitive)
+ */
+function findCol(row, ...patterns) {
+  for (const key of Object.keys(row)) {
+    const k = key.trim().toLowerCase();
+    for (const pat of patterns) {
+      if (k.includes(pat.toLowerCase())) return row[key];
+    }
+  }
+  return null;
+}
+
+/**
+ * Parse dimensions string like "2500х410х150мм" into {length, width, thickness}
+ * Handles both Russian "х" (U+0445) and Latin "x"
+ */
+function parseDimensions(dimStr) {
+  if (!dimStr) return { length: 0, width: 0, thickness: 0 };
+  const cleaned = String(dimStr).replace(/мм$/i, '').trim();
+  const parts = cleaned.split(/[хxХX]/);
+  return {
+    length: parseFloat(parts[0]) || 0,
+    width: parseFloat(parts[1]) || 0,
+    thickness: parseFloat(parts[2]) || 0
+  };
+}
+
+/**
+ * Extract material name and type from "Наименование" text
+ * e.g. "... Материал — гранит м-ния Жалгыз; ..." → { type: 'гранит', name: 'гранит м-ния Жалгыз' }
+ */
+function extractMaterial(nameText) {
+  if (!nameText) return { type: 'мрамор', name: 'unknown' };
+  const matMatch = String(nameText).match(/Материал\s*[—–\-:]\s*(.+?)(?:[;,]|$)/i);
+  if (!matMatch) return { type: 'мрамор', name: 'unknown' };
+  const materialName = matMatch[1].trim();
+  // Detect type from first word of material name
+  const knownTypes = ['гранит', 'мрамор', 'известняк', 'травертин', 'песчаник', 'оникс', 'габбро', 'кварцит'];
+  const firstWord = materialName.split(/\s/)[0].toLowerCase();
+  const materialType = knownTypes.find(t => firstWord.startsWith(t)) || 'мрамор';
+  return { type: materialType, name: materialName };
+}
+
+/**
+ * Map texture description to internal code
+ * e.g. "Бучардирование, лощение" → "бучардирование_лощение"
+ */
+function mapTexture(textureStr) {
+  if (!textureStr) return 'лощение';
+  const s = String(textureStr).trim().toLowerCase();
+  const textureMap = {
+    'бучардирование, лощение': 'бучардирование_лощение',
+    'бучардирование лощение': 'бучардирование_лощение',
+    'лощение': 'лощение',
+    'рельефная матовая': 'рельефная_матовая',
+    'рельефная, матовая': 'рельефная_матовая',
+    'полировка': 'полировка'
+  };
+  if (textureMap[s]) return textureMap[s];
+  // Fallback: normalize by replacing spaces/commas with underscores
+  return s.replace(/[\s,]+/g, '_');
+}
+
+/**
+ * Normalize unit of measurement to internal codes
+ */
+function mapControlUnit(unitStr) {
+  if (!unitStr) return null;
+  const s = String(unitStr).trim().toLowerCase();
+  if (s === 'шт' || s === 'шт.') return 'шт';
+  if (s === 'кв.м.' || s === 'кв. м.' || s === 'кв.м' || s === 'м²' || s === 'м2') return 'м²';
+  if (s === 'м.п.' || s === 'п.м.' || s === 'м.п' || s === 'п.м') return 'м.п.';
+  return 'шт';
+}
+
+/**
  * Parse Excel input file
+ * Expected columns: №п/п, Наименование, Тип обработки пов-ти, Габаритные размеры, Ед. изм., Кол-во, Цена за ед. с НДС руб
  */
 function parseExcelInput(filePath) {
   const XLSX = require('xlsx');
@@ -74,50 +151,48 @@ function parseExcelInput(filePath) {
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const rows = XLSX.utils.sheet_to_json(sheet);
-  
-  // Fix: допустимые единицы контрольной цены для РКМ
-  const VALID_CONTROL_UNITS = ['шт', 'м²', 'м.п.'];
 
   return rows.map((row, i) => {
-    // Fix: парсинг и валидация control_unit из Excel
-    const rawUnit = row['control_unit'] || row['Единица'] || row['Ед.'] || row['ед.изм.'] || null;
-    let control_unit = rawUnit ? String(rawUnit).trim() : null;
-    if (control_unit && !VALID_CONTROL_UNITS.includes(control_unit)) {
-      console.warn(`[Excel] Позиция ${i + 1}: неизвестная control_unit "${control_unit}", используется "шт" по умолчанию`);
-      control_unit = 'шт';
-    }
+    // Read columns with flexible matching
+    const rowNum = findCol(row, '№п/п', '№', 'п/п');
+    const nameText = findCol(row, 'Наименование', 'name', 'Название', 'Изделие');
+    const textureStr = findCol(row, 'Тип обработки', 'обработк', 'Фактура', 'texture');
+    const dimStr = findCol(row, 'Габаритные размеры', 'Габарит', 'размер');
+    const unitStr = findCol(row, 'Ед. изм', 'Ед.изм', 'ед. изм', 'control_unit', 'Единица');
+    const qty = findCol(row, 'Кол-во', 'Кол во', 'quantity', 'Количество');
+    const price = findCol(row, 'Цена за ед', 'Цена', 'control_price', 'цена');
 
-    // Map Excel columns to product spec
+    const dimensions = parseDimensions(dimStr);
+    const material = extractMaterial(nameText);
+    const control_unit = mapControlUnit(unitStr);
+    const texture = mapTexture(textureStr);
+    const control_price = price != null ? Number(price) : null;
+    const quantity = qty != null ? Number(qty) : null;
+
     return {
-      tk_number: row['tk_number'] || row['№'] || row['№ ТК'] || (i + 1),
-      name: row['name'] || row['Название'] || row['Изделие'] || row['Наименование'],
-      short_name: row['short_name'] || row['Код'] || row['Код файла'] || null,
-      dimensions: {
-        length: Number(row['length'] || row['Длина'] || row['длина'] || row['Длина, мм'] || 0),
-        width: Number(row['width'] || row['Ширина'] || row['ширина'] || row['Ширина, мм'] || 0),
-        thickness: Number(row['thickness'] || row['Толщина'] || row['толщина'] || row['Толщина, мм'] || 0)
-      },
+      tk_number: rowNum || (i + 1),
+      name: nameText ? String(nameText) : null,
+      short_name: null,
+      dimensions: dimensions,
       material: {
-        type: row['material_type'] || row['Порода'] || 'мрамор',
-        name: row['material_name'] || row['Камень'] || row['Материал'],
-        density: Number(row['density'] || row['Плотность'] || row['Плотность, кг/м³'] || 2700)
+        type: material.type,
+        name: material.name,
+        density: 2700
       },
-      texture: row['texture'] || row['Фактура'] || 'лощение',
-      quantity: row['quantity'] || row['Объём'] || row['Объём партии'] || null,
-      quantity_pieces: row['quantity_pieces'] || row['Штук'] || row['Кол-во, шт'] ? Number(row['quantity_pieces'] || row['Штук'] || row['Кол-во, шт']) : null,
+      texture: texture,
+      quantity: control_unit === 'м²' && quantity != null ? `${quantity} м²`
+        : control_unit === 'м.п.' && quantity != null ? `${quantity} м.п.`
+        : null,
+      quantity_pieces: control_unit === 'шт' && quantity != null ? quantity : null,
       control_unit: control_unit,
-      edges: row['edges'] || row['Кромки'] || row['Кромки/грани'] || null,
-      geometry_type: row['geometry_type'] || row['Геометрия'] || row['Тип геометрии'] || 'simple',
-      object: row['object_name'] ? {
-        name: row['object_name'] || row['Объект'],
-        years: row['object_years'] || null,
-        address: row['object_address'] || null,
-        project: row['object_project'] || null
-      } : null,
-      category: row['category'] || row['Категория'] || '1',
-      gost_primary: row['gost_primary'] || row['ГОСТ'] || row['Основной ГОСТ'] || 'ГОСТ 9480-2024',
-      packaging: row['packaging'] || row['Упаковка'] || 'стандартная',
-      date: row['date'] || row['Дата'] || null
+      control_price: control_price,
+      edges: null,
+      geometry_type: 'simple',
+      object: null,
+      category: '1',
+      gost_primary: 'ГОСТ 9480-2024',
+      packaging: 'стандартная',
+      date: null
     };
   });
 }
