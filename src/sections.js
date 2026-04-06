@@ -13,6 +13,149 @@ const sectionsTemplate = JSON.parse(
 );
 
 /**
+ * Material-specific physical properties for section customization.
+ * Keyed by commercial name (product.material.name).
+ */
+const MATERIAL_PROPERTIES = {
+  'Delikato light': {
+    structure: 'мелко- и среднезернистая',
+    color: 'светло-бежевый, кремовый с тонкими прожилками',
+    quartzNote: 'содержит значительно меньше кварца, чем гранит, однако общецеховые меры профилактики силикоза применяются',
+    density_note: 'нижняя консервативная оценка'
+  },
+  'м-ния Жалгыз': {
+    structure: 'мелко- и среднезернистая, массивная',
+    color: 'серо-розовый с тёмными вкраплениями',
+    quartzNote: 'содержит кварц (~25-30%), требуется строгое соблюдение мер профилактики силикоза (FFP3/СИЗОД, влажная резка, промышленная вентиляция)',
+    density_note: 'среднее для данного месторождения'
+  },
+  'Fatima (Португалия)': {
+    structure: 'мелко-среднезернистая, плотная',
+    color: 'бежево-серый, тёплый кремовый с характерными прожилками',
+    quartzNote: 'содержит минимальное количество кварца (мраморизированный известняк), однако общецеховые меры профилактики силикоза применяются',
+    density_note: 'типичная для мраморизированных известняков Португалии'
+  },
+  'Габбро-диабаз': {
+    structure: 'мелкозернистая, массивная',
+    color: 'чёрный с зеленоватым оттенком',
+    quartzNote: 'практически не содержит свободного кварца, однако общецеховые меры профилактики силикоза применяются',
+    density_note: 'высокая плотность'
+  }
+};
+
+/**
+ * Get material properties for a product, with fallback defaults.
+ */
+function getMaterialProps(product) {
+  const matName = product.material && product.material.name;
+  if (matName && MATERIAL_PROPERTIES[matName]) {
+    return MATERIAL_PROPERTIES[matName];
+  }
+  // Fallback: generic based on material type
+  const matType = (product.material && product.material.type || '').toLowerCase();
+  if (matType.includes('гранит')) {
+    return {
+      structure: 'среднезернистая',
+      color: 'серый',
+      quartzNote: 'содержит кварц, требуется соблюдение мер профилактики силикоза (FFP2+, влажная резка, промышленная вентиляция)',
+      density_note: ''
+    };
+  }
+  // Default (marble-like)
+  return {
+    structure: 'мелко- и среднезернистая',
+    color: 'светлый',
+    quartzNote: 'содержит значительно меньше кварца, чем гранит, однако общецеховые меры профилактики силикоза применяются',
+    density_note: ''
+  };
+}
+
+/**
+ * Extract a short product description from product name and geometry_type.
+ * Maps geometry_type + product.name to the correct product type text.
+ * Returns { nom: "ступень фигурная", gen: "ступени фигурной", plural_gen: "ступеней фигурных" }
+ */
+function getProductDescription(product) {
+  const name = (product.name || '').toLowerCase();
+  const geoType = (product.geometry_type || 'simple').toLowerCase();
+
+  // Extract the key product type from the name (first ~50 chars usually have it)
+  if (name.includes('ступен') || name.includes('проступь') || name.includes('подступен')) {
+    return { nom: 'ступень', gen: 'ступени', plural_gen: 'ступеней' };
+  }
+  if (name.includes('накрывн')) {
+    return { nom: 'накрывная плита', gen: 'накрывной плиты', plural_gen: 'накрывных плит' };
+  }
+  if (name.includes('колонн') || name.includes('база')) {
+    return { nom: 'база колонны', gen: 'базы колонны', plural_gen: 'баз колонн' };
+  }
+  if (name.includes('сегмент') && name.includes('радиус')) {
+    return { nom: 'сегментное радиусное изделие', gen: 'сегментного радиусного изделия', plural_gen: 'сегментных радиусных изделий' };
+  }
+  if (name.includes('сегмент')) {
+    return { nom: 'сегментное изделие', gen: 'сегментного изделия', plural_gen: 'сегментных изделий' };
+  }
+  if (name.includes('подоконник')) {
+    return { nom: 'подоконник', gen: 'подоконника', plural_gen: 'подоконников' };
+  }
+  if (name.includes('столешниц')) {
+    return { nom: 'столешница', gen: 'столешницы', plural_gen: 'столешниц' };
+  }
+  if (name.includes('облицов')) {
+    return { nom: 'плита облицовочная', gen: 'плиты облицовочной', plural_gen: 'плит облицовочных' };
+  }
+
+  // Geometry-type based fallback
+  if (geoType === 'profile') {
+    return { nom: 'изделие профильное', gen: 'изделия профильного', plural_gen: 'изделий профильных' };
+  }
+  if (geoType === 'radial') {
+    return { nom: 'сегментное радиусное изделие', gen: 'сегментного радиусного изделия', plural_gen: 'сегментных радиусных изделий' };
+  }
+
+  // Default: напольная плита (simple geometry)
+  return { nom: 'плита напольная', gen: 'плиты напольной', plural_gen: 'плит напольных' };
+}
+
+/**
+ * Replace hardcoded "напольная плита" references in text with actual product description.
+ */
+function replaceProductDescription(text, product) {
+  const desc = getProductDescription(product);
+
+  // Replace various forms of "напольная плита" / "напольной плиты" / "напольных плит"
+  // Also handle "напольную плиту", "напольные плиты" etc.
+  text = text.replace(/напольной\s+плиты/g, desc.gen);
+  text = text.replace(/напольных\s+плит/g, desc.plural_gen);
+  text = text.replace(/напольн(?:ая|ую)\s+плит(?:а|у)/g, desc.nom);
+  text = text.replace(/напольные\s+плиты/g, desc.nom);  // plural nom ≈ nom for display
+
+  // "плита напольная" pattern (reversed word order)
+  text = text.replace(/плиты\s+напольной/g, desc.gen);
+  text = text.replace(/плит\s+напольных/g, desc.plural_gen);
+  text = text.replace(/плит(?:а|у)\s+напольн(?:ая|ую)/g, desc.nom);
+
+  // Replace "простая прямоугольная, без сложных профилей" for non-simple geometry
+  if (product.geometry_type !== 'simple') {
+    text = text.replace(
+      /простая прямоугольная, без сложных профилей/g,
+      product.geometry_type === 'profile'
+        ? 'профильное изделие с фигурными кантами'
+        : 'сегментное радиусное изделие'
+    );
+    // Also replace "прямоугольной (квадратной) формы"
+    text = text.replace(
+      /прямоугольной\s*\(квадратной\)\s*формы/g,
+      product.geometry_type === 'profile'
+        ? 'профильной формы с фигурными кантами'
+        : 'сегментной радиусной формы'
+    );
+  }
+
+  return text;
+}
+
+/**
  * Build title page text for a product
  */
 function buildTitlePage(product) {
@@ -114,7 +257,10 @@ function buildSection(sectionNum, product) {
   
   // The templates are based on лощение texture, so we parametrize from that base
   let text = parametrize(template, product, 'лощение');
-  
+
+  // Replace hardcoded "напольная плита" with actual product description
+  text = replaceProductDescription(text, product);
+
   // Additional section-specific customizations
   switch (sectionNum) {
     case '1':
@@ -129,6 +275,9 @@ function buildSection(sectionNum, product) {
     case '7':
       text = customizeSection7(text, product);
       break;
+    case '8':
+      text = customizeSection8(text, product);
+      break;
     case '10':
       text = customizeSection10(text, product);
       break;
@@ -137,11 +286,109 @@ function buildSection(sectionNum, product) {
       break;
   }
   
+  // Global: replace "напольная плита" with actual product type in ALL sections
+  text = replaceProductType(text, product);
+  
+  // Global: replace material color and quartz note in ALL sections
+  const matProps = getMaterialProps(product);
+  text = text.replace(
+    /содержит значительно меньше кварца, чем гранит, однако общецеховые меры профилактики силикоза применяются/g,
+    matProps.quartzNote
+  );
+  text = text.replace(
+    /Цвет:\s*светло-бежевый,\s*кремовый с тонкими прожилками/g,
+    `Цвет: ${matProps.color}`
+  );
+  
   return text;
 }
 
 /**
- * Section 1 — customize texture description
+ * Extract a short product type description from the full name.
+ * E.g. "ступень фигурная" from full ВОР name, or "плита напольная" etc.
+ */
+function extractProductType(product) {
+  const name = (product.name || '').toLowerCase();
+  // Try to find the product type after the colon or dash
+  const patterns = [
+    /:\s*(.{5,80}?)(?:;|,\s*материал|$)/i,
+    /-\s*(.{5,80}?)(?:;|,\s*материал|$)/i,
+  ];
+  for (const pat of patterns) {
+    const m = name.match(pat);
+    if (m && m[1]) return m[1].trim();
+  }
+  // Fallback: detect by keywords
+  if (name.includes('ступень')) return 'ступень фигурная';
+  if (name.includes('проступь')) return 'проступь фигурная';
+  if (name.includes('подступенок')) return 'подступенок фигурный';
+  if (name.includes('балясин')) return 'балясина';
+  if (name.includes('поручен')) return 'поручень фигурный';
+  if (name.includes('карниз')) return 'карниз фигурный';
+  if (name.includes('молдинг')) return 'молдинг фигурный';
+  if (name.includes('баз')) return 'база колонны';
+  if (name.includes('накрывн')) return 'накрывная плита';
+  if (name.includes('бортов')) return 'бортовой камень';
+  if (name.includes('брусчатк')) return 'брусчатка';
+  if (name.includes('пилястр')) return 'основание пилястры';
+  if (name.includes('стенов')) return 'стеновая плита';
+  if (name.includes('облицовочн')) return 'облицовочная плита';
+  if (name.includes('площадк')) return 'плита площадки';
+  if (name.includes('цокол')) return 'плита цоколя';
+  if (name.includes('наклонн')) return 'наклонная плита';
+  if (name.includes('напольн')) return 'плита напольная';
+  return 'изделие из натурального камня';
+}
+
+/**
+ * Replace all hardcoded "напольная плита / напольной плиты / напольных плит"
+ * with the actual product type from ВОР.
+ */
+function replaceProductType(text, product) {
+  const ptype = extractProductType(product);
+  // Genitive forms for common types
+  const genitiveMap = {
+    'ступень фигурная': 'ступени фигурной',
+    'проступь фигурная': 'проступи фигурной',
+    'подступенок фигурный': 'подступенка фигурного',
+    'балясина': 'балясины',
+    'поручень фигурный': 'поручня фигурного',
+    'карниз фигурный': 'карниза фигурного',
+    'молдинг фигурный': 'молдинга фигурного',
+    'база колонны': 'базы колонны',
+    'накрывная плита': 'накрывной плиты',
+    'бортовой камень': 'бортового камня',
+    'брусчатка': 'брусчатки',
+    'основание пилястры': 'основания пилястры',
+    'стеновая плита': 'стеновой плиты',
+    'облицовочная плита': 'облицовочной плиты',
+    'плита площадки': 'плиты площадки',
+    'плита цоколя': 'плиты цоколя',
+    'наклонная плита': 'наклонной плиты',
+    'плита напольная': 'плиты напольной',
+    'изделие из натурального камня': 'изделия из натурального камня',
+  };
+  const ptypeGen = genitiveMap[ptype] || ptype;
+  // Plural
+  const pluralMap = {
+    'плита напольная': 'плит напольных',
+    'ступень фигурная': 'ступеней фигурных',
+    'проступь фигурная': 'проступей фигурных',
+  };
+  const ptypePlural = pluralMap[ptype] || ptypeGen;
+  
+  // Replace nominative forms
+  text = text.replace(/напольная плита/gi, ptype);
+  text = text.replace(/Напольная плита/g, ptype.charAt(0).toUpperCase() + ptype.slice(1));
+  // Replace genitive forms
+  text = text.replace(/напольной плиты/gi, ptypeGen);
+  text = text.replace(/напольных плит/gi, ptypePlural);
+  
+  return text;
+}
+
+/**
+ * Section 1 — customize texture description + product type
  */
 function customizeSection1(text, product) {
   const textureDescs = {
@@ -156,6 +403,7 @@ function customizeSection1(text, product) {
     textureDescs[product.texture] || textureDescs['лощение']
   );
   
+  // Note: "напольная плита" replacement is handled globally in buildSection() via replaceProductDescription()
   return text;
 }
 
@@ -166,7 +414,10 @@ function customizeSection2(text, product) {
   const dims = product.dimensions;
   const pieceMass = calcProductMass(product);
   const pieceArea = (dims.length / 1000) * (dims.width / 1000);
-  
+  const matProps = getMaterialProps(product);
+  const matName = product.material.name;
+  const matTypeName = getMaterialTypeName(product.material.type);
+
   // Replace mass calculation pattern
   // "0,7×0,7×0,03×2700 ≈ 39,7 кг/плита" → actual calc
   const calcStr = `${(dims.length/1000).toFixed(1).replace('.',',')}×${(dims.width/1000).toFixed(1).replace('.',',')}×${(dims.thickness/1000).toFixed(2).replace('.',',')}×${product.material.density}`;
@@ -174,7 +425,7 @@ function customizeSection2(text, product) {
     /0,7×0,7×0,03×2700\s*≈\s*39,7\s*кг\/плита/,
     `${calcStr} ≈ ${pieceMass.toFixed(1).replace('.', ',')} кг/плита`
   );
-  
+
   // Replace texture description
   const textureDescs = {
     'лощение': 'лощение (матовый сатиновый блеск без зеркальной полировки)',
@@ -185,8 +436,35 @@ function customizeSection2(text, product) {
     /лощение \(матовый сатиновый блеск без зеркальной\s*полировки\)/,
     textureDescs[product.texture] || textureDescs['лощение']
   );
-  
-  // Replace stone type references  
+
+  // Bug 3 fix: Replace hardcoded material color and structure
+  text = text.replace(
+    /Структура:\s*мелко- и среднезернистая\./,
+    `Структура: ${matProps.structure}.`
+  );
+  text = text.replace(
+    /Структура:\s*\n?мелко- и среднезернистая\./,
+    `Структура: ${matProps.structure}.`
+  );
+  // Handle case where "Структура:" is followed by text without period
+  text = text.replace(
+    /Структура:\s*мелко- и среднезернистая/,
+    `Структура: ${matProps.structure}`
+  );
+  text = text.replace(
+    /Цвет: светло-бежевый, кремовый с тонкими\s*прожилками/,
+    `Цвет: ${matProps.color}`
+  );
+
+  // Bug 4 fix: Replace the ВАЖНОЕ ПРИМЕЧАНИЕ quartz paragraph
+  // Original: "Мрамор Delikato light содержит значительно меньше кварца, чем гранит, однако..."
+  // This becomes nonsensical for granite. Use material-specific quartzNote.
+  text = text.replace(
+    /ВАЖНОЕ ПРИМЕЧАНИЕ:.*?(?:СанПиН 1\.2\.3685-21 как обязательные цеховые меры\.?|обязательные цеховые меры\.?)/s,
+    `ВАЖНОЕ ПРИМЕЧАНИЕ: ${matTypeName} ${matName} ${matProps.quartzNote} на всех операциях механической обработки (влажная резка, полумаски-респираторы FFP2+ при обработке, влажная уборка пыли) в соответствии с СанПиН 1.2.3685-21 как обязательные цеховые меры.`
+  );
+
+  // Replace stone type references (whole-word only to protect "мраморизированный")
   if (product.material.type !== 'мрамор') {
     const rockForms = {
       'гранит':       { gen: 'гранита', nom: 'гранит' },
@@ -196,12 +474,24 @@ function customizeSection2(text, product) {
     };
     const matType = product.material.type.toLowerCase();
     const forms = rockForms[matType] || { gen: matType + 'а', nom: matType };
-    text = text.replace(/мрамор(?!а)/g, forms.nom);
-    text = text.replace(/мрамора/g, forms.gen);
-    text = text.replace(/Мрамор(?!а)/g, forms.nom.charAt(0).toUpperCase() + forms.nom.slice(1));
-    text = text.replace(/Мрамора/g, forms.gen.charAt(0).toUpperCase() + forms.gen.slice(1));
+    // Use Cyrillic-aware negative lookahead to avoid matching inside "мраморизированный"
+    text = text.replace(/мрамор(?![а-яё])/g, forms.nom);
+    text = text.replace(/мрамора(?![а-яё])/g, forms.gen);
+    text = text.replace(/Мрамор(?![а-яё])/g, forms.nom.charAt(0).toUpperCase() + forms.nom.slice(1));
+    text = text.replace(/Мрамора(?![а-яё])/g, forms.gen.charAt(0).toUpperCase() + forms.gen.slice(1));
   }
-  
+
+  // Fix section 2.4: replace "принято как консервативная оценка" with material-specific density note
+  if (matProps.density_note) {
+    text = text.replace(
+      /принято как консервативная оценка/g,
+      matProps.density_note
+    );
+  }
+
+  // Note: "напольная плита" and geometry description replacements are handled globally
+  // in buildSection() via replaceProductDescription()
+
   return text;
 }
 
@@ -277,9 +567,41 @@ function customizeSection7(text, product) {
     };
     const matType = product.material.type.toLowerCase();
     const forms = rockForms[matType] || { gen: matType + 'а', nom: matType };
-    text = text.replace(/мрамора/g, forms.gen);
-    text = text.replace(/мрамор\b/g, forms.nom);
+    // Use Cyrillic-aware negative lookahead to avoid matching inside "мраморизированный"
+    text = text.replace(/мрамора(?![а-яё])/g, forms.gen);
+    text = text.replace(/мрамор(?![а-яё])/g, forms.nom);
   }
+  return text;
+}
+
+/**
+ * Section 8 — customize quartz/silicosis note based on material
+ */
+function customizeSection8(text, product) {
+  const matProps = getMaterialProps(product);
+  const matTypeName = getMaterialTypeName(product.material.type);
+  const matName = product.material.name;
+
+  // Replace "мрамор Delikato light содержит значительно меньше кварца, чем гранит, общецеховые..."
+  text = text.replace(
+    /Несмотря на то что мрамор Delikato light содержит значительно меньше\s*кварца, чем гранит, общецеховые/s,
+    `${matTypeName} ${matName} ${matProps.quartzNote}. Общецеховые`
+  );
+
+  // Replace remaining rock type references for non-мрамор materials
+  if (product.material.type !== 'мрамор') {
+    const matType = product.material.type.toLowerCase();
+    const rockForms = {
+      'гранит':       { gen: 'гранита', nom: 'гранит' },
+      'известняк':    { gen: 'известняка', nom: 'известняк' },
+      'габбро-диабаз': { gen: 'габбро-диабаза', nom: 'габбро-диабаз' },
+      'мраморизированный известняк': { gen: 'мраморизированного известняка', nom: 'мраморизированный известняк' }
+    };
+    const forms = rockForms[matType] || { gen: matType + 'а', nom: matType };
+    text = text.replace(/мрамор(?![а-яё])/g, forms.nom);
+    text = text.replace(/мрамора(?![а-яё])/g, forms.gen);
+  }
+
   return text;
 }
 
@@ -310,7 +632,23 @@ function customizeSection12(text, product) {
   const dims = product.dimensions;
   const blockMass = calcBlockMass(product);
   const blockMassT = (blockMass / 1000).toFixed(1).replace('.', ',');
-  
+  const matProps = getMaterialProps(product);
+  const density = product.material.density;
+  const matTypeName = getMaterialTypeName(product.material.type);
+  const matName = product.material.name;
+
+  // Bug 5 fix: Replace hardcoded density 1600 with actual product density
+  // Template: "Плотность блока мрамора Delikato light принята \~1600 кг/м³ ... нижней консервативной оценкой"
+  text = text.replace(
+    /Плотность блока мрамора Delikato light принята\s*\\?~?\s*1600\s*кг\/м³[^.]*нижней\s*консервативной оценкой/s,
+    `Плотность блока ${matTypeName.toLowerCase()} ${matName} принята ~${density} кг/м³ (расчётная масса блока ~${blockMassT} т), что является ${matProps.density_note || 'расчётной оценкой'}`
+  );
+  // Also handle already-parametrized density values (in case parametrize already replaced 1600)
+  text = text.replace(
+    /Плотность блока [а-яёА-ЯЁ\s]+ принята\s*\\?~?\s*\d+\s*кг\/м³[^.]*нижней\s*консервативной оценкой/s,
+    `Плотность блока ${matTypeName.toLowerCase()} ${matName} принята ~${density} кг/м³ (расчётная масса блока ~${blockMassT} т), что является ${matProps.density_note || 'расчётной оценкой'}`
+  );
+
   // Update JC-1010 assumption
   if (dims.width > 1000) {
     text = text.replace(

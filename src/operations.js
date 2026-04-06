@@ -162,23 +162,31 @@ function parametrize(text, product, textureKey) {
   // Замена падежных форм "мрамора" → "гранита" и т.д. (строчные + заглавные)
   // Пропускаем если материал = мрамор (шаблон уже написан для мрамора, замена не нужна)
   if (materialType !== 'мрамор') {
+    // IMPORTANT: For "мраморизированный известняк", do Fatima-specific replacement FIRST
+    // so that "мраморизированный" is preserved and not mangled by мрамор→X regex.
+    // We replace the full commercial name "мрамора Delikato light" → "мраморизированного известняка Fatima (Португалия)"
+    // BEFORE doing generic rock-type replacement.
+
+    // Use whole-word matching with Cyrillic-aware negative lookahead (?![а-яё])
+    // to prevent matching "мрамор" inside "мраморизированный"
     const replacePair = (pattern, replacement) => {
-      text = text.replace(new RegExp(pattern, 'g'), replacement);
+      // Add Cyrillic-aware word boundary: pattern must not be followed by а-яё
+      text = text.replace(new RegExp(pattern + '(?![а-яё])', 'g'), replacement);
       // Заглавная буква
       const capPattern = pattern.charAt(0).toUpperCase() + pattern.slice(1);
       const capReplacement = replacement.charAt(0).toUpperCase() + replacement.slice(1);
-      text = text.replace(new RegExp(capPattern, 'g'), capReplacement);
+      text = text.replace(new RegExp(capPattern + '(?![а-яё])', 'g'), capReplacement);
     };
     replacePair('мрамора', targetRock.gen);
     replacePair('мрамору', targetRock.dat);
     replacePair('мрамором', targetRock.ins);
     replacePair('мраморе', targetRock.prp);
-    // мрамор (именительный) — не захватывая мрамора/мрамору/мрамором/мраморе/мраморн
-    text = text.replace(/мрамор(?![ауеон])/g, targetRock.nom);
-    text = text.replace(/Мрамор(?![ауеон])/g, targetRock.nom.charAt(0).toUpperCase() + targetRock.nom.slice(1));
-    // мраморная → каменная
-    text = text.replace(/мраморн/g, 'каменн');
-    text = text.replace(/Мраморн/g, 'Каменн');
+    // мрамор (именительный) — whole-word only (not followed by any Cyrillic letter)
+    text = text.replace(/мрамор(?![а-яё])/g, targetRock.nom);
+    text = text.replace(/Мрамор(?![а-яё])/g, targetRock.nom.charAt(0).toUpperCase() + targetRock.nom.slice(1));
+    // мраморн → каменн: ONLY when not part of "мраморизированн"
+    text = text.replace(/мраморн(?!ого известняк|ому известняк|ым известняк|ом известняк)/g, 'каменн');
+    text = text.replace(/Мраморн(?!ого известняк|ому известняк|ым известняк|ом известняк)/g, 'Каменн');
   }
   
   // Замена коммерческого имени камня
