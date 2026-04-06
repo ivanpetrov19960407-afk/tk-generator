@@ -60,7 +60,7 @@ function applyDefaults(product) {
       'сланец': 2700,
       'оникс': 2700
     };
-    p.material.density = defaultDensities[p.material.type.toLowerCase()] || 2700;
+    p.material.density = (p.material.type ? defaultDensities[p.material.type.toLowerCase()] : null) || 2700;
   }
   
   // Default quantity_pieces from quantity if not specified
@@ -88,7 +88,7 @@ function applyDefaults(product) {
   if (!p.gost_primary) p.gost_primary = 'ГОСТ 9480-2024';
   
   // Default short_name
-  if (!p.short_name) {
+  if (!p.short_name && p.name) {
     p.short_name = p.name.toLowerCase()
       .replace(/\s+/g, '_')
       .replace(/[^a-zа-яёA-ZА-ЯЁ0-9_]/g, '')

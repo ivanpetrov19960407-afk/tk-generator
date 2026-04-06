@@ -146,7 +146,7 @@ function parametrize(text, product, textureKey) {
 
   // 4. Replace material commercial name AND rock type (порода)
   //    Шаблоны захардкожены как "мрамора Delikato light" — нужно заменять и породу
-  const materialType = (product.material.type || 'мрамор').toLowerCase();
+  const materialType = ((product.material && product.material.type) || 'мрамор').toLowerCase();
   
   // Маппинг падежей: мрамор → гранит / известняк / габбро-диабаз
   const rockForms = {
@@ -416,6 +416,7 @@ function parametrize(text, product, textureKey) {
  * Get product type name for text substitution
  */
 function getProductTypeName(product) {
+  if (!product.name) return '';
   const name = product.name.toLowerCase();
   if (name.includes('плита') && name.includes('напольн')) return 'плита напольная';
   if (name.includes('плита') && name.includes('облицов')) return 'плита облицовочная';
@@ -423,7 +424,7 @@ function getProductTypeName(product) {
   if (name.includes('ступен')) return 'ступень';
   if (name.includes('подоконник')) return 'подоконник';
   if (name.includes('столешниц')) return 'столешница';
-  return product.name.toLowerCase();
+  return name;
 }
 
 /**

@@ -86,6 +86,7 @@ function getMaterialTypeName(type) {
     'песчаник': 'Песчаник',
     'сланец': 'Сланец'
   };
+  if (!type) return type || '';
   return types[type.toLowerCase()] || type;
 }
 

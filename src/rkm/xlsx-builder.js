@@ -239,7 +239,7 @@ function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel) {
     // row 10
     ['Подрезка по месту (0=нет, 1=да)', 1, '', '', ''],
     // row 11
-    ['Материал (текст для титула)', product.material ? `${product.material.type.charAt(0).toUpperCase() + product.material.type.slice(1)} месторождения \"${product.material.name}\" ` : '', '', '', ''],
+    ['Материал (текст для титула)', product.material && product.material.type ? `${product.material.type.charAt(0).toUpperCase() + product.material.type.slice(1)} месторождения \"${product.material.name || ''}\" ` : '', '', '', ''],
     // row 12
     ['Фактура/отделка (текст для титула)', formatTexture(product.texture), '', '', ''],
   ];

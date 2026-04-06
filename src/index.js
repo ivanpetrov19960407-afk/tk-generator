@@ -89,25 +89,25 @@ function parseExcelInput(filePath) {
 
     // Map Excel columns to product spec
     return {
-      tk_number: row['tk_number'] || row['№'] || (i + 1),
-      name: row['name'] || row['Название'] || row['Изделие'],
-      short_name: row['short_name'] || row['Код'] || null,
+      tk_number: row['tk_number'] || row['№'] || row['№ ТК'] || (i + 1),
+      name: row['name'] || row['Название'] || row['Изделие'] || row['Наименование'],
+      short_name: row['short_name'] || row['Код'] || row['Код файла'] || null,
       dimensions: {
-        length: Number(row['length'] || row['Длина'] || row['длина']),
-        width: Number(row['width'] || row['Ширина'] || row['ширина']),
-        thickness: Number(row['thickness'] || row['Толщина'] || row['толщина'])
+        length: Number(row['length'] || row['Длина'] || row['длина'] || row['Длина, мм'] || 0),
+        width: Number(row['width'] || row['Ширина'] || row['ширина'] || row['Ширина, мм'] || 0),
+        thickness: Number(row['thickness'] || row['Толщина'] || row['толщина'] || row['Толщина, мм'] || 0)
       },
       material: {
         type: row['material_type'] || row['Порода'] || 'мрамор',
         name: row['material_name'] || row['Камень'] || row['Материал'],
-        density: Number(row['density'] || row['Плотность'] || 2700)
+        density: Number(row['density'] || row['Плотность'] || row['Плотность, кг/м³'] || 2700)
       },
       texture: row['texture'] || row['Фактура'] || 'лощение',
-      quantity: row['quantity'] || row['Объём'] || null,
-      quantity_pieces: row['quantity_pieces'] || row['Штук'] ? Number(row['quantity_pieces'] || row['Штук']) : null,
+      quantity: row['quantity'] || row['Объём'] || row['Объём партии'] || null,
+      quantity_pieces: row['quantity_pieces'] || row['Штук'] || row['Кол-во, шт'] ? Number(row['quantity_pieces'] || row['Штук'] || row['Кол-во, шт']) : null,
       control_unit: control_unit,
-      edges: row['edges'] || row['Кромки'] || null,
-      geometry_type: row['geometry_type'] || row['Геометрия'] || 'simple',
+      edges: row['edges'] || row['Кромки'] || row['Кромки/грани'] || null,
+      geometry_type: row['geometry_type'] || row['Геометрия'] || row['Тип геометрии'] || 'simple',
       object: row['object_name'] ? {
         name: row['object_name'] || row['Объект'],
         years: row['object_years'] || null,
@@ -115,7 +115,7 @@ function parseExcelInput(filePath) {
         project: row['object_project'] || null
       } : null,
       category: row['category'] || row['Категория'] || '1',
-      gost_primary: row['gost_primary'] || row['ГОСТ'] || 'ГОСТ 9480-2024',
+      gost_primary: row['gost_primary'] || row['ГОСТ'] || row['Основной ГОСТ'] || 'ГОСТ 9480-2024',
       packaging: row['packaging'] || row['Упаковка'] || 'стандартная',
       date: row['date'] || row['Дата'] || null
     };
