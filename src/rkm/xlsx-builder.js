@@ -220,8 +220,8 @@ function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel) {
   // Отображаемое количество: для площадных — оригинальное quantity_pieces, для штучных — из geometry
   const dispQty = displayProduct.quantity_pieces || geometry.qty;
 
-  const materialText = product.material ? `${product.material.type} месторождения \"${product.material.name}\"` : '';
-  const fullName = `Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - ${displayProduct.name || product.name || 'ступень фигурная'}, цельная, сложной конфигурации, с закругленным кантом (капельником) R 25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; материал — ${materialText}; обработка поверхности — ${product.texture || 'бучардирование+лощение'}; размеры ${disp_L}\u00D7${disp_W}\u00D7${disp_T}мм (возможная подрезка изделия по месту под фактическую установку)`;
+  // Название берётся из поля name продукта (полное название из Excel-списка)
+  const fullName = displayProduct.name || product.name || 'Изделие из натурального камня';
 
   const qtyLabel = unitLabel === 'шт.' ? 'Количество, шт' : `Количество, ${unitLabel}`;
 

@@ -191,7 +191,7 @@ for (let i = 1; i < rows.length; i++) {
 
   const product = {
     tk_number: no,
-    name: fullName.substring(0, 200),
+    name: fullName,
     short_name: shortName(no, dims),
     dimensions: dims,
     material: material,
