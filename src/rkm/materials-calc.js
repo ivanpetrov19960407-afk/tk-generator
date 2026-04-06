@@ -11,9 +11,14 @@ function calcMaterials(product, geometry, unitLabel) {
   const hasBucharda = texture.includes('бучардирование');
   const ul = unitLabel || 'шт';
 
-  // Bush-hammer heads: ~2 pcs per m2 of bucharda surface (area_top)
+  // Bush-hammer heads: resource per head depends on piece size
+  // Large pieces (area_top >= 1 m²) wear heads faster → 5 m²/head
+  // Small tiles (area_top < 0.1 m²) → 30 m²/head
   const buchardaArea = geometry.area_top * qty;
-  const bushHammerQty = hasBucharda ? Math.ceil(buchardaArea * 2) : 0;
+  const headResource_m2 = geometry.area_top >= 1.0 ? 5 :
+                           geometry.area_top >= 0.5 ? 10 :
+                           geometry.area_top >= 0.1 ? 20 : 30;
+  const bushHammerQty = hasBucharda ? Math.max(1, Math.ceil(buchardaArea / headResource_m2)) : 0;
 
   const items = [
     {
@@ -56,8 +61,8 @@ function calcMaterials(product, geometry, unitLabel) {
       qty_val: bushHammerQty,
       price: mp.bush_hammer_heads_price || 8500,
       doc: 'КП поставщика',
-      norm: 'норма на м2',
-      formula: '\u22482 шт/м\u00B2 бучардирования (арх. 1 кат.)',
+      norm: 'ресурс головы',
+      formula: `${headResource_m2} м²/голову, ${buchardaArea.toFixed(1)} м² / ${headResource_m2} = ${bushHammerQty} шт`,
       comment: 'Расход зависит от требуемой фактуры.'
     },
     {

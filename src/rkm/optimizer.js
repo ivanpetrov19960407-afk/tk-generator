@@ -38,8 +38,9 @@ const BATCH_OPS = new Set([1, 2, 3, 6, 9, 10, 24, 25]);
 function calcSerialFactor(qty, areaMode) {
   if (qty <= 1) return 1.0;
   if (areaMode && areaMode.totalArea > 100) {
-    // Усиленная серийность: при 200 м² фактор ~0.55, при 500 м² ~0.42
-    return Math.max(0.15, 1.0 / Math.pow(qty, 0.14));
+    // Массовое производство: конвейерная обработка мелкой плитки
+    // При qty=3344 → factor=0.131 (было 0.321 с exp=0.14)
+    return Math.max(0.05, 1.0 / Math.pow(qty, 0.25));
   }
   return Math.max(0.3, 1.0 / Math.pow(qty, 0.08));
 }
@@ -263,7 +264,10 @@ function optimizeRKM(product, controlPrice, options = {}) {
 
   if (!opt.rkm) opt.rkm = {};
   opt.rkm.norms_override = buildSizeBasedOverrides(opt, geometry, areaMode);
-  opt.rkm.material_prices = { ...buildSizeBasedMaterialPrices(V_net, qty), ...(opt.rkm.material_prices || {}) };
+  // Для площадных позиций size-based цены имеют приоритет над дефолтными из JSON
+  opt.rkm.material_prices = areaMode
+    ? { ...(opt.rkm.material_prices || {}), ...buildSizeBasedMaterialPrices(V_net, qty) }
+    : { ...buildSizeBasedMaterialPrices(V_net, qty), ...(opt.rkm.material_prices || {}) };
   if (!product.rkm || !product.rkm.k_reject) {
     opt.rkm.k_reject = getSizeBasedKReject(V_net);
   }
