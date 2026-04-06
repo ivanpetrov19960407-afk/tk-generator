@@ -246,12 +246,43 @@ function parseExcelInput(filePath) {
   });
 
   // Логистика посчитана отдельно для позиций #36, #28, #29, #27, #30
-  const SKIP_TRANSPORT = new Set([36, 28, 29, 27, 30]);
+  const SKIP_TRANSPORT = new Set([36, 28, 29, 27, 30, 9, 10]);
   for (const p of products) {
     if (SKIP_TRANSPORT.has(p.tk_number)) {
       if (!p.rkm) p.rkm = {};
       if (!p.rkm.transport) p.rkm.transport = {};
       p.rkm.transport.skip = true;
+    }
+  }
+
+  // Габбро-диабаз (брусчатка): сократить операции, убрать ручные
+  // Брусчатка — простое массовое изделие: ниже коэфф. брака, без ручных операций
+  const GABBRO_SKIP_OPS = [10, 13, 14, 15, 19, 22]; // ЧПУ, профиль, ручные доводки
+  const GABBRO_REDUCE_OPS = [2, 3, 8, 11, 21, 26, 27]; // сократить нормы
+  for (const p of products) {
+    if (p.material && p.material.type === 'габбро-диабаз') {
+      if (!p.rkm) p.rkm = {};
+      if (!p.rkm.norms_override) p.rkm.norms_override = {};
+      // Обнулить ручные операции (остальные оптимизатор подберёт сам)
+      for (const opNo of GABBRO_SKIP_OPS) {
+        p.rkm.norms_override[opNo] = { chel_ch: 0, mash_ch: 0 };
+      }
+      // Ниже коэфф. брака для простой геометрии брусчатки
+      p.rkm.k_reject = 1.08;
+      // Цена блока для брусчатки (не архитектурный подбор, массовая распиловка)
+      p.rkm.block_price = 40000; // карьерный блок для массовой брусчатки (карельский габбро, опт)
+      // Расходники: цена на 1шт минимальная — брусчатка пакуется на поддоны, не поштучно
+      p.rkm.material_prices = {
+        diamond_discs: 2000,
+        diamond_milling_heads: 1500,
+        bush_hammer_heads_price: 2000,
+        abrasives: 1,       // конвейер, мин. расход (не 0 — иначе fallback)
+        coolant_chemistry: 1,
+        protective_materials: 1, // не 0!
+        packaging: 5,
+        marking: 1,
+        ppe: 1
+      };
     }
   }
 

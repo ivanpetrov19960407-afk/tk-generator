@@ -302,11 +302,13 @@ function optimizeRKM(product, controlPrice, options = {}) {
   const qty = opt.quantity_pieces || 1;
 
   if (!opt.rkm) opt.rkm = {};
-  opt.rkm.norms_override = buildSizeBasedOverrides(opt, geometry, areaMode);
+  // Мержим: size-based overrides как база, поверх — пользовательские (напр. обнулённые для Габбро)
+  const userOverrides = opt.rkm.norms_override || {};
+  opt.rkm.norms_override = { ...buildSizeBasedOverrides(opt, geometry, areaMode), ...userOverrides };
   // Для площадных позиций size-based цены имеют приоритет над дефолтными из JSON
-  opt.rkm.material_prices = areaMode
-    ? { ...(opt.rkm.material_prices || {}), ...buildSizeBasedMaterialPrices(V_net, qty) }
-    : { ...buildSizeBasedMaterialPrices(V_net, qty), ...(opt.rkm.material_prices || {}) };
+  // Пользовательские цены материалов имеют приоритет над size-based
+  const userMatPrices = opt.rkm.material_prices || {};
+  opt.rkm.material_prices = { ...buildSizeBasedMaterialPrices(V_net, qty), ...userMatPrices };
   if (!product.rkm || !product.rkm.k_reject) {
     opt.rkm.k_reject = getSizeBasedKReject(V_net);
   }
@@ -337,6 +339,7 @@ function optimizeRKM(product, controlPrice, options = {}) {
       const key = String(op.no);
       const sizeNorm = sizeOverrides[key];
       if (!sizeNorm) continue;
+
 
       let ch = sizeNorm.chel_ch * midM;
       let mh = sizeNorm.mash_ch * midM;

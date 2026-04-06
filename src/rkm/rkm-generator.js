@@ -110,9 +110,11 @@ async function generateRKM(product, outputDir, options = {}) {
     const V_net = realGeometry.V_net;
     const qty = workProduct.quantity_pieces || 1;
     if (!workProduct.rkm) workProduct.rkm = {};
-    workProduct.rkm.norms_override = buildSizeBasedOverrides(workProduct, realGeometry, areaMode);
+    const userNormsOvr = workProduct.rkm.norms_override || {};
+    workProduct.rkm.norms_override = { ...buildSizeBasedOverrides(workProduct, realGeometry, areaMode), ...userNormsOvr };
     // Для площадных позиций size-based цены имеют приоритет над дефолтными из JSON
-    workProduct.rkm.material_prices = { ...(workProduct.rkm.material_prices || {}), ...buildSizeBasedMaterialPrices(V_net, qty) };
+    const userMatPrices = workProduct.rkm.material_prices || {};
+    workProduct.rkm.material_prices = { ...buildSizeBasedMaterialPrices(V_net, qty), ...userMatPrices };
     if (!product.rkm || !product.rkm.k_reject) {
       workProduct.rkm.k_reject = getSizeBasedKReject(V_net);
     }
