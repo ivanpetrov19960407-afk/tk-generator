@@ -42,9 +42,9 @@ async function buildXlsx(product, geometry, operations, materials, transport, ov
   wb.creator = 'TK-Generator / RKM Module';
   wb.created = new Date();
 
-  // Для отображения используем оригинальный продукт (реальные размеры)
+  // Размеры теперь всегда реальные — displayProduct = product
   const opts = displayOpts || {};
-  const displayProduct = opts.originalProduct || product;
+  const displayProduct = product;
   const areaMode = opts.areaMode || null;
 
   // Определяем единицу измерения для отображения
@@ -1090,7 +1090,8 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
   const areaMode = info.area_mode;
   let descText = 'Допустимый коридор отклонения: \u00b115% от контрольной цены. Цена не должна превышать контрольную.';
   if (areaMode) {
-    descText += ` \u041f\u041b\u041e\u0429\u0410\u0414\u041d\u041e\u0419 \u0420\u0415\u0416\u0418\u041c: 1 \u0448\u0442 = 1 ${areaMode.controlUnit === 'm2' ? '\u043c\u00B2' : '\u043c.\u043f.'} (${areaMode.virtualDims.length}\u00d7${areaMode.virtualDims.width}\u00d7${areaMode.virtualDims.thickness}\u043c\u043c)`;
+    const dims = areaMode.originalDims;
+    descText += ` \u041f\u041b\u041e\u0429\u0410\u0414\u041d\u041e\u0419 \u0420\u0415\u0416\u0418\u041c: единица \u2014 ${areaMode.controlUnit === 'm2' ? '\u043a\u0432.\u043c.' : '\u043f\u043e\u0433.\u043c.'}, изделие ${dims.length}\u00d7${dims.width}\u00d7${dims.thickness}\u043c\u043c, ${areaMode.quantityPieces} шт = ${areaMode.totalArea.toFixed(1)} ${areaMode.controlUnit === 'm2' ? '\u043c\u00B2' : '\u043c.\u043f.'}`;
   }
   ws.getCell('A2').value = descText;
   ws.getCell('A2').font = { italic: true, size: 10 };
@@ -1098,7 +1099,8 @@ function buildSverkaSheet(wb, product, overheads, geometry, info) {
   // Row 3: Пометка площадного режима
   if (areaMode) {
     mergeCells(ws, 'A3:F3');
-    ws.getCell('A3').value = `\u25B6 \u041f\u043b\u043e\u0449\u0430\u0434\u043d\u043e\u0439 \u0440\u0435\u0436\u0438\u043c: \u0432\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0435 \u0438\u0437\u0434\u0435\u043b\u0438\u0435 ${areaMode.virtualDims.length}\u00d7${areaMode.virtualDims.width}\u00d7${areaMode.virtualDims.thickness}\u043c\u043c, \u043a\u043e\u043b-\u0432\u043e: ${areaMode.virtualQty} \u0448\u0442 (\u2248${areaMode.totalArea.toFixed(1)} \u043c\u00B2)${areaMode.totalArea > 100 ? ', \u0443\u0441\u0438\u043b\u0435\u043d\u043d\u0430\u044f \u0441\u0435\u0440\u0438\u0439\u043d\u043e\u0441\u0442\u044c' : ''}`;
+    const dims3 = areaMode.originalDims;
+    ws.getCell('A3').value = `\u25B6 \u041f\u043b\u043e\u0449\u0430\u0434\u043d\u043e\u0439 \u0440\u0435\u0436\u0438\u043c: \u0438\u0437\u0434\u0435\u043b\u0438\u0435 ${dims3.length}\u00d7${dims3.width}\u00d7${dims3.thickness}\u043c\u043c, \u043a\u043e\u043b-\u0432\u043e: ${areaMode.quantityPieces} \u0448\u0442 (\u2248${areaMode.totalArea.toFixed(1)} \u043c\u00B2)${areaMode.totalArea > 100 ? ', \u0443\u0441\u0438\u043b\u0435\u043d\u043d\u0430\u044f \u0441\u0435\u0440\u0438\u0439\u043d\u043e\u0441\u0442\u044c' : ''}`;
     ws.getCell('A3').font = { bold: true, size: 10, color: { argb: 'FF2E75B6' } };
   }
 

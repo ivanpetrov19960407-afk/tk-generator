@@ -62,18 +62,16 @@ function getCalcPrice(result, controlUnit) {
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 // ============================================================
-// ПЛОЩАДНОЙ РЕЖИМ: определение и пересчёт виртуального изделия
+// ПЛОЩАДНОЙ РЕЖИМ: определение метаданных (без подмены размеров)
 // ============================================================
 
 /**
  * Определяет, нужен ли площадной режим.
  * Площадной режим включается автоматически, если единица контрольной цены —
- * кв.м. или пог.м. При этом:
- *   - виртуальное изделие = 1 м² (1000×1000×T мм) или 1 м.п. (1000×W×T мм)
- *   - quantity_pieces пересчитывается как количество таких виртуальных штук
- *   - включается усиленная серийность для массовых партий
+ * кв.м. или пог.м. Размеры изделия НЕ подменяются — остаются реальные.
+ * Возвращает метаданные для корректного расчёта удельных цен.
  *
- * @returns {Object|null} — { enabled, virtualDims, virtualQty, originalDims, totalArea }
+ * @returns {Object|null} — { enabled, controlUnit, originalDims, pieceArea_m2, totalArea, quantityPieces }
  */
 function detectAreaMode(product) {
   const controlUnit = getControlUnit(product);
@@ -86,57 +84,37 @@ function detectAreaMode(product) {
   const W_mm = dims.width;
   const T_mm = dims.thickness;
 
-  // Оригинальная площадь одной штуки (м²)
+  // Площадь одной штуки (м²)
   const pieceArea_m2 = (L_mm / 1000) * (W_mm / 1000);
-  // Оригинальная длина одной штуки (м)
+  // Длина одной штуки (м)
   const pieceLength_m = L_mm / 1000;
 
-  // Считаем общее количество
+  // Считаем общее количество в единицах (м² или м.п.)
   const qtyStr = product.quantity || '';
   const qtyMatch = qtyStr.match(/[\d.,]+/);
-  const qtyNum = qtyMatch ? parseFloat(qtyMatch[0].replace(',', '.')) : (product.quantity_pieces || 1);
+  const totalQtyInUnits = qtyMatch ? parseFloat(qtyMatch[0].replace(',', '.')) : (product.quantity_pieces || 1);
 
   let totalArea = 0;
   let totalLength = 0;
-  let virtualDims, virtualQty;
 
   if (controlUnit === 'm2') {
-    // 1 виртуальная штука = 1 м² = 1000×1000×T мм
-    virtualDims = { length: 1000, width: 1000, thickness: T_mm };
-    totalArea = qtyNum; // qtyNum уже в м²
-    virtualQty = Math.ceil(qtyNum); // N виртуальных штук = N м²
+    totalArea = totalQtyInUnits; // уже в м²
   } else {
-    // m.p.: 1 виртуальная штука = 1 м.п. = 1000×W×T мм
-    virtualDims = { length: 1000, width: W_mm, thickness: T_mm };
-    totalLength = qtyNum;
-    totalArea = qtyNum * (W_mm / 1000); // приблизительная площадь
-    virtualQty = Math.ceil(qtyNum);
+    // m.p.
+    totalLength = totalQtyInUnits;
+    totalArea = totalQtyInUnits * (W_mm / 1000); // приблизительная площадь
   }
 
   return {
     enabled: true,
     controlUnit,
-    virtualDims,
-    virtualQty,
     originalDims: { length: L_mm, width: W_mm, thickness: T_mm },
-    originalQtyPieces: product.quantity_pieces || 1,
+    pieceArea_m2,
+    pieceLength_m,
     totalArea,
     totalLength,
-    pieceArea_m2,
-    pieceLength_m
+    quantityPieces: product.quantity_pieces || Math.ceil(totalQtyInUnits / pieceArea_m2)
   };
-}
-
-/**
- * Применяет площадной режим к продукту — заменяет размеры и quantity.
- */
-function applyAreaMode(product, areaMode) {
-  const p = deepClone(product);
-  p.dimensions = { ...areaMode.virtualDims };
-  p.quantity_pieces = areaMode.virtualQty;
-  // Помечаем что работаем в площадном режиме
-  p._area_mode = areaMode;
-  return p;
 }
 
 // ============================================================
@@ -253,18 +231,17 @@ function optimizeRKM(product, controlPrice, options = {}) {
   const log = [];
   const controlUnit = getControlUnit(product);
 
-  // --- Площадной режим: автодетект ---
+  // --- Площадной режим: автодетект (без подмены размеров) ---
   const areaMode = detectAreaMode(product);
   let workProduct = product;
 
   if (areaMode) {
+    const dims = areaMode.originalDims;
     log.push(`[Площадной режим] Единица: ${controlUnit === 'm2' ? 'кв.м.' : 'пог.м.'}`);
-    log.push(`  Виртуальное изделие: ${areaMode.virtualDims.length}×${areaMode.virtualDims.width}×${areaMode.virtualDims.thickness}мм`);
-    log.push(`  Виртуальное количество: ${areaMode.virtualQty} шт (≈${areaMode.totalArea.toFixed(1)} м²)`);
+    log.push(`  Реальное изделие: ${dims.length}×${dims.width}×${dims.thickness}мм, ${product.quantity_pieces} шт (≈${areaMode.totalArea.toFixed(1)} м²)`);
     if (areaMode.totalArea > 100) {
       log.push(`  Усиленная серийность: партия >100 м² → поточная линия`);
     }
-    workProduct = applyAreaMode(product, areaMode);
   }
 
   // --- ЭТАП 0 ---
@@ -466,6 +443,5 @@ module.exports = {
   getControlUnit,
   getCalcPrice,
   calcSerialFactor,
-  detectAreaMode,
-  applyAreaMode
+  detectAreaMode
 };
