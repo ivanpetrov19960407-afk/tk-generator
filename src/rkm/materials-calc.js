@@ -3,12 +3,13 @@
 /**
  * Calculate materials section (10 mandatory items).
  */
-function calcMaterials(product, geometry) {
+function calcMaterials(product, geometry, unitLabel) {
   const qty = geometry.qty;
   const rkm = product.rkm || {};
   const mp = rkm.material_prices || {};
   const texture = (product.texture || '').toLowerCase();
   const hasBucharda = texture.includes('бучардирование');
+  const ul = unitLabel || 'шт';
 
   // Bush-hammer heads: ~2 pcs per m2 of bucharda surface (area_top)
   const buchardaArea = geometry.area_top * qty;
@@ -66,8 +67,8 @@ function calcMaterials(product, geometry) {
       qty_val: qty,
       price: mp.abrasives || 6500,
       doc: 'КП поставщика',
-      norm: '1 компл на изделие',
-      formula: `${qty} компл на ${qty} шт`,
+      norm: `1 компл на ${ul}`,
+      formula: `${qty} компл на ${qty} ${ul}`,
       comment: 'Включая ручную доводку переходов.'
     },
     {
@@ -77,8 +78,8 @@ function calcMaterials(product, geometry) {
       qty_val: qty,
       price: mp.coolant_chemistry || 1200,
       doc: 'внутр. лимит/смета',
-      norm: 'лимит на изделие',
-      formula: '1 компл/шт',
+      norm: `лимит на ${ul}`,
+      formula: `1 компл/${ul}`,
       comment: 'Для мойки/сушки между операциями.'
     },
     {
@@ -88,8 +89,8 @@ function calcMaterials(product, geometry) {
       qty_val: qty,
       price: mp.protective_materials || 800,
       doc: 'счет',
-      norm: 'лимит на изделие',
-      formula: '1 компл/шт',
+      norm: `лимит на ${ul}`,
+      formula: `1 компл/${ul}`,
       comment: 'Защита зон лощения при бучардировании.'
     },
     {
@@ -100,7 +101,7 @@ function calcMaterials(product, geometry) {
       price: mp.packaging || 18000,
       doc: 'КП/смета тары',
       norm: 'по чертежу упаковки',
-      formula: '1 короб/шт',
+      formula: `1 короб/${ul}`,
       comment: 'Длина изделия требует усиления и распорок.'
     },
     {
@@ -110,8 +111,8 @@ function calcMaterials(product, geometry) {
       qty_val: qty,
       price: mp.marking || 1500,
       doc: 'счет',
-      norm: 'лимит на изделие',
-      formula: '1 компл/шт',
+      norm: `лимит на ${ul}`,
+      formula: `1 компл/${ul}`,
       comment: 'Маркировка, защита кромок.'
     },
     {
@@ -121,8 +122,8 @@ function calcMaterials(product, geometry) {
       qty_val: qty,
       price: mp.ppe || 600,
       doc: 'счет',
-      norm: 'лимит на изделие',
-      formula: '1 компл/шт',
+      norm: `лимит на ${ul}`,
+      formula: `1 компл/${ul}`,
       comment: 'Пылевые операции (бучардирование/шлифование).'
     }
   ];

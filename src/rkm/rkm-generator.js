@@ -7,7 +7,7 @@ const { mapOperations } = require('./operations-mapper');
 const { calcMaterials } = require('./materials-calc');
 const { calcOverheads } = require('./overhead-calc');
 const { buildXlsx } = require('./xlsx-builder');
-const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode } = require('./optimizer');
+const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode, applyAreaMode, buildSizeBasedOverrides, buildSizeBasedMaterialPrices, getSizeBasedKReject } = require('./optimizer');
 const rates = require('../../data/rkm_rates.json');
 
 /**
@@ -45,9 +45,15 @@ async function generateRKM(product, outputDir, options = {}) {
     console.log(`  [ОПТИМИЗАЦИЯ] Контрольная цена: ${product.control_price} руб`);
   }
 
+  // === Площадной режим (без --optimize) ===
+  // Определяем area mode для любого продукта с единицей кв.м./пог.м.
+  const areaMode = detectAreaMode(product);
+
   // === Оптимизация ===
   let optimizerInfo = null;
   let workProduct = product;
+  // Сохраняем оригинальный продукт для отображения размеров в Excel
+  const originalProduct = product;
 
   if (doOptimize) {
     const optResult = optimizeRKM(product, product.control_price, { tolerance: 0.15 });
@@ -79,6 +85,26 @@ async function generateRKM(product, outputDir, options = {}) {
     optResult.log.forEach(l => console.log(`    ${l}`));
   }
 
+  // === Площадной режим без --optimize ===
+  // Если не оптимизация, но единица м²/м.п. — применяем виртуальные размеры для расчёта
+  // и масштабируем нормы по размеру (аналог этапов 1-2 оптимизатора)
+  if (!doOptimize && areaMode) {
+    workProduct = applyAreaMode(product, areaMode);
+
+    // Масштабирование норм и цен расходников по размеру виртуального изделия
+    const areaGeometry = calcGeometry(workProduct);
+    const V_net = areaGeometry.V_net;
+    const areaQty = workProduct.quantity_pieces || 1;
+    if (!workProduct.rkm) workProduct.rkm = {};
+    workProduct.rkm.norms_override = buildSizeBasedOverrides(workProduct, areaGeometry, areaMode);
+    workProduct.rkm.material_prices = { ...buildSizeBasedMaterialPrices(V_net, areaQty), ...(workProduct.rkm.material_prices || {}) };
+    if (!product.rkm || !product.rkm.k_reject) {
+      workProduct.rkm.k_reject = getSizeBasedKReject(V_net);
+    }
+
+    console.log(`  [ПЛОЩАДНОЙ РЕЖИМ] Виртуальное изделие: ${areaMode.virtualDims.length}×${areaMode.virtualDims.width}×${areaMode.virtualDims.thickness}мм, ${areaMode.virtualQty} шт`);
+  }
+
   // === Основной расчёт ===
   // 1. Geometry
   const geometry = calcGeometry(workProduct);
@@ -90,7 +116,9 @@ async function generateRKM(product, outputDir, options = {}) {
   console.log(`  Операций: ${operations.rows.length}, прямые затраты: ${operations.totals.itogo_pryamye.toFixed(2)} руб`);
 
   // 3. Materials
-  const materials = calcMaterials(workProduct, geometry);
+  const curAreaMode = areaMode || (optimizerInfo && optimizerInfo.area_mode) || null;
+  const unitLabel = curAreaMode ? (curAreaMode.controlUnit === 'm2' ? 'м²' : 'м.п.') : 'шт';
+  const materials = calcMaterials(workProduct, geometry, unitLabel);
   console.log(`  Материалы: ${materials.total.toFixed(2)} руб`);
 
   // 4. Overheads (two-pass: first without transport, then with)
@@ -126,7 +154,11 @@ async function generateRKM(product, outputDir, options = {}) {
   }
 
   // 7. Build Excel
-  const wb = await buildXlsx(workProduct, geometry, operations, materials, transport, overheads, optimizerInfo);
+  // Передаём originalProduct для отображения реальных размеров, areaMode для единиц измерения
+  const wb = await buildXlsx(workProduct, geometry, operations, materials, transport, overheads, optimizerInfo, {
+    originalProduct,
+    areaMode: areaMode || (optimizerInfo && optimizerInfo.area_mode) || null
+  });
 
   // 8. Save
   if (!fs.existsSync(outputDir)) {

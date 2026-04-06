@@ -37,25 +37,36 @@ function mergeCells(ws, range) {
  * ALL calculated cells use Excel formulas referencing other sheets,
  * exactly matching the reference template structure.
  */
-async function buildXlsx(product, geometry, operations, materials, transport, overheads, optimizerInfo) {
+async function buildXlsx(product, geometry, operations, materials, transport, overheads, optimizerInfo, displayOpts) {
   const wb = new ExcelJS.Workbook();
   wb.creator = 'TK-Generator / RKM Module';
   wb.created = new Date();
 
-  buildTitleSheet(wb, product, geometry);
+  // Для отображения используем оригинальный продукт (реальные размеры)
+  const opts = displayOpts || {};
+  const displayProduct = opts.originalProduct || product;
+  const areaMode = opts.areaMode || null;
+
+  // Определяем единицу измерения для отображения
+  const controlUnit = (displayProduct.control_unit || displayProduct.unit || 'шт').toLowerCase().replace(/\./g, '').trim();
+  const isAreaUnit = controlUnit.includes('кв') || controlUnit.includes('м2');
+  const isLinearUnit = controlUnit.includes('пог') || controlUnit.includes('мп');
+  const unitLabel = isAreaUnit ? 'м²' : isLinearUnit ? 'м.п.' : 'шт.';
+
+  buildTitleSheet(wb, product, geometry, displayProduct, unitLabel);
   buildInstructionSheet(wb);
-  buildInputDataSheet(wb, product, geometry);
+  buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel);
   buildGeometrySheet(wb, geometry);
-  buildMaterialsSheet(wb, materials, geometry);
-  const opRowStart = buildOperationsSheet(wb, operations);
+  buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel);
+  const opRowStart = buildOperationsSheet(wb, operations, unitLabel);
   buildOverheadSheet(wb, overheads, operations);
   buildTransportSheet(wb, product, overheads);
-  buildTotalSheet(wb, overheads, geometry, operations);
+  buildTotalSheet(wb, overheads, geometry, operations, unitLabel);
   buildReferenceSheet(wb);
 
   // Лист Сверка — добавляется только при наличии контрольной цены и данных оптимизации
   if (optimizerInfo && optimizerInfo.control_price) {
-    buildSverkaSheet(wb, product, overheads, geometry, optimizerInfo);
+    buildSverkaSheet(wb, displayProduct, overheads, geometry, optimizerInfo);
   }
 
   return wb;
@@ -63,7 +74,7 @@ async function buildXlsx(product, geometry, operations, materials, transport, ov
 
 // ===== Sheet 1: Титульный лист =====
 // Reference: all dynamic fields are formulas referencing Вводные_данные
-function buildTitleSheet(wb, product, geometry) {
+function buildTitleSheet(wb, product, geometry, displayProduct, unitLabel) {
   const ws = wb.addWorksheet('Титульный лист');
   setColWidths(ws, [35, 80]);
 
@@ -97,7 +108,7 @@ function buildTitleSheet(wb, product, geometry) {
   // A6: Количество — formula
   ws.getCell('A6').value = 'Количество:';
   ws.getCell('A6').font = BOLD_FONT;
-  ws.getCell('B6').value = { formula: 'TEXT(\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435!$B$6,"0")&" шт."' };
+  ws.getCell('B6').value = { formula: `TEXT(\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435!$B$6,"0")&" ${unitLabel}"` };
 
   // A7: Фактура — formula
   ws.getCell('A7').value = 'Фактура поверхности ';
@@ -180,7 +191,7 @@ function buildInstructionSheet(wb) {
 
 // ===== Sheet 3: Вводные_данные =====
 // Reference: merged cells, correct row positions matching template
-function buildInputDataSheet(wb, product, geometry) {
+function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel) {
   const ws = wb.addWorksheet('Вводные_данные');
   setColWidths(ws, [35, 40, 50, 40, 18, 30, 18, 15, 15, 15]);
 
@@ -201,20 +212,30 @@ function buildInputDataSheet(wb, product, geometry) {
   ws.getCell('D4').value = '2) Материал, коэффициенты потерь и допуски';
   ws.getCell('D4').font = BOLD_FONT;
 
+  // Используем оригинальные размеры для отображения
+  const dispDims = displayProduct.dimensions || product.dimensions;
+  const disp_L = dispDims.length;
+  const disp_W = dispDims.width;
+  const disp_T = dispDims.thickness;
+  // Отображаемое количество: для площадных — оригинальное quantity_pieces, для штучных — из geometry
+  const dispQty = displayProduct.quantity_pieces || geometry.qty;
+
   const materialText = product.material ? `${product.material.type} месторождения \"${product.material.name}\"` : '';
-  const fullName = `Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - ${product.name || 'ступень фигурная'}, цельная, сложной конфигурации, с закругленным кантом (капельником) R 25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; материал — ${materialText}; обработка поверхности — ${product.texture || 'бучардирование+лощение'}; размеры ${geometry.L_mm}\u00D7${geometry.W_mm}\u00D7${geometry.T_mm}мм (возможная подрезка изделия по месту под фактическую установку)`;
+  const fullName = `Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - ${displayProduct.name || product.name || 'ступень фигурная'}, цельная, сложной конфигурации, с закругленным кантом (капельником) R 25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; материал — ${materialText}; обработка поверхности — ${product.texture || 'бучардирование+лощение'}; размеры ${disp_L}\u00D7${disp_W}\u00D7${disp_T}мм (возможная подрезка изделия по месту под фактическую установку)`;
+
+  const qtyLabel = unitLabel === 'шт.' ? 'Количество, шт' : `Количество, ${unitLabel}`;
 
   const rows = [
     // row 5
     ['Наименование', fullName, '', 'Плотность гранита, кг/м3', geometry.density],
     // row 6
-    ['Количество, шт', geometry.qty, '', 'Коэф. припусков/керфа (объем), k_allow', geometry.k_allow],
+    [qtyLabel, geometry.qty, '', 'Коэф. припусков/керфа (объем), k_allow', geometry.k_allow],
     // row 7
-    ['Длина L, мм', geometry.L_mm, '', 'Коэф. отбора/брака (подбор партии, длина>5м), k_reject', geometry.k_reject],
+    ['Длина L, мм', disp_L, '', 'Коэф. отбора/брака (подбор партии, длина>5м), k_reject', geometry.k_reject],
     // row 8
-    ['Ширина W, мм', geometry.W_mm, '', 'Тех. запас на партию, k_reserve', geometry.k_reserve],
+    ['Ширина W, мм', disp_W, '', 'Тех. запас на партию, k_reserve', geometry.k_reserve],
     // row 9
-    ['Толщина T, мм', geometry.T_mm, '', 'Цена гранитного блока, руб/м3 (КП/счет)', geometry.blockPrice],
+    ['Толщина T, мм', disp_T, '', 'Цена гранитного блока, руб/м3 (КП/счет)', geometry.blockPrice],
     // row 10
     ['Подрезка по месту (0=нет, 1=да)', 1, '', '', ''],
     // row 11
@@ -310,7 +331,7 @@ function buildInputDataSheet(wb, product, geometry) {
 
   // Row 23: base m² — FORMULA referencing Геометрия!$B$22
   const br = 23;
-  ws.getCell(br, 1).value = 'База м\u00B2 на 1 шт, м\u00B2';
+  ws.getCell(br, 1).value = `База м\u00B2 на 1 ${unitLabel}, м\u00B2`;
   ws.getCell(br, 2).value = { formula: '\u0413\u0435\u043E\u043C\u0435\u0442\u0440\u0438\u044F!$B$22' };
   ws.getCell(br, 2).numFmt = NUM_FMT_4D;
   ws.getCell(br, 2).fill = YELLOW_FILL;
@@ -324,7 +345,7 @@ function buildInputDataSheet(wb, product, geometry) {
 
   // Row 24: base m.p. — FORMULA referencing Геометрия!$B$23
   const br2 = 24;
-  ws.getCell(br2, 1).value = 'База м.п. на 1 шт, м';
+  ws.getCell(br2, 1).value = `База м.п. на 1 ${unitLabel}, м`;
   ws.getCell(br2, 2).value = { formula: '\u0413\u0435\u043E\u043C\u0435\u0442\u0440\u0438\u044F!$B$23' };
   ws.getCell(br2, 2).numFmt = NUM_FMT_4D;
   ws.getCell(br2, 2).fill = YELLOW_FILL;
@@ -524,7 +545,7 @@ function buildGeometrySheet(wb, g) {
 
 // ===== Sheet 5: Материалы =====
 // Reference: D5=Геометрия!$F$8, D8=ROUNDUP(Геометрия!$B$9*2,0), D9+=Вводные_данные!$B$6
-function buildMaterialsSheet(wb, materials, geometry) {
+function buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel) {
   const ws = wb.addWorksheet('Материалы');
   setColWidths(ws, [5, 60, 8, 14, 14, 16, 22, 22, 30, 35]);
 
@@ -619,7 +640,7 @@ function buildMaterialsSheet(wb, materials, geometry) {
 
 // ===== Sheet 6: Операции =====
 // Reference: ALL calculated columns use Excel formulas with VLOOKUP
-function buildOperationsSheet(wb, operations) {
+function buildOperationsSheet(wb, operations, unitLabel) {
   const ws = wb.addWorksheet('Операции');
   setColWidths(ws, [4, 35, 40, 30, 25, 25, 18, 10, 12, 12, 14, 14, 10, 12, 12, 14, 10, 10, 12, 14, 35]);
 
@@ -635,9 +656,9 @@ function buildOperationsSheet(wb, operations) {
   // Header row 4
   const headers = [
     '№', 'Операция', 'Содержание/примечание', 'Оборудование', 'Исполнитель (роль)',
-    'Норматив/основание', 'Установки/перевороты', 'Чел-час/шт', 'Чел-час/партия',
-    'Ставка, руб/ч', 'ФОТ, руб', 'Страх.взносы, руб', 'Маш-ч/шт', 'Маш-ч/партия',
-    'Тариф, руб/маш-ч', 'Маш.затраты, руб', 'Мощн., кВт', 'кВт\u00B7ч/шт',
+    'Норматив/основание', 'Установки/перевороты', `Чел-час/${unitLabel}`, 'Чел-час/партия',
+    'Ставка, руб/ч', 'ФОТ, руб', 'Страх.взносы, руб', `Маш-ч/${unitLabel}`, 'Маш-ч/партия',
+    'Тариф, руб/маш-ч', 'Маш.затраты, руб', 'Мощн., кВт', `кВт\u00B7ч/${unitLabel}`,
     'Энергия, руб', 'Итого прямые, руб', 'Комментарий'
   ];
 
@@ -920,7 +941,7 @@ function buildTransportSheet(wb, product, oh) {
 
 // ===== Sheet 9: ИТОГО =====
 // Reference: ALL values are formulas referencing Накладные_и_прибыль, Транспорт, Вводные_данные
-function buildTotalSheet(wb, oh, geometry, operations) {
+function buildTotalSheet(wb, oh, geometry, operations, unitLabel) {
   const ws = wb.addWorksheet('ИТОГО');
   setColWidths(ws, [50, 22, 45, 15, 15, 15, 15, 15, 15, 15]);
 
@@ -931,7 +952,7 @@ function buildTotalSheet(wb, oh, geometry, operations) {
 
   // Row 2: FORMULA with qty
   mergeCells(ws, 'A2:J2');
-  ws.getCell('A2').value = { formula: '"Стоимость за 1 шт. и за партию "&TEXT(\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435!$B$6,"0")&" шт., с учетом НДС (ставка во вводных данных)."' };
+  ws.getCell('A2').value = { formula: `"Стоимость за 1 ${unitLabel} и за партию "&TEXT(\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435!$B$6,"0")&" ${unitLabel}, с учетом НДС (ставка во вводных данных)."` };
 
   ws.getCell('A4').value = 'Показатель';
   ws.getCell('A4').font = HEADER_FONT;
@@ -970,9 +991,9 @@ function buildTotalSheet(wb, oh, geometry, operations) {
     // Row 14
     ['ИТОГО с НДС', { formula: 'B12+B13' }, ''],
     // Row 15
-    ['Стоимость 1 шт. без НДС', { formula: `IF(${vd}!$B$6=0,"-",B12/${vd}!$B$6)` }, ''],
+    [`Стоимость 1 ${unitLabel} без НДС`, { formula: `IF(${vd}!$B$6=0,"-",B12/${vd}!$B$6)` }, ''],
     // Row 16
-    ['Стоимость 1 шт. с НДС', { formula: `IF(${vd}!$B$6=0,"-",B14/${vd}!$B$6)` }, ''],
+    [`Стоимость 1 ${unitLabel} с НДС`, { formula: `IF(${vd}!$B$6=0,"-",B14/${vd}!$B$6)` }, ''],
     // Row 17: dynamic label with formula
     [{ formula: `IF(${vd}!$E$23="","Стоимость 1 м² без НДС","Стоимость 1 м² ("&${vd}!$E$23&") без НДС")` },
      { formula: `IF(${vd}!$B$23*${vd}!$B$6=0,"-",B12/(${vd}!$B$23*${vd}!$B$6))` },
