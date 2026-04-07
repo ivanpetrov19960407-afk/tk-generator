@@ -137,18 +137,34 @@ function replaceProductDescription(text, product) {
 
   // Replace "простая прямоугольная, без сложных профилей" for non-simple geometry
   if (product.geometry_type !== 'simple') {
+    const pName = (product.name || '').toLowerCase();
+    let profileDesc, profileFormDesc;
+    if (product.geometry_type === 'profile') {
+      if (pName.includes('ступен') || pName.includes('проступь')) {
+        profileDesc = 'профильное (Г-образное сечение с капиносом/свесом)';
+        profileFormDesc = 'профильной Г-образной формы с капиносом';
+      } else if (pName.includes('подступен')) {
+        profileDesc = 'простая прямоугольная (подступенок)';
+        profileFormDesc = 'прямоугольной формы (подступенок)';
+      } else if (pName.includes('карниз') || pName.includes('плинтус')) {
+        profileDesc = 'профильное изделие с фигурным сечением';
+        profileFormDesc = 'профильной формы с фигурным сечением';
+      } else {
+        profileDesc = 'профильное изделие с фигурными кантами';
+        profileFormDesc = 'профильной формы с фигурными кантами';
+      }
+    } else {
+      profileDesc = 'сегментное радиусное изделие';
+      profileFormDesc = 'сегментной радиусной формы';
+    }
     text = text.replace(
       /простая прямоугольная, без сложных профилей/g,
-      product.geometry_type === 'profile'
-        ? 'профильное изделие с фигурными кантами'
-        : 'сегментное радиусное изделие'
+      profileDesc
     );
     // Also replace "прямоугольной (квадратной) формы"
     text = text.replace(
       /прямоугольной\s*\(квадратной\)\s*формы/g,
-      product.geometry_type === 'profile'
-        ? 'профильной формы с фигурными кантами'
-        : 'сегментной радиусной формы'
+      profileFormDesc
     );
   }
 
@@ -498,6 +514,36 @@ function customizeSection2(text, product) {
 
   // Note: "напольная плита" and geometry description replacements are handled globally
   // in buildSection() via replaceProductDescription()
+
+  // Replace section 2.2 geometry description for profiled products (steps)
+  const productName = (product.name || '').toLowerCase();
+  if (productName.includes('ступен') || productName.includes('проступь')) {
+    // Replace the entire "Изделие:...Конфигурация --- ..." block
+    text = text.replace(
+      /Изделие:.*?Конфигурация\s*---\s*[^\n]+/s,
+      `Изделие: ступень профильная, Г-образного сечения с капиносом (свес лицевой грани). Конфигурация\n--- профильная (Г-образное сечение)`
+    );
+    // Replace "напольная плита прямоугольной (квадратной) формы"
+    text = text.replace(
+      /напольная плита прямоугольной \(квадратной\) формы/g,
+      'ступень профильная Г-образного сечения'
+    );
+    // Replace dimensions description
+    text = text.replace(
+      /Габаритные размеры:.*?\(длина\s*×\s*ширина\s*×\s*толщина\)/s,
+      `Габаритные размеры: ${dims.length}×${dims.width}×${dims.thickness} мм (длина × ширина проступи × толщина)`
+    );
+    // Replace calibration description
+    text = text.replace(
+      /Калибровка:.*?грани --- лицевая и тыльная\)\./s,
+      'Калибровка: по плоскостям (лицевая и тыльная грани), кромки обрабатываются по профилю.'
+    );
+    // Replace "Фаски: 5 мм по всем четырём кромкам"
+    text = text.replace(
+      /Фаски:.*?кромкам\./,
+      'Фаски и профиль капиноса: согласно эскизу изделия.'
+    );
+  }
 
   return text;
 }

@@ -1,0 +1,14 @@
+{
+  "products": [{
+    "tk_number": 99,
+    "name": "Ступень 1 гранит м-ния Жалгыз; Обработка: бучардирование+лощение; 1200x350x40",
+    "dimensions": {"length": 1200, "width": 350, "thickness": 40},
+    "material": {"type": "гранит", "name": "гранит м-ния Жалгыз", "density": 2620},
+    "texture": "бучардирование_лощение",
+    "quantity_pieces": 5,
+    "geometry_type": "profile",
+    "edges": "капинос + фаска",
+    "control_unit": "м.п.",
+    "measurement_type": "length"
+  }]
+}

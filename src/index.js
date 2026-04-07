@@ -236,7 +236,15 @@ function parseExcelInput(filePath) {
       measurement_type: measurement_type,
       control_price: control_price,
       edges: null,
-      geometry_type: 'simple',
+      geometry_type: (() => {
+        const n = (nameText || '').toLowerCase();
+        if (n.includes('ступен') || n.includes('проступь')) return 'profile';
+        if (n.includes('подступен')) return 'profile';
+        if (n.includes('сегмент') || n.includes('радиусн') || n.includes('колонн')) return 'segment';
+        if (n.includes('карниз') || n.includes('капитель') || n.includes('балясин')) return 'profile';
+        if (n.includes('плинтус') || n.includes('цоколь')) return 'profile';
+        return 'simple';
+      })(),
       object: null,
       category: '1',
       gost_primary: 'ГОСТ 9480-2024',
