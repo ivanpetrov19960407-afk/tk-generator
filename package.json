@@ -11,7 +11,8 @@
     "excel:template": "node scripts/generate_excel_template.js",
     "smoke": "node tests/smoke/generate-docx.test.js && node tests/smoke/generate-rkm.test.js && node tests/smoke/summary-report.test.js",
     "build:binary": "node scripts/build-binary.js",
-    "serve": "node src/server/index.js"
+    "serve": "node src/server/index.js",
+    "bot": "node src/bot/index.js"
   },
   "keywords": [
     "технологическая карта",
@@ -28,7 +29,8 @@
     "exceljs": "^4.4.0",
     "minimist": "^1.2.8",
     "xlsx": "^0.18.5",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "telegraf": "file:vendor/telegraf"
   },
   "bin": {
     "tk-generator": "src/index.js"
