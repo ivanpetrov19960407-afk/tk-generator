@@ -125,6 +125,15 @@ function createOpenApiSpec() {
     },
     servers: [{ url: '/' }],
     paths: {
+      '/api/health': {
+        get: {
+          summary: 'Проверка доступности API.',
+          tags: ['System'],
+          responses: {
+            200: { description: 'Сервис доступен.' }
+          }
+        }
+      },
       '/api/generate': {
         post: {
           summary: 'Генерация DOCX/XLSX и возврат ZIP архива.',
@@ -327,6 +336,10 @@ async function createHandler(req, res, deps = {}) {
 
   if (req.method === 'GET' && url.pathname === '/api/config') {
     return sendJson(res, 200, getPublicConfig(getConfig()));
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/health') {
+    return sendJson(res, 200, { status: 'ok', service: 'tk-generator-api' });
   }
 
   if (req.method === 'POST' && url.pathname === '/api/validate') {
