@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * operations.js — Operation text builder with parametric substitution
  * 
@@ -9,6 +10,8 @@ const { calcProductMass, calcBlockMass, calcBatchMass, analyzeEquipment } = requ
 const { resolveOverridesPath, loadOverridesFile, applyOverridesToOperations, applyManualProductOverrides } = require('./utils/overrides-loader');
 const { formatSupportedTextures } = require('./textures');
 const { getOperationsTemplate, applyOperationPlugins } = require('./plugin-registry');
+
+/** @typedef {import('./types').Product} Product */
 
 // Known template product dimensions per texture type (for replacement)
 const TEMPLATE_PRODUCTS = {
@@ -79,6 +82,8 @@ const TEMPLATE_PRODUCTS = {
 
 /**
  * Escape special regex characters in a string
+ * @param {string} str
+ * @returns {string}
  */
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -93,6 +98,10 @@ function escapeRegex(str) {
  *   - Block dimensions (3200×1500×1000) — standard input block
  *   - Equipment model names
  *   - GOST references
+ * @param {string} text
+ * @param {Product} product
+ * @param {string} textureKey
+ * @returns {string}
  */
 function parametrize(text, product, textureKey) {
   const tpl = TEMPLATE_PRODUCTS[textureKey];
@@ -420,6 +429,8 @@ function parametrize(text, product, textureKey) {
 
 /**
  * Get product type name for text substitution
+ * @param {Product} product
+ * @returns {string}
  */
 function getProductTypeName(product) {
   if (!product.name) return '';
@@ -436,6 +447,9 @@ function getProductTypeName(product) {
 /**
  * Build all 29 operations for a given product.
  * Returns array of { number, title, text } objects.
+ * @param {Product} product
+ * @param {{overridesPath?: string}} [options]
+ * @returns {{ operations: Array<{ number: number; title: string; text: string; isNotApplicable: boolean }>; warnings: string[] }}
  */
 function buildOperations(product, options = {}) {
   const textureKey = product.texture;
@@ -501,6 +515,10 @@ function buildOperations(product, options = {}) {
 
 /**
  * Check if an operation is marked as "НЕ ПРИМЕНЯЕТСЯ"
+ * @param {string} text
+ * @param {string} textureKey
+ * @param {number} opNum
+ * @returns {boolean}
  */
 function isOperationNA(text, textureKey, opNum) {
   if (opNum >= 17 && opNum <= 20 && textureKey === 'лощение') {
@@ -514,6 +532,8 @@ function isOperationNA(text, textureKey, opNum) {
 
 /**
  * Clean title text from markdown/pandoc artifacts
+ * @param {string} title
+ * @returns {string}
  */
 function cleanTitle(title) {
   // Remove {.underline} artifacts

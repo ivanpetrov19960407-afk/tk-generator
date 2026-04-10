@@ -30,6 +30,32 @@ npx tk-generator --input examples/batch_small.json --output ./output
 - Для новых входных форматов добавляйте пример в `examples/`.
 - Для изменений схем обновляйте `schemas/*.json` и тесты валидации.
 
+## JSDoc и постепенная типизация (без миграции на TS)
+
+- Ставьте `// @ts-check` в верхней части файла для модулей с активной доработкой или повышенным риском регрессий.
+- Для экспортируемых функций обязательно указывайте `@param` и `@returns`, включая optional/nullable поля.
+- Для типов проекта используйте `@typedef` через `import('../types').TypeName` и описывайте shape объектов явно (вложенные поля, union-подобные значения).
+- `any` допустим только локально (например, при чтении внешнего JSON), когда точный shape заранее неизвестен; старайтесь сразу сужать тип после валидации.
+
+Примеры из репозитория:
+
+```js
+/** @typedef {import('./types').Product} Product */
+/**
+ * @param {Product} product
+ * @returns {Product}
+ */
+function applyDefaults(product) { /* ... */ }
+```
+
+```js
+/**
+ * @param {unknown} v
+ * @returns {v is number}
+ */
+function isPositiveNumber(v) { /* ... */ }
+```
+
 ## Коммиты и версии
 
 - Используем SemVer (`MAJOR.MINOR.PATCH`).

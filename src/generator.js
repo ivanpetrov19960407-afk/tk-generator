@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * generator.js — Main document generator
  * Orchestrates the entire TK+MK document generation pipeline.
@@ -20,7 +21,14 @@ const { hashInput, createManifest } = require('./utils/cache');
 const { getDefaultDensityByMaterialType } = require('./plugin-registry');
 const { sanitizeName, ensureSafePath } = require('./utils/security');
 
+/** @typedef {import('./types').Product} Product */
+/** @typedef {import('./types').GenerationResult} GenerationResult */
 
+/**
+ * Normalize output formats from CLI/API options.
+ * @param {string|string[]|undefined|null} formatOption
+ * @returns {Array<'docx'|'pdf'>}
+ */
 function normalizeFormats(formatOption) {
   const raw = Array.isArray(formatOption) ? formatOption.join(',') : (formatOption || 'docx');
   const formats = [...new Set(String(raw).split(',').map((f) => f.trim().toLowerCase()).filter(Boolean))];
@@ -32,6 +40,8 @@ function normalizeFormats(formatOption) {
 
 /**
  * Apply defaults to a product spec
+ * @param {Product} product
+ * @returns {Product}
  */
 function applyDefaults(product) {
   const p = { ...product };
@@ -81,9 +91,17 @@ function applyDefaults(product) {
 
 /**
  * Generate a single TK+MK document for a product
- * @param {Object} product - Product specification
+ * @param {Product} product - Product specification
  * @param {string} outputDir - Output directory path
- * @returns {Object} { filePath, warnings, pageEstimate }
+ * @param {{
+ *   logger?: { info: Function; warn: Function; debug: Function; error: Function };
+ *   profile?: boolean;
+ *   profiler?: { measure: <T>(name: string, fn: () => Promise<T>) => Promise<T>; summary: () => Record<string, unknown> };
+ *   validation?: Record<string, unknown>;
+ *   format?: string|string[];
+ *   templatePath?: string;
+ * }} [options]
+ * @returns {Promise<GenerationResult>}
  */
 async function generateDocument(product, outputDir, options = {}) {
   const log = options.logger || logger;
@@ -194,9 +212,17 @@ async function generateDocument(product, outputDir, options = {}) {
 
 /**
  * Generate multiple TK documents from a batch input
- * @param {Array} products - Array of product specifications
+ * @param {Product[]} products - Array of product specifications
  * @param {string} outputDir - Output directory path
- * @returns {Array} Array of results
+ * @param {{
+ *   logger?: { info: Function; warn: Function; debug: Function; error: Function };
+ *   profile?: boolean;
+ *   cache?: boolean;
+ *   concurrency?: number;
+ *   validation?: Record<string, unknown>;
+ *   format?: string|string[];
+ * }} [options]
+ * @returns {Promise<Array<GenerationResult & { success: boolean; cached?: boolean; error?: string }>>}
  */
 async function generateBatch(products, outputDir, options = {}) {
   const log = options.logger || logger;
