@@ -7,7 +7,7 @@ const http = require('http');
 const XLSX = require('xlsx');
 const JSZip = require('jszip');
 
-const { generateBatch, applyDefaults } = require('../generator');
+const { generateBatch, applyDefaults, normalizeFormats } = require('../generator');
 const { generateRKM } = require('../rkm/rkm-generator');
 const { validateBatchInput } = require('../validation/validator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
@@ -136,7 +136,7 @@ function createOpenApiSpec() {
       },
       '/api/generate': {
         post: {
-          summary: 'Генерация DOCX/XLSX и возврат ZIP архива.',
+          summary: 'Генерация DOCX/PDF/XLSX и возврат ZIP архива.',
           tags: ['API'],
           requestBody: {
             required: true,
@@ -263,7 +263,8 @@ function createOpenApiSpec() {
           type: 'object',
           required: ['products'],
           properties: {
-            products: { type: 'array', items: { $ref: '#/components/schemas/Product' } }
+            products: { type: 'array', items: { $ref: '#/components/schemas/Product' } },
+            format: { type: 'string', example: 'docx,pdf', description: 'Формат ТК: docx, pdf или docx,pdf' }
           }
         },
         GenerationResult: {
@@ -369,13 +370,14 @@ async function createHandler(req, res, deps = {}) {
       if (!products) return sendJson(res, 400, { error: 'Ожидается массив products или объект { products: [] }' });
 
       const report = validateBatchInput(products, { unknownUnitPolicy: 'warning' });
+      const formats = normalizeFormats(body.format || 'docx');
       if (!report.valid) return sendJson(res, 400, { error: 'Валидация не пройдена', report });
 
       const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-generator-api-'));
       try {
         const normalizedProducts = products.map((p) => applyDefaults(p));
         const startedAt = Date.now();
-        const tkResults = await generateBatch(normalizedProducts, tmpDir, { validation: { unknownUnitPolicy: 'warning' } });
+        const tkResults = await generateBatch(normalizedProducts, tmpDir, { validation: { unknownUnitPolicy: 'warning' }, format: formats });
         for (const product of normalizedProducts) {
           await generateRKM(product, tmpDir, { optimize: false });
         }

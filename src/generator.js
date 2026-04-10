@@ -10,6 +10,7 @@ const { buildOperations } = require('./operations');
 const { buildAllSections, buildTitlePage } = require('./sections');
 const { buildMKHeader, buildMKTableData } = require('./mk-table');
 const { assembleDocument, Packer } = require('./docx-builder');
+const { buildPdfBuffer } = require('./pdf-builder');
 const { renderTemplateDocx } = require('./template-engine');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 const { validateProductOrThrow } = require('./validation/validator');
@@ -17,6 +18,16 @@ const { logger } = require('./logger');
 const { Profiler } = require('./utils/perf');
 const { hashInput, createManifest } = require('./utils/cache');
 const { getDefaultDensityByMaterialType } = require('./plugin-registry');
+
+
+function normalizeFormats(formatOption) {
+  const raw = Array.isArray(formatOption) ? formatOption.join(',') : (formatOption || 'docx');
+  const formats = [...new Set(String(raw).split(',').map((f) => f.trim().toLowerCase()).filter(Boolean))];
+  const allowed = new Set(['docx', 'pdf']);
+  const invalid = formats.filter((f) => !allowed.has(f));
+  if (invalid.length) throw new Error(`Неподдерживаемый формат: ${invalid.join(', ')}`);
+  return formats.length ? formats : ['docx'];
+}
 
 /**
  * Apply defaults to a product spec
@@ -107,46 +118,69 @@ async function generateDocument(product, outputDir, options = {}) {
     log.warn({ tkNumber: product.tk_number, warnings: allWarnings }, 'Предупреждения при генерации ТК');
   }
   
-  // 5. Assemble DOCX (legacy) or render from custom template
-  const buffer = options.templatePath
-    ? await profiler.measure('tk.renderTemplate', async () => renderTemplateDocx(options.templatePath, {
-        product,
-        sections: sectionData.sections,
-        operations,
-        mkRows,
-        warnings: allWarnings,
-        mk_header: mkHeader,
-        title_page: sectionData.title_page
-      }))
-    : await profiler.measure('tk.packDocx', async () => {
-        const doc = assembleDocument({
-          titlePageText: sectionData.title_page,
-          sections: sectionData.sections,
-          operations,
-          mkHeaderText: mkHeader,
-          mkRows,
-          product,
-          warnings: allWarnings
-        });
-        return Packer.toBuffer(doc);
-      });
-  
+  const formats = normalizeFormats(options.format);
+
   // Ensure output dir exists
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
-  
-  const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
-  const filePath = path.join(outputDir, filename);
-  await profiler.measure('tk.writeDocx', async () => fs.writeFileSync(filePath, buffer));
-  
-  const sizeKB = Math.round(buffer.length / 1024);
-  log.info({ tkNumber: product.tk_number, filename, sizeKB }, 'Файл ТК сохранён');
-  
+
+  const files = [];
+
+  if (formats.includes('docx')) {
+    const docxBuffer = options.templatePath
+      ? await profiler.measure('tk.renderTemplate', async () => renderTemplateDocx(options.templatePath, {
+          product,
+          sections: sectionData.sections,
+          operations,
+          mkRows,
+          warnings: allWarnings,
+          mk_header: mkHeader,
+          title_page: sectionData.title_page
+        }))
+      : await profiler.measure('tk.packDocx', async () => {
+          const doc = assembleDocument({
+            titlePageText: sectionData.title_page,
+            sections: sectionData.sections,
+            operations,
+            mkHeaderText: mkHeader,
+            mkRows,
+            product,
+            warnings: allWarnings
+          });
+          return Packer.toBuffer(doc);
+        });
+
+    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
+    const filePath = path.join(outputDir, filename);
+    await profiler.measure('tk.writeDocx', async () => fs.writeFileSync(filePath, docxBuffer));
+    files.push({ format: 'docx', filePath, filename, sizeKB: Math.round(docxBuffer.length / 1024) });
+  }
+
+  if (formats.includes('pdf')) {
+    const pdfBuffer = await profiler.measure('tk.packPdf', async () => buildPdfBuffer({
+      titlePageText: sectionData.title_page,
+      sections: sectionData.sections,
+      operations,
+      mkHeaderText: mkHeader,
+      mkRows,
+      product,
+      warnings: allWarnings
+    }, options));
+    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.pdf`;
+    const filePath = path.join(outputDir, filename);
+    await profiler.measure('tk.writePdf', async () => fs.writeFileSync(filePath, pdfBuffer));
+    files.push({ format: 'pdf', filePath, filename, sizeKB: Math.round(pdfBuffer.length / 1024) });
+  }
+
+  const primary = files[0];
+  log.info({ tkNumber: product.tk_number, files: files.map((f) => ({ format: f.format, filename: f.filename, sizeKB: f.sizeKB })) }, 'Файлы ТК сохранены');
+
   return {
-    filePath,
-    filename,
-    sizeKB,
+    filePath: primary ? primary.filePath : null,
+    filename: primary ? primary.filename : null,
+    sizeKB: primary ? primary.sizeKB : 0,
+    files,
     warnings: allWarnings,
     product,
     profile: profiler.summary()
@@ -177,20 +211,31 @@ async function generateBatch(products, outputDir, options = {}) {
       if (i >= products.length) break;
       const rawProduct = products[i];
       const product = applyDefaults(rawProduct);
-      const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
-      const filePath = path.join(outputDir, filename);
-      const cacheKey = `tk:${product.tk_number}:${product.short_name}:${product.texture}`;
+      const formats = normalizeFormats(options.format);
+      const expectedFiles = formats.map((format) => {
+        const ext = format === 'pdf' ? 'pdf' : 'docx';
+        const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.${ext}`;
+        return { format, filename, filePath: path.join(outputDir, filename) };
+      });
+      const cacheKey = `tk:${product.tk_number}:${product.short_name}:${product.texture}:${formats.join('+')}`;
       const inputHash = hashInput({ product, validation: options.validation || {} });
       log.debug({ current: i + 1, total: products.length, tkNumber: product.tk_number }, 'Обработка позиции');
 
-      if (manifest && manifest.hasFresh(cacheKey, inputHash, filePath)) {
-        results[i] = { success: true, filePath, filename, sizeKB: Math.round(fs.statSync(filePath).size / 1024), product, cached: true };
+      if (manifest && expectedFiles.every((item) => manifest.hasFresh(cacheKey, inputHash, item.filePath))) {
+        const files = expectedFiles.filter((item) => fs.existsSync(item.filePath)).map((item) => ({
+          format: item.format,
+          filename: item.filename,
+          filePath: item.filePath,
+          sizeKB: Math.round(fs.statSync(item.filePath).size / 1024)
+        }));
+        const primary = files[0] || null;
+        results[i] = { success: true, filePath: primary && primary.filePath, filename: primary && primary.filename, sizeKB: primary ? primary.sizeKB : 0, files, product, cached: true };
         continue;
       }
 
       try {
         const profiler = new Profiler(profileEnabled);
-        const result = await generateDocument(product, outputDir, { ...options, profiler });
+        const result = await generateDocument(product, outputDir, { ...options, profiler, format: formats });
         results[i] = { success: true, ...result, cached: false };
         if (manifest) manifest.update(cacheKey, inputHash, result.filePath);
       } catch (err) {
@@ -225,5 +270,6 @@ async function generateBatch(products, outputDir, options = {}) {
 module.exports = {
   generateDocument,
   generateBatch,
-  applyDefaults
+  applyDefaults,
+  normalizeFormats
 };
