@@ -50,6 +50,7 @@ function printHelp() {
       --cost-breakdown   Показать смету по операциям в консоли
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
+      --overrides <file.json>   Переопределить операции через rules JSON
   -h, --help     Показать справку
 
 Примеры:
@@ -397,7 +398,9 @@ async function main() {
 
   // === Генерация ТК+МК (всегда) ===
   console.log('\n=== Генерация ТК+МК ===');
-  const results = await generateBatch(products, outputDir);
+  const results = await generateBatch(products, outputDir, {
+    overridesPath: args.overrides ? path.resolve(args.overrides) : null
+  });
   const failed = results.filter(r => !r.success);
   if (failed.length > 0) {
     console.warn(`\n⚠ ${failed.length} ТК не сгенерированы (см. ошибки выше)`);

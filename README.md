@@ -67,6 +67,9 @@ node src/index.js --input examples/batch_input.json --export-cost output/costs.j
 
 # Переопределить тарифы труда внешним JSON
 node src/index.js --input examples/batch_input.json --cost-breakdown --labor-rates-override ./my_labor_rates.json
+
+# Применить overrides операций
+node src/index.js --input examples/batch_input.json --overrides ./examples/operation_overrides.json
 ```
 
 ### Формат JSON экспорта
@@ -106,7 +109,13 @@ node src/index.js --input examples/batch_input.json --cost-breakdown --labor-rat
       "category": "1",
       "gost_primary": "ГОСТ 9480-2024",
       "packaging": "стандартная",
-      "date": "02 апреля 2026 г."
+      "date": "02 апреля 2026 г.",
+      "overrides_path": "./examples/operation_overrides.json",
+      "operation_overrides": {
+        "replace_fields": {
+          "10": { "title": "Ручная правка", "text": "Финальная ручная корректировка" }
+        }
+      }
     }
   ]
 }
@@ -225,8 +234,46 @@ tk-generator/
 }
 ```
 
-### Пользовательские переопределения
-Создайте файл в `templates/operation_overrides/` с нужными изменениями.
+### Пользовательские переопределения (overrides)
+Поддерживается отдельный JSON-файл (через `--overrides` или `product.overrides_path`).
+
+Пример формата:
+```json
+{
+  "version": 1,
+  "rules": [
+    {
+      "match": { "texture": "бучардирование_лощение" },
+      "patch": {
+        "drop_operations": [29],
+        "replace_fields": {
+          "10": { "name": "Уточнённая операция 10", "comment": "переопределено" }
+        }
+      }
+    }
+  ]
+}
+```
+
+Поддерживаемые поля `match`:
+- `texture`
+- `material_type`
+- `material_name`
+- `geometry_type`
+- `name_regex`
+
+Поддерживаемые поля `patch`:
+- `drop_operations: number[]` — удалить операции по номеру
+- `replace_fields: { [operationNo]: object }` — заменить поля операции (`title/text`, а также алиасы `name/comment`)
+
+Приоритет применения:
+1. База (`data/operations_library.json` + параметризация)
+2. Overrides-файл (`--overrides` или `product.overrides_path`)
+3. Ручные правки в `product.operation_overrides`
+
+Поведение при ошибках:
+- Битый JSON overrides → ошибка с путём файла.
+- Ссылка на несуществующую операцию → предупреждение, правило пропускается.
 
 ## Форматирование документа
 

@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const { calcProductMass, calcBlockMass, calcBatchMass, analyzeEquipment } = require('./equipment');
+const { resolveOverridesPath, loadOverridesFile, applyOverridesToOperations, applyManualProductOverrides } = require('./utils/overrides-loader');
 
 const operationsLibrary = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'data', 'operations_library.json'), 'utf8')
@@ -440,7 +441,7 @@ function getProductTypeName(product) {
  * Build all 29 operations for a given product.
  * Returns array of { number, title, text } objects.
  */
-function buildOperations(product) {
+function buildOperations(product, options = {}) {
   const textureKey = product.texture;
   const templateOps = operationsLibrary[textureKey];
   
@@ -485,6 +486,20 @@ function buildOperations(product) {
     });
   }
 
+  const overridesPath = resolveOverridesPath(product, options.overridesPath);
+  if (overridesPath) {
+    const loadedOverrides = loadOverridesFile(overridesPath);
+    const overridden = applyOverridesToOperations(operations, product, loadedOverrides);
+    operations.length = 0;
+    operations.push(...overridden.operations);
+    warnings.push(...overridden.warnings);
+  }
+
+  const manualOverrideResult = applyManualProductOverrides(operations, product);
+  operations.length = 0;
+  operations.push(...manualOverrideResult.operations);
+  warnings.push(...manualOverrideResult.warnings);
+
   return { operations, warnings };
 }
 
@@ -521,29 +536,6 @@ function cleanTitle(title) {
   // Clean whitespace
   title = title.trim();
   return title;
-}
-
-/**
- * Load operation overrides from templates/operation_overrides/ directory
- * Allows users to customize individual operation texts.
- */
-function loadOverrides() {
-  const overridesDir = path.join(__dirname, '..', 'templates', 'operation_overrides');
-  const overrides = {};
-  
-  if (fs.existsSync(overridesDir)) {
-    const files = fs.readdirSync(overridesDir).filter(f => f.endsWith('.json'));
-    for (const file of files) {
-      try {
-        const data = JSON.parse(fs.readFileSync(path.join(overridesDir, file), 'utf8'));
-        Object.assign(overrides, data);
-      } catch (e) {
-        console.warn(`Предупреждение: не удалось загрузить override ${file}: ${e.message}`);
-      }
-    }
-  }
-  
-  return overrides;
 }
 
 module.exports = {

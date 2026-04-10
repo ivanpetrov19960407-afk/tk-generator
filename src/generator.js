@@ -107,7 +107,7 @@ function applyDefaults(product) {
  * @param {string} outputDir - Output directory path
  * @returns {Object} { filePath, warnings, pageEstimate }
  */
-async function generateDocument(product, outputDir) {
+async function generateDocument(product, outputDir, options = {}) {
   // Apply defaults
   product = applyDefaults(product);
   
@@ -120,7 +120,7 @@ async function generateDocument(product, outputDir) {
   console.log(`  Генерация ТК для: ${product.name} (${product.texture})`);
   
   // 1. Build operations (Section 6)
-  const { operations, warnings: opWarnings } = buildOperations(product);
+  const { operations, warnings: opWarnings } = buildOperations(product, options);
   console.log(`  → ${operations.length} операций загружено`);
   
   // 2. Build sections
@@ -183,7 +183,7 @@ async function generateDocument(product, outputDir) {
  * @param {string} outputDir - Output directory path
  * @returns {Array} Array of results
  */
-async function generateBatch(products, outputDir) {
+async function generateBatch(products, outputDir, options = {}) {
   console.log(`\nГенерация ${products.length} ТК документов...\n`);
   
   const results = [];
@@ -193,7 +193,7 @@ async function generateBatch(products, outputDir) {
     console.log(`[${i + 1}/${products.length}] -------`);
     
     try {
-      const result = await generateDocument(product, outputDir);
+      const result = await generateDocument(product, outputDir, options);
       results.push({ success: true, ...result });
     } catch (err) {
       console.error(`  ОШИБКА: ${err.message}`);
