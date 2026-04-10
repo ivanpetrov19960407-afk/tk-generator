@@ -1,0 +1,37 @@
+module.exports = [
+  {
+    files: ['src/**/*.js', 'tests/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        clearInterval: 'readonly',
+        clearTimeout: 'readonly',
+        console: 'readonly',
+        exports: 'readonly',
+        global: 'readonly',
+        module: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        URL: 'readonly',
+        fetch: 'readonly',
+        File: 'readonly',
+        DataTransfer: 'readonly',
+        document: 'readonly',
+        DragEvent: 'readonly',
+        setInterval: 'readonly',
+        setTimeout: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'error',
+      'no-unreachable': 'error',
+      'no-unused-vars': 'warn',
+      'no-console': 'off',
+      'prefer-const': 'error',
+    },
+  },
+];

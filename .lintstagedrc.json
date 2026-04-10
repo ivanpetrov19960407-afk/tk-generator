@@ -1,0 +1,6 @@
+{
+  "*.js": [
+    "eslint --fix --max-warnings=0 || npx --yes eslint@9.39.4 --fix --max-warnings=0",
+    "prettier --write || npx --yes prettier@3.8.2 --write"
+  ]
+}
