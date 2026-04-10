@@ -16,6 +16,7 @@ const { generateBatch } = require('./generator');
 const { generateRKMBatch } = require('./rkm/rkm-generator');
 const { nowMs } = require('./utils/perf');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
+const { write1CXml, write1CCsv } = require('./export-1c');
 const { normalizeUnit } = require('./utils/unit-normalizer');
 const { SUPPORTED_TEXTURES } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
@@ -30,7 +31,7 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv'],
   default: {
     output: 'output/',
     rkm: false,
@@ -60,6 +61,8 @@ function printHelp() {
       --cost-breakdown   Показать смету по операциям в консоли
       --validate-only    Только проверить входные данные и завершить
       --summary          Сформировать сводный Excel-отчёт по партии
+      --export-1c        Экспорт калькуляций в 1С-совместимый XML
+      --export-1c-csv    Экспорт калькуляций в упрощённый CSV для 1С
       --profile          Вывести timing по этапам генерации
       --no-cache         Отключить кэширование неизменённых позиций
       --concurrency <n>  Число параллельных задач в пакетной генерации
@@ -95,6 +98,9 @@ function printHelp() {
 
   # Экспорт смет в JSON
   tk-generator --input examples/batch_small.json --export-cost output/costs.json
+
+  # Экспорт в 1С-совместимый XML/CSV
+  tk-generator --input examples/batch_small.json --export-1c --export-1c-csv
 
 Поддерживаемые фактуры:
 ${SUPPORTED_TEXTURES.map(t => `  - ${t}`).join('\n')}
@@ -429,7 +435,7 @@ async function main() {
     return;
   }
 
-  const needCostCalculation = Boolean(args['cost-breakdown'] || args['export-cost']);
+  const needCostCalculation = Boolean(args['cost-breakdown'] || args['export-cost'] || args['export-1c'] || args['export-1c-csv']);
   let costs = [];
   if (needCostCalculation) {
     logger.info('Расчёт стоимости');
@@ -460,6 +466,16 @@ async function main() {
       fs.mkdirSync(path.dirname(exportPath), { recursive: true });
       fs.writeFileSync(exportPath, JSON.stringify({ generated_at: new Date().toISOString(), products: costs }, null, 2), 'utf8');
       logger.info({ exportPath }, 'Смета экспортирована');
+    }
+
+    if (args['export-1c']) {
+      const exportPath = write1CXml(products, costs, outputDir);
+      logger.info({ exportPath }, 'Калькуляции экспортированы в 1С XML');
+    }
+
+    if (args['export-1c-csv']) {
+      const exportPath = write1CCsv(products, costs, outputDir);
+      logger.info({ exportPath }, 'Калькуляции экспортированы в 1С CSV');
     }
   }
 
