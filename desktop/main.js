@@ -15,6 +15,8 @@ process.on('uncaughtException', (error) => {
 });
 
 const { createApp } = require('../src/server');
+const { loadConfig, getConfig } = require('../src/config');
+const { setupAutoUpdates } = require('./auto-update');
 
 let win;
 let tray;
@@ -22,6 +24,7 @@ let apiServer;
 let apiPort;
 let selectedOutputDir = null;
 let generationStatus = 'Готово';
+let stopAutoUpdateTimer = null;
 
 function createMenu() {
   const template = [
@@ -108,6 +111,7 @@ async function startApiServer() {
 }
 
 async function createMainWindow() {
+  loadConfig();
   await startApiServer();
 
   win = new BrowserWindow({
@@ -141,6 +145,15 @@ async function createMainWindow() {
 
   ensureTray();
   createMenu();
+
+  if (!stopAutoUpdateTimer) {
+    stopAutoUpdateTimer = setupAutoUpdates({
+      app,
+      window: win,
+      config: getConfig(),
+      logger: console
+    });
+  }
 }
 
 ipcMain.handle('open-file', async () => {
@@ -215,6 +228,11 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  if (stopAutoUpdateTimer) {
+    stopAutoUpdateTimer();
+    stopAutoUpdateTimer = null;
+  }
+
   if (apiServer) {
     apiServer.close();
     apiServer = null;

@@ -10,5 +10,9 @@
     "BIK": "040000000",
     "tel": "+7 900 000 00 00",
     "email": "billing@example.com"
+  },
+  "autoUpdate": {
+    "enabled": true,
+    "checkInterval": "24h"
   }
 }

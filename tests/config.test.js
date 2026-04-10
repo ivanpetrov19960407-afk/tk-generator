@@ -45,6 +45,8 @@ function createTmpConfig(files) {
   loadConfig({ configDir: dir });
   const cfg = getConfig();
   assert.strictEqual(cfg.rkm.logisticsDefaults.distance_km, 150);
+  assert.strictEqual(cfg.autoUpdate.enabled, true);
+  assert.strictEqual(cfg.autoUpdate.checkInterval, '24h');
 
   const transport = calcTransport({ rkm: {} }, { itogo_production: 0 });
   assert.strictEqual(transport.total, 150 * 10);

@@ -24,6 +24,7 @@ const { loadConfig, getConfig } = require('./config');
 const { generateSummaryReport } = require('./summary-report');
 const { configureLogger, logger, LEVELS } = require('./logger');
 const { createRepository } = require('./db/repository');
+const { checkForStandaloneUpdate, performStandaloneSelfUpdate } = require('./self-update');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -32,7 +33,7 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv', 'watch'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv', 'watch', 'check-update', 'self-update'],
   default: {
     output: 'output/',
     rkm: false,
@@ -81,6 +82,8 @@ function printHelp() {
       --log-file <path>         Дублировать логи в файл
       --template <path.docx>    Пользовательский DOCX-шаблон для ТК+МК
       --watch                   Режим разработки: следить за файлами и перегенерировать 1 тестовую позицию
+      --check-update            Проверить наличие новой версии standalone
+      --self-update             Скачать свежий standalone-бинарник из GitHub Releases
       --history                 Показать историю генераций (последние 20 запусков)
       --history-detail <id>     Показать детали запуска по ID
       --stats                   Показать агрегированную статистику генераций
@@ -684,6 +687,35 @@ function runWatchMode({ inputPath, outputDir }) {
   });
 }
 
+
+async function handleStandaloneUpdateCli() {
+  const currentVersion = require('../package.json').version;
+
+  if (args['check-update']) {
+    const update = await checkForStandaloneUpdate({ currentVersion });
+    if (update.hasUpdate) {
+      logger.info({ currentVersion: update.currentVersion, latestVersion: update.latestVersion }, 'Доступно обновление standalone');
+      console.log(`Доступна версия ${update.latestVersion}. Текущая: ${update.currentVersion}.`);
+      return 10;
+    }
+    console.log(`Обновлений нет. Текущая версия ${update.currentVersion}.`);
+    return 0;
+  }
+
+  if (args['self-update']) {
+    const result = await performStandaloneSelfUpdate({ currentVersion });
+    logger.info({
+      currentVersion: result.currentVersion,
+      latestVersion: result.latestVersion,
+      preparedPath: result.preparedPath || null
+    }, 'Self-update standalone');
+    console.log(result.message);
+    return result.updated ? 10 : 0;
+  }
+
+  return null;
+}
+
 /**
  * Main entry point
  */
@@ -715,6 +747,12 @@ async function main() {
       console.log(JSON.stringify(stats, null, 2));
       return;
     }
+  }
+
+  const updateExitCode = await handleStandaloneUpdateCli();
+  if (updateExitCode != null) {
+    process.exitCode = updateExitCode;
+    return;
   }
 
   if (args.help || !args.input) {

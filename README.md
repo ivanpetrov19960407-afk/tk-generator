@@ -428,7 +428,15 @@ npm run build:binary
 dist/tk-generator.exe --input examples/batch_small.json --output dist/output --rkm
 ```
 
+Проверка обновлений standalone:
 
+```bash
+tk-generator --check-update
+tk-generator --self-update
+```
+
+`--check-update` проверяет `releases/latest` в GitHub и сообщает доступную версию.
+`--self-update` скачивает свежий архив standalone рядом с текущим исполняемым файлом.
 
 ## Desktop (Electron)
 
@@ -438,3 +446,5 @@ dist/tk-generator.exe --input examples/batch_small.json --output dist/output --r
 - Build Linux (.AppImage): `npm run desktop:build:linux`
 
 Electron uses secure defaults (`nodeIntegration: false`, `contextIsolation: true`) and starts embedded API server on a random local port.
+
+Auto-update для Electron работает через `electron-updater` и GitHub Releases. При обнаружении новой версии показывается диалог: «Доступна версия X.Y.Z. Обновить сейчас?».
