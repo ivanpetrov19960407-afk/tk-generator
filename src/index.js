@@ -16,6 +16,7 @@ const { generateBatch } = require('./generator');
 const { generateRKM } = require('./rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
 const { normalizeUnit, validateUnitConsistency } = require('./utils/unit-normalizer');
+const { SUPPORTED_TEXTURES } = require('./textures');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -73,9 +74,7 @@ function printHelp() {
   node src/index.js --input examples/batch_input.json --export-cost output/costs.json
 
 Поддерживаемые фактуры:
-  - лощение
-  - рельефная_матовая
-  - бучардирование_лощение
+${SUPPORTED_TEXTURES.map(t => `  - ${t}`).join('\n')}
 `);
 }
 
@@ -171,7 +170,6 @@ function mapTexture(textureStr) {
   if (hasBuch) return 'бучардирование_лощение'; // бучардирование alone defaults to combo
   if (hasRelief || hasMat) return 'рельефная_матовая';
   if (hasLosh) return 'лощение';
-  if (s.includes('полировка')) return 'полировка';
 
   // Fallback: normalize by replacing separators with underscores
   return s.replace(/[\s,+]+/g, '_');
