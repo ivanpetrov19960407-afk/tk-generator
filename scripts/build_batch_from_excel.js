@@ -17,6 +17,7 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 const { normalizeUnit, validateUnitConsistency, checkPriceDeviation } = require('../src/utils/unit-normalizer');
+const { loadConfig, getConfig } = require('../src/config');
 
 const inputFile = process.argv[2];
 const outputFile = process.argv[3] || 'examples/full_album_batch.json';
@@ -25,6 +26,8 @@ if (!inputFile) {
   console.error('Usage: node scripts/build_batch_from_excel.js <input.xlsx> [output.json]');
   process.exit(1);
 }
+
+loadConfig();
 
 // Material detection from full product name
 function detectMaterial(name) {
@@ -215,12 +218,7 @@ for (let i = 1; i < rows.length; i++) {
     rkm: {
       k_reject: k_reject,
       transport: {
-        distance_km: 940,
-        tariff_rub_km: 120,
-        trips: 1,
-        loading: 25000,
-        unloading: 35000,
-        insurance_pct: 0.005
+        ...getConfig().rkm.logisticsDefaults
       },
       material_prices: {
         diamond_discs: 10000,

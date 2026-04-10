@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getConfig } = require('./config');
 
 const COST_PREFIX = '[COST]';
 const COSTS_DIR = path.join(__dirname, '..', 'data', 'costs');
@@ -33,10 +34,12 @@ function readJsonRequired(filePath) {
 }
 
 function loadCostData(options = {}) {
-  const laborRatesPath = options.laborRatesPath || path.join(COSTS_DIR, 'labor_rates.json');
-  const equipmentCostsPath = options.equipmentCostsPath || path.join(COSTS_DIR, 'equipment_costs.json');
-  const materialPricesPath = options.materialPricesPath || path.join(COSTS_DIR, 'material_prices.json');
-  const overheadPath = options.overheadPath || path.join(COSTS_DIR, 'overhead.json');
+  const cfg = getConfig();
+  const cfgPaths = (cfg.cost && cfg.cost.paths) || {};
+  const laborRatesPath = options.laborRatesPath || cfgPaths.laborRatesPath || path.join(COSTS_DIR, 'labor_rates.json');
+  const equipmentCostsPath = options.equipmentCostsPath || cfgPaths.equipmentCostsPath || path.join(COSTS_DIR, 'equipment_costs.json');
+  const materialPricesPath = options.materialPricesPath || cfgPaths.materialPricesPath || path.join(COSTS_DIR, 'material_prices.json');
+  const overheadPath = options.overheadPath || cfgPaths.overheadPath || path.join(COSTS_DIR, 'overhead.json');
 
   const laborRates = readJsonRequired(laborRatesPath);
   const equipmentCosts = readJsonRequired(equipmentCostsPath);

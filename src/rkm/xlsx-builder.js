@@ -2,6 +2,7 @@
 
 const ExcelJS = require('exceljs');
 const rates = require('../../data/rkm_rates.json');
+const { getConfig } = require('../config');
 
 const YELLOW_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
 const HEADER_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
@@ -76,7 +77,7 @@ function buildTitleSheet(wb, product, geometry, displayProduct, unitLabel) {
   const ws = wb.addWorksheet('Титульный лист');
   setColWidths(ws, [35, 80]);
 
-  const company = rates.company;
+  const company = getConfig().company;
   const companyBlock = `${company.name}  \nЮр.адрес: ${company.address}  \nИНН: ${company.INN}, КПП: ${company.KPP}  \nР/счет: ${company.rs}, в ${company.bank}  \nК/счет: ${company.ks}, БИК: ${company.BIK}  \nТел.: ${company.tel}, Email: ${company.email}`;
 
   ws.getCell('B1').value = companyBlock;
@@ -851,12 +852,13 @@ function buildTransportSheet(wb, product, oh, isLong) {
   setColWidths(ws, [50, 22, 40, 15, 15, 15, 15, 15, 15, 15]);
 
   const tr = (product.rkm && product.rkm.transport) || {};
-  const distance = tr.distance_km || 940;
-  const tariff = tr.tariff_rub_km || 120;
-  const trips = tr.trips || 1;
-  const loading = tr.loading || 25000;
-  const unloading = tr.unloading || 35000;
-  const insurance_pct = tr.insurance_pct || 0.005;
+  const logisticsDefaults = getConfig().rkm.logisticsDefaults || {};
+  const distance = tr.distance_km ?? logisticsDefaults.distance_km ?? 940;
+  const tariff = tr.tariff_rub_km ?? logisticsDefaults.tariff_rub_km ?? 120;
+  const trips = tr.trips ?? logisticsDefaults.trips ?? 1;
+  const loading = tr.loading ?? logisticsDefaults.loading ?? 25000;
+  const unloading = tr.unloading ?? logisticsDefaults.unloading ?? 35000;
+  const insurance_pct = tr.insurance_pct ?? logisticsDefaults.insurance_pct ?? 0.005;
 
   // Row 1: merged
   mergeCells(ws, 'A1:J1');
