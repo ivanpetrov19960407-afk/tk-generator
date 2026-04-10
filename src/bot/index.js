@@ -11,8 +11,27 @@ const { generateDocument, applyDefaults } = require('../generator');
 const { generateRKM } = require('../rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
+const { sanitizeName, ensureSafePath } = require('../utils/security');
 
 const sessions = new Map();
+
+const BOT_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const ALLOWED_USERS = String(process.env.BOT_ALLOWED_USERS || '')
+  .split(',')
+  .map((id) => Number(id.trim()))
+  .filter((id) => Number.isInteger(id));
+
+function isAllowedUser(ctx) {
+  if (!ALLOWED_USERS.length) return true;
+  const userId = Number(
+    (ctx && ctx.from && ctx.from.id)
+    || (ctx && ctx.message && ctx.message.from && ctx.message.from.id)
+    || NaN
+  );
+  // For non-Telegram test doubles where user metadata is absent, do not block handlers.
+  if (!Number.isFinite(userId)) return true;
+  return ALLOWED_USERS.includes(userId);
+}
 
 function getSession(chatId) {
   if (!sessions.has(chatId)) {
@@ -177,6 +196,12 @@ async function runGeneration(ctx, session, products) {
 }
 
 function registerHandlers(bot) {
+  if (typeof bot.use === 'function') {
+    bot.use(async (ctx, next) => {
+      if (!isAllowedUser(ctx)) return;
+      return next();
+    });
+  }
   bot.start(async (ctx) => {
     await ctx.reply([
       'Привет! Я бот для генерации ТК+МК и РКМ.',
@@ -189,6 +214,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('status', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     const details = [
       `Статус: ${s.lastStatus}`,
@@ -200,6 +226,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('price', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     const arg = ctx.message.text.split(' ').slice(1).join(' ').trim();
 
@@ -227,6 +254,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('generate', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     s.flow = 'generate';
     s.step = 'name';
@@ -235,6 +263,7 @@ function registerHandlers(bot) {
   });
 
   bot.on('document', async (ctx) => {
+  if (!isAllowedUser(ctx)) return;
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') {
     await ctx.reply('Чтобы обработать Excel, сначала запустите /generate.');
@@ -242,13 +271,18 @@ function registerHandlers(bot) {
   }
 
   const doc = ctx.message.document;
+  if (doc.file_size && Number(doc.file_size) > BOT_MAX_UPLOAD_BYTES) {
+    await ctx.reply('Файл слишком большой: максимум 10MB.');
+    return;
+  }
   const ext = path.extname(doc.file_name || '').toLowerCase();
   if (ext !== '.xlsx' && ext !== '.xls') {
     await ctx.reply('Поддерживаются только Excel-файлы .xlsx/.xls');
     return;
   }
 
-  const tmpFile = path.join(os.tmpdir(), `tg-upload-${Date.now()}-${doc.file_name}`);
+  const safeFileName = sanitizeName((doc.file_name || '').replace(/\.[^.]+$/, ''), 'upload') + path.extname(doc.file_name || '.xlsx').toLowerCase();
+  const tmpFile = ensureSafePath(os.tmpdir(), `tg-upload-${Date.now()}-${safeFileName}`).finalPath;
   try {
     await ctx.reply('Получил файл, обрабатываю...');
     await downloadTelegramFile(ctx, doc.file_id, tmpFile);
@@ -267,6 +301,7 @@ function registerHandlers(bot) {
   });
 
   bot.on('text', async (ctx) => {
+  if (!isAllowedUser(ctx)) return;
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') return;
 

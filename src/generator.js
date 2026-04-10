@@ -18,6 +18,7 @@ const { logger } = require('./logger');
 const { Profiler } = require('./utils/perf');
 const { hashInput, createManifest } = require('./utils/cache');
 const { getDefaultDensityByMaterialType } = require('./plugin-registry');
+const { sanitizeName, ensureSafePath } = require('./utils/security');
 
 
 function normalizeFormats(formatOption) {
@@ -151,8 +152,10 @@ async function generateDocument(product, outputDir, options = {}) {
           return Packer.toBuffer(doc);
         });
 
-    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
-    const filePath = path.join(outputDir, filename);
+    const safeShortName = sanitizeName(product.short_name || `pos_${String(product.tk_number).padStart(2, '0')}`);
+    const safeTexture = sanitizeName(product.texture || 'texture');
+    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${safeShortName}_${safeTexture}.docx`;
+    const filePath = ensureSafePath(outputDir, filename).finalPath;
     await profiler.measure('tk.writeDocx', async () => fs.writeFileSync(filePath, docxBuffer));
     files.push({ format: 'docx', filePath, filename, sizeKB: Math.round(docxBuffer.length / 1024) });
   }
@@ -167,8 +170,10 @@ async function generateDocument(product, outputDir, options = {}) {
       product,
       warnings: allWarnings
     }, options));
-    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.pdf`;
-    const filePath = path.join(outputDir, filename);
+    const safeShortName = sanitizeName(product.short_name || `pos_${String(product.tk_number).padStart(2, '0')}`);
+    const safeTexture = sanitizeName(product.texture || 'texture');
+    const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${safeShortName}_${safeTexture}.pdf`;
+    const filePath = ensureSafePath(outputDir, filename).finalPath;
     await profiler.measure('tk.writePdf', async () => fs.writeFileSync(filePath, pdfBuffer));
     files.push({ format: 'pdf', filePath, filename, sizeKB: Math.round(pdfBuffer.length / 1024) });
   }
@@ -214,8 +219,10 @@ async function generateBatch(products, outputDir, options = {}) {
       const formats = normalizeFormats(options.format);
       const expectedFiles = formats.map((format) => {
         const ext = format === 'pdf' ? 'pdf' : 'docx';
-        const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.${ext}`;
-        return { format, filename, filePath: path.join(outputDir, filename) };
+        const safeShortName = sanitizeName(product.short_name || `pos_${String(product.tk_number).padStart(2, '0')}`);
+        const safeTexture = sanitizeName(product.texture || 'texture');
+        const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${safeShortName}_${safeTexture}.${ext}`;
+        return { format, filename, filePath: ensureSafePath(outputDir, filename).finalPath };
       });
       const cacheKey = `tk:${product.tk_number}:${product.short_name}:${product.texture}:${formats.join('+')}`;
       const inputHash = hashInput({ product, validation: options.validation || {} });

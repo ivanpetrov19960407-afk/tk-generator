@@ -56,10 +56,12 @@ const DEFAULT_CONFIG = {
   },
   auth: {
     enabled: false,
-    accessTokenTtlSec: 900,
+    accessTokenTtlSec: 3600,
     refreshTokenTtlSec: 604800,
     jwtSecret: ''
   },
+  plugins_enabled: false,
+  allowed_plugins: ['default-materials'],
   autoUpdate: {
     enabled: true,
     checkInterval: '24h'
@@ -144,6 +146,7 @@ function applyEnvOverrides(config, env = process.env) {
     out.auth.enabled = ['1', 'true', 'yes', 'on'].includes(String(env.TKG_AUTH_ENABLED).toLowerCase());
   }
   if (env.TKG_AUTH_ACCESS_TTL_SEC) out.auth.accessTokenTtlSec = Number(env.TKG_AUTH_ACCESS_TTL_SEC);
+  if (env.TKG_PLUGINS_ENABLED != null) out.plugins_enabled = ['1', 'true', 'yes', 'on'].includes(String(env.TKG_PLUGINS_ENABLED).toLowerCase());
   if (env.TKG_AUTH_REFRESH_TTL_SEC) out.auth.refreshTokenTtlSec = Number(env.TKG_AUTH_REFRESH_TTL_SEC);
   if (env.TKG_AUTH_JWT_SECRET) out.auth.jwtSecret = env.TKG_AUTH_JWT_SECRET;
 
@@ -187,6 +190,12 @@ function validateConfig(config) {
   }
   if (config.auth && config.auth.refreshTokenTtlSec != null && !Number.isFinite(Number(config.auth.refreshTokenTtlSec))) {
     throw new Error('config.auth.refreshTokenTtlSec должен быть числом.');
+  }
+  if (config.plugins_enabled != null && typeof config.plugins_enabled !== 'boolean') {
+    throw new Error('config.plugins_enabled должен быть boolean.');
+  }
+  if (config.allowed_plugins != null && !Array.isArray(config.allowed_plugins)) {
+    throw new Error('config.allowed_plugins должен быть массивом строк.');
   }
   if (config.autoUpdate != null && !isObject(config.autoUpdate)) {
     throw new Error('config.autoUpdate должен быть объектом.');

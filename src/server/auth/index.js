@@ -17,12 +17,49 @@ function normalizeRole(role) {
 function createAuth(config, repository) {
   const authConfig = (config && config.auth) || {};
   const enabled = Boolean(authConfig.enabled);
-  const accessTtlSec = Number(authConfig.accessTokenTtlSec || 15 * 60);
+  const accessTtlSec = Number(authConfig.accessTokenTtlSec || 60 * 60);
   const refreshTtlSec = Number(authConfig.refreshTokenTtlSec || 7 * 24 * 60 * 60);
 
   const jwtSecret = authConfig.jwtSecret || process.env.TKG_AUTH_JWT_SECRET || null;
   if (enabled && (!jwtSecret || jwtSecret.length < 16)) {
     throw new Error('Auth enabled, but JWT secret is missing or too short. Set config.auth.jwtSecret or TKG_AUTH_JWT_SECRET.');
+  }
+
+
+  const loginRateLimit = {
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000
+  };
+  const loginAttempts = new Map();
+
+  function checkRateLimit(ip) {
+    if (!ip) return { blocked: false };
+    const now = Date.now();
+    const rec = loginAttempts.get(ip);
+    if (!rec) return { blocked: false };
+    if (now - rec.firstAttemptAt > loginRateLimit.windowMs) {
+      loginAttempts.delete(ip);
+      return { blocked: false };
+    }
+    if (rec.count >= loginRateLimit.maxAttempts) return { blocked: true };
+    return { blocked: false };
+  }
+
+  function registerFailedAttempt(ip) {
+    if (!ip) return;
+    const now = Date.now();
+    const rec = loginAttempts.get(ip);
+    if (!rec || now - rec.firstAttemptAt > loginRateLimit.windowMs) {
+      loginAttempts.set(ip, { count: 1, firstAttemptAt: now });
+      return;
+    }
+    rec.count += 1;
+    loginAttempts.set(ip, rec);
+  }
+
+  function clearAttempts(ip) {
+    if (!ip) return;
+    loginAttempts.delete(ip);
   }
 
   function base64urlEncode(input) {
@@ -63,14 +100,14 @@ function createAuth(config, repository) {
 
   function hashPassword(password) {
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.scryptSync(String(password), salt, 64).toString('hex');
+    const hash = crypto.scryptSync(String(password), salt, 64, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 }).toString('hex');
     return `scrypt$${salt}$${hash}`;
   }
 
   function verifyPassword(password, encodedHash) {
     const [algo, salt, hash] = String(encodedHash || '').split('$');
     if (algo !== 'scrypt' || !salt || !hash) return false;
-    const candidate = crypto.scryptSync(String(password), salt, 64).toString('hex');
+    const candidate = crypto.scryptSync(String(password), salt, 64, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 }).toString('hex');
     return crypto.timingSafeEqual(Buffer.from(candidate, 'hex'), Buffer.from(hash, 'hex'));
   }
 
@@ -161,14 +198,24 @@ function createAuth(config, repository) {
     return true;
   }
 
-  async function login(username, password) {
+  async function login(username, password, ipAddress) {
     if (!enabled) throw new Error('Auth disabled');
+    const rate = checkRateLimit(ipAddress);
+    if (rate.blocked) return null;
+
     const user = repository.getUserByUsername(username);
-    if (!user || !user.is_active) return null;
+    if (!user || !user.is_active) {
+      registerFailedAttempt(ipAddress);
+      return null;
+    }
 
     const ok = verifyPassword(password, user.password_hash);
-    if (!ok) return null;
+    if (!ok) {
+      registerFailedAttempt(ipAddress);
+      return null;
+    }
 
+    clearAttempts(ipAddress);
     repository.touchUserLogin(user.id);
 
     return {

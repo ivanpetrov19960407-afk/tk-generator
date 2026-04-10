@@ -17,6 +17,10 @@ const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
 const { createAuth } = require('./auth');
 
+const MAX_JSON_BODY_BYTES = 5 * 1024 * 1024;
+const MAX_EXCEL_UPLOAD_BYTES = 10 * 1024 * 1024;
+const GENERATION_TIMEOUT_MS = 30 * 1000;
+
 function parseProductsPayload(body) {
   if (Array.isArray(body)) return body;
   if (body && Array.isArray(body.products)) return body.products;
@@ -91,10 +95,20 @@ function parseExcelProductsFromBuffer(buffer, mappingArg) {
   }).filter(Boolean);
 }
 
-function readBody(req) {
+function readBody(req, maxBytes = MAX_JSON_BODY_BYTES) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', (c) => chunks.push(c));
+    let total = 0;
+    req.on('data', (c) => {
+      total += c.length;
+      if (total > maxBytes) {
+        const err = new Error('Payload too large');
+        err.statusCode = 413;
+        req.destroy(err);
+        return;
+      }
+      chunks.push(c);
+    });
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
@@ -355,11 +369,11 @@ function createSwaggerHtml() {
 <head>
   <meta charset="utf-8" />
   <title>TK Generator API Docs</title>
-  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <link rel="stylesheet" href="/swagger-ui.css" />
 </head>
 <body>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="/swagger-ui-bundle.js"></script>
   <script>
     window.ui = SwaggerUIBundle({
       url: '/api/docs/spec.json',
@@ -376,6 +390,17 @@ async function createHandler(req, res, deps = {}) {
   const auth = deps.auth;
 
   if (deps.bootstrapPromise) await deps.bootstrapPromise;
+
+  const ipAddress = req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null;
+  function enforceContentLengthLimit(maxBytes, action) {
+    const contentLength = Number(req.headers['content-length'] || 0);
+    if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+      repository.saveAuditLog({ action, user: (req.auth && req.auth.user && req.auth.user.username) || req.headers['x-user'] || 'api', details: { contentLength, maxBytes, path: req.url }, ip: ipAddress });
+      sendJson(res, 413, { error: 'Payload too large' });
+      return false;
+    }
+    return true;
+  }
 
   if (req.method === 'GET' && url.pathname === '/api/docs/spec.json') {
     return sendJson(res, 200, createOpenApiSpec());
@@ -397,7 +422,8 @@ async function createHandler(req, res, deps = {}) {
 
   if (req.method === 'POST' && url.pathname === '/api/validate') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
-    const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+    if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+    const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
     const products = parseProductsPayload(body);
     if (!products) return sendJson(res, 400, { valid: false, errors: ['Ожидается массив products или объект { products: [] }'], warnings: [] });
     return sendJson(res, 200, validateBatchInput(products, { unknownUnitPolicy: 'warning' }));
@@ -406,7 +432,8 @@ async function createHandler(req, res, deps = {}) {
   if (req.method === 'POST' && url.pathname === '/api/upload-excel') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     try {
-      const buffer = await readBody(req);
+      if (!enforceContentLengthLimit(MAX_EXCEL_UPLOAD_BYTES, 'security.payload_too_large')) return;
+      const buffer = await readBody(req, MAX_EXCEL_UPLOAD_BYTES);
       const products = parseExcelProductsFromBuffer(buffer, null);
       return sendJson(res, 200, { products });
     } catch (error) {
@@ -417,7 +444,8 @@ async function createHandler(req, res, deps = {}) {
   if (req.method === 'POST' && url.pathname === '/api/generate') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     try {
-      const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+      if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+      const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
       const products = parseProductsPayload(body);
       if (!products) return sendJson(res, 400, { error: 'Ожидается массив products или объект { products: [] }' });
 
@@ -429,10 +457,19 @@ async function createHandler(req, res, deps = {}) {
       try {
         const normalizedProducts = products.map((p) => applyDefaults(p));
         const startedAt = Date.now();
-        const tkResults = await generateBatch(normalizedProducts, tmpDir, { validation: { unknownUnitPolicy: 'warning' }, format: formats });
-        for (const product of normalizedProducts) {
-          await generateRKM(product, tmpDir, { optimize: false });
-        }
+        const generationPromise = (async () => {
+          const tkResults = await generateBatch(normalizedProducts, tmpDir, { validation: { unknownUnitPolicy: 'warning' }, format: formats });
+          for (const product of normalizedProducts) {
+            await generateRKM(product, tmpDir, { optimize: false });
+          }
+          return tkResults;
+        })();
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => {
+          const err = new Error('Generation timeout exceeded');
+          err.statusCode = 504;
+          reject(err);
+        }, GENERATION_TIMEOUT_MS));
+        const tkResults = await Promise.race([generationPromise, timeoutPromise]);
 
         const failed = tkResults.filter((r) => !r.success).length;
         const generationId = repository.saveGeneration({
@@ -523,16 +560,21 @@ async function createHandler(req, res, deps = {}) {
 
   if (req.method === 'POST' && url.pathname === '/api/auth/login') {
     if (!auth || !auth.enabled) return sendJson(res, 404, { error: 'Auth disabled' });
-    const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
-    const result = await auth.login(body.username, body.password);
-    if (!result) return sendJson(res, 401, { error: 'Invalid credentials' });
+    if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+    const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
+    const result = await auth.login(body.username, body.password, ipAddress);
+    if (!result) {
+      repository.saveAuditLog({ action: 'auth.login.failed', user: String(body.username || ''), details: { path: req.url }, ip: ipAddress });
+      return sendJson(res, 401, { error: 'Invalid credentials' });
+    }
     return sendJson(res, 200, result);
   }
 
   if (req.method === 'POST' && url.pathname === '/api/auth/register') {
     if (!auth || !auth.enabled) return sendJson(res, 404, { error: 'Auth disabled' });
     if (!(await auth.requireRole(req, res, sendJson, 'admin'))) return;
-    const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+    if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+    const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
     try {
       const user = await auth.register(req.auth.user, body);
       return sendJson(res, 201, { user });
@@ -574,6 +616,21 @@ async function createHandler(req, res, deps = {}) {
     const filters = parseAnalyticsFilters(url);
     const items = repository.getAnalyticsTextures(filters);
     return sendJson(res, 200, { filters, items });
+  }
+
+
+  if (req.method === 'GET' && url.pathname === '/swagger-ui.css') {
+    const file = path.resolve(process.cwd(), 'public', 'swagger-ui.css');
+    res.writeHead(200, { 'Content-Type': 'text/css; charset=utf-8' });
+    res.end(fs.readFileSync(file));
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/swagger-ui-bundle.js') {
+    const file = path.resolve(process.cwd(), 'public', 'swagger-ui-bundle.js');
+    res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
+    res.end(fs.readFileSync(file));
+    return;
   }
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {

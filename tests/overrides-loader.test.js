@@ -3,10 +3,11 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const { buildOperations } = require('../src/operations');
 const { loadOverridesFile } = require('../src/utils/overrides-loader');
+
+fs.mkdirSync(path.resolve(process.cwd(), 'overrides'), { recursive: true });
 
 function makeProduct(extra = {}) {
   return {
@@ -24,7 +25,7 @@ function makeProduct(extra = {}) {
 }
 
 (function testOverridesApplyReplaceAndDropAndPriority() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-overrides-'));
+  const dir = fs.mkdtempSync(path.join(path.resolve(process.cwd(), 'overrides'), 'tk-overrides-'));
   const filePath = path.join(dir, 'overrides.json');
 
   fs.writeFileSync(filePath, JSON.stringify({
@@ -64,7 +65,7 @@ function makeProduct(extra = {}) {
 })();
 
 (function testInvalidJsonErrorContainsPath() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-overrides-invalid-'));
+  const dir = fs.mkdtempSync(path.join(path.resolve(process.cwd(), 'overrides'), 'tk-overrides-invalid-'));
   const filePath = path.join(dir, 'broken.json');
   fs.writeFileSync(filePath, '{"version": 1,', 'utf8');
 
@@ -75,7 +76,7 @@ function makeProduct(extra = {}) {
 })();
 
 (function testUnknownOperationWarning() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-overrides-warn-'));
+  const dir = fs.mkdtempSync(path.join(path.resolve(process.cwd(), 'overrides'), 'tk-overrides-warn-'));
   const filePath = path.join(dir, 'warn.json');
 
   fs.writeFileSync(filePath, JSON.stringify({
