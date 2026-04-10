@@ -5,11 +5,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveRuntimeDir } = require('./runtime-paths');
 const { parametrize, TEMPLATE_PRODUCTS } = require('./operations');
 const { buildEquipmentListText, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 
 const sectionsTemplate = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'data', 'sections_template.json'), 'utf8')
+  fs.readFileSync(path.join(resolveRuntimeDir('data'), 'sections_template.json'), 'utf8')
 );
 
 /**

@@ -408,3 +408,23 @@ tk-generator/
 - **Размер выходного файла:** 45–75 КБ
 - **Количество страниц:** 30–65 (зависит от фактуры и объёма текста)
 - **Время генерации:** < 2 секунды на документ
+
+
+## Standalone Windows binary (без Node.js)
+
+Сборка исполняемого файла и ассетов рядом с ним:
+
+```bash
+npm run build:binary
+```
+
+После сборки в `dist/` будут:
+- `tk-generator.exe`
+- папки `data/`, `config/`, `schemas/`, `templates/`
+
+Запуск бинарника:
+
+```bash
+dist/tk-generator.exe --input examples/batch_small.json --output dist/output --rkm
+```
+

@@ -7,12 +7,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveRuntimeDir } = require('./runtime-paths');
 const { calcProductMass, calcBlockMass, calcBatchMass, analyzeEquipment } = require('./equipment');
 const { resolveOverridesPath, loadOverridesFile, applyOverridesToOperations, applyManualProductOverrides } = require('./utils/overrides-loader');
 const { formatSupportedTextures } = require('./textures');
 
 const operationsLibrary = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'data', 'operations_library.json'), 'utf8')
+  fs.readFileSync(path.join(resolveRuntimeDir('data'), 'operations_library.json'), 'utf8')
 );
 
 // Known template product dimensions per texture type (for replacement)
