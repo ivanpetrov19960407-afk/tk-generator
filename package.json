@@ -41,8 +41,8 @@
     "xlsx": "^0.18.5",
     "jszip": "^3.10.1",
     "telegraf": "file:vendor/telegraf",
-    "pdf-parse": "file:vendor/pdf-parse",
-    "pdfkit": "file:vendor/pdfkit"
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.15.0"
   },
   "bin": {
     "tk-generator": "src/index.js"
