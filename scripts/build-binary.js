@@ -37,60 +37,12 @@ function copyDirRecursive(src, dest) {
   }
 }
 
-function copyIfExists(src, dest) {
-  if (!fs.existsSync(src)) return;
-  const stat = fs.statSync(src);
-  if (stat.isDirectory()) {
-    copyDirRecursive(src, dest);
-    return;
-  }
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
-}
-
-function includeNativeAddons() {
-  const modulesDir = path.join(ROOT, 'node_modules');
-  const distModulesDir = path.join(DIST_DIR, 'node_modules');
-  const betterSqlite3Src = path.join(modulesDir, 'better-sqlite3');
-  const betterSqlite3Dest = path.join(distModulesDir, 'better-sqlite3');
-
-  if (!fs.existsSync(betterSqlite3Src)) {
-    console.warn('better-sqlite3 is not installed in node_modules, skipping native addon copy');
-    return;
-  }
-
-  fs.mkdirSync(betterSqlite3Dest, { recursive: true });
-
-  for (const relativePath of ['package.json', 'LICENSE', 'README.md', 'binding.gyp']) {
-    copyIfExists(path.join(betterSqlite3Src, relativePath), path.join(betterSqlite3Dest, relativePath));
-  }
-
-  copyIfExists(path.join(betterSqlite3Src, 'lib'), path.join(betterSqlite3Dest, 'lib'));
-  copyIfExists(path.join(betterSqlite3Src, 'deps'), path.join(betterSqlite3Dest, 'deps'));
-  copyIfExists(path.join(betterSqlite3Src, 'src'), path.join(betterSqlite3Dest, 'src'));
-  copyIfExists(path.join(betterSqlite3Src, 'build'), path.join(betterSqlite3Dest, 'build'));
-  copyIfExists(path.join(betterSqlite3Src, 'prebuilds'), path.join(betterSqlite3Dest, 'prebuilds'));
-
-  // Bun standalone needs explicit JS entrypoint for externalized native package.
-  const shimPath = path.join(distModulesDir, 'better-sqlite3.js');
-  fs.writeFileSync(shimPath, "module.exports = require('./better-sqlite3');\n", 'utf8');
-}
-
 function main() {
   fs.rmSync(DIST_DIR, { recursive: true, force: true });
   fs.mkdirSync(DIST_DIR, { recursive: true });
 
   console.log('Building Windows standalone binary with Bun...');
-  run('bun', [
-    'build',
-    './src/index.js',
-    '--compile',
-    '--target=bun-windows-x64',
-    '--external',
-    'better-sqlite3',
-    '--outfile',
-    OUTPUT_EXE
-  ]);
+  run('bun', ['build', './src/index.js', '--compile', '--target=bun-windows-x64', '--outfile', OUTPUT_EXE]);
 
   console.log('Copying runtime assets next to executable...');
   for (const dirName of ASSET_DIRS) {
@@ -99,9 +51,6 @@ function main() {
       copyDirRecursive(src, path.join(DIST_DIR, dirName));
     }
   }
-
-  console.log('Copying native addons...');
-  includeNativeAddons();
 
   console.log(`Done: ${OUTPUT_EXE}`);
 }
