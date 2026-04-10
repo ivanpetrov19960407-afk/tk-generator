@@ -5,16 +5,10 @@
  * product-specific parameters (dimensions, material, quantities, etc.)
  */
 
-const fs = require('fs');
-const path = require('path');
-const { resolveRuntimeDir } = require('./runtime-paths');
 const { calcProductMass, calcBlockMass, calcBatchMass, analyzeEquipment } = require('./equipment');
 const { resolveOverridesPath, loadOverridesFile, applyOverridesToOperations, applyManualProductOverrides } = require('./utils/overrides-loader');
 const { formatSupportedTextures } = require('./textures');
-
-const operationsLibrary = JSON.parse(
-  fs.readFileSync(path.join(resolveRuntimeDir('data'), 'operations_library.json'), 'utf8')
-);
+const { getOperationsTemplate, applyOperationPlugins } = require('./plugin-registry');
 
 // Known template product dimensions per texture type (for replacement)
 const TEMPLATE_PRODUCTS = {
@@ -445,7 +439,7 @@ function getProductTypeName(product) {
  */
 function buildOperations(product, options = {}) {
   const textureKey = product.texture;
-  const templateOps = operationsLibrary[textureKey];
+  const templateOps = applyOperationPlugins(getOperationsTemplate(textureKey), textureKey);
 
   if (!templateOps) {
     throw new Error(`Неизвестный тип фактуры: "${textureKey}". Доступные: ${formatSupportedTextures()}`);

@@ -1,7 +1,7 @@
 'use strict';
 
 const { normalizeUnit } = require('../utils/unit-normalizer');
-const { SUPPORTED_TEXTURES, formatSupportedTextures } = require('../textures');
+const { getSupportedTextures, formatSupportedTextures } = require('../textures');
 
 function isPositiveNumber(v) {
   return typeof v === 'number' && Number.isFinite(v) && v > 0;
@@ -50,7 +50,7 @@ function validateProduct(product, options = {}) {
 
   if (!product.texture || typeof product.texture !== 'string') {
     errors.push('[product] /texture: обязательное строковое поле');
-  } else if (!SUPPORTED_TEXTURES.includes(product.texture)) {
+  } else if (!getSupportedTextures().includes(product.texture)) {
     errors.push(`Неизвестная фактура: "${product.texture}". Допустимые: ${formatSupportedTextures()}`);
   }
 

@@ -1,16 +1,8 @@
 'use strict';
 
-const SUPPORTED_TEXTURES = Object.freeze([
-  'лощение',
-  'рельефная_матовая',
-  'бучардирование_лощение'
-]);
-
-function formatSupportedTextures() {
-  return SUPPORTED_TEXTURES.join(', ');
-}
+const { getSupportedTextures, formatSupportedTextures } = require('./plugin-registry');
 
 module.exports = {
-  SUPPORTED_TEXTURES,
+  getSupportedTextures,
   formatSupportedTextures
 };

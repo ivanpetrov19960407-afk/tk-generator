@@ -18,13 +18,14 @@ const { nowMs } = require('./utils/perf');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
 const { write1CXml, write1CCsv } = require('./export-1c');
 const { normalizeUnit } = require('./utils/unit-normalizer');
-const { SUPPORTED_TEXTURES } = require('./textures');
+const { getSupportedTextures } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
 const { loadConfig, getConfig } = require('./config');
 const { generateSummaryReport } = require('./summary-report');
 const { configureLogger, logger, LEVELS } = require('./logger');
 const { createRepository } = require('./db/repository');
 const { checkForStandaloneUpdate, performStandaloneSelfUpdate } = require('./self-update');
+const { loadPlugins } = require('./plugin-loader');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -33,7 +34,7 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv', 'watch', 'check-update', 'self-update'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv', 'watch', 'check-update', 'self-update', 'list-plugins'],
   default: {
     output: 'output/',
     rkm: false,
@@ -84,6 +85,8 @@ function printHelp() {
       --watch                   Режим разработки: следить за файлами и перегенерировать 1 тестовую позицию
       --check-update            Проверить наличие новой версии standalone
       --self-update             Скачать свежий standalone-бинарник из GitHub Releases
+      --list-plugins            Показать список найденных плагинов и их статус
+      --disable-plugin <name>   Отключить плагин (можно указывать несколько раз или через запятую)
       --history                 Показать историю генераций (последние 20 запусков)
       --history-detail <id>     Показать детали запуска по ID
       --stats                   Показать агрегированную статистику генераций
@@ -112,7 +115,7 @@ function printHelp() {
   tk-generator --input examples/batch_small.json --export-1c --export-1c-csv
 
 Поддерживаемые фактуры:
-${SUPPORTED_TEXTURES.map(t => `  - ${t}`).join('\n')}
+${getSupportedTextures().map(t => `  - ${t}`).join('\n')}
 `);
 }
 
@@ -378,6 +381,27 @@ function createWatchTargets(inputPath) {
 
 function formatElapsedMs(ms) {
   return `${Math.round(ms)}мс`;
+}
+
+
+function normalizeDisabledPlugins(value) {
+  if (value == null) return [];
+  const raw = Array.isArray(value) ? value : [value];
+  return raw
+    .flatMap((item) => String(item).split(','))
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function printPluginReport(report) {
+  if (!report || !Array.isArray(report.report) || report.report.length === 0) {
+    console.log('Плагины не найдены.');
+    return;
+  }
+  for (const row of report.report) {
+    const reason = row.reason ? ` (${row.reason})` : '';
+    console.log(`- ${row.name}: ${row.status}${reason}`);
+  }
 }
 
 async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
@@ -727,6 +751,20 @@ async function main() {
 
   if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
     throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
+  }
+
+  const pluginReport = loadPlugins({
+    pluginsDir: path.resolve(process.cwd(), 'plugins'),
+    disabledPlugins: normalizeDisabledPlugins(args['disable-plugin'])
+  });
+  if (pluginReport.errors.length > 0) {
+    pluginReport.errors.forEach((e) => logger.error({ plugin: e.name, error: e.error }, 'Ошибка загрузки плагина'));
+    throw new Error('Не удалось загрузить один или несколько плагинов');
+  }
+
+  if (args['list-plugins']) {
+    printPluginReport(pluginReport);
+    return;
   }
 
   if (args.history || args['history-detail'] || args.stats) {
