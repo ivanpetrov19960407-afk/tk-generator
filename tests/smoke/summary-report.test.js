@@ -40,6 +40,9 @@ const batch = require('../../examples/batch_small.json');
 
     const parsedPdf = await pdfParse(fs.readFileSync(pdfFile.file));
     assert(parsedPdf.numpages >= 1, 'SUMMARY pdf should have pages');
+    const normalizedText = String(parsedPdf.text || '').replace(/\s+/g, ' ').trim();
+    assert(/[А-Яа-яЁё]/.test(normalizedText), 'SUMMARY pdf should contain Cyrillic text');
+    assert(normalizedText.includes('Сводный отчёт ТК+МК'), 'SUMMARY pdf should contain expected heading');
 
     console.log(`Summary smoke test passed: ${path.basename(xlsxFile.file)} + ${path.basename(pdfFile.file)}`);
   } finally {

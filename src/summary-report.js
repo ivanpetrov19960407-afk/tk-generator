@@ -9,7 +9,7 @@ const { mapOperations } = require('./rkm/operations-mapper');
 const { calcMaterials } = require('./rkm/materials-calc');
 const { calcOverheads } = require('./rkm/overhead-calc');
 const { calcTransport } = require('./rkm/rkm-generator');
-const { resolveFontPath } = require('./pdf-builder');
+const { applyDefaultFonts, addHeaderFooter, drawTable, cleanMarkdown } = require('./pdf-utils');
 const {
   detectAreaMode,
   buildSizeBasedOverrides,
@@ -27,35 +27,66 @@ function calcProductSummary(product) { const workProduct = applyAreaModeAdjustme
 function normalizeReportFormats(formatOption) { const raw = Array.isArray(formatOption) ? formatOption.join(',') : (formatOption || 'xlsx'); const formats = [...new Set(String(raw).split(',').map((f) => f.trim().toLowerCase()).filter(Boolean))]; const allowed = new Set(['xlsx', 'pdf']); const invalid = formats.filter((f) => !allowed.has(f)); if (invalid.length) throw new Error(`Неподдерживаемый формат отчёта: ${invalid.join(', ')}`); return formats.length ? formats : ['xlsx']; }
 
 async function generateSummaryReportPdf(calculations, tkStatusByNumber, outputDir, options = {}) {
-  const doc = new PDFDocument({ size: 'A4', margins: { top: 40, left: 40, right: 40, bottom: 40 }, bufferPages: true });
+  const doc = new PDFDocument({ size: 'A4', margins: { top: 55, left: 40, right: 40, bottom: 42 }, bufferPages: true });
   const chunks = [];
   doc.on('data', (c) => chunks.push(c));
-  const fontPath = resolveFontPath(options.fontPath);
-  if (fontPath) doc.font(fontPath);
+  const fonts = applyDefaultFonts(doc, options);
 
-  doc.fontSize(14).text('Сводный отчёт ТК+МК');
-  doc.fontSize(10).text(`Дата: ${new Date().toISOString().slice(0, 10)}`);
+  doc.font(fonts.bold).fontSize(15).text('Сводный отчёт ТК+МК');
+  doc.font(fonts.regular).fontSize(10).text(`Дата формирования: ${new Date().toISOString().slice(0, 10)}`);
   doc.moveDown(0.6);
 
-  doc.fontSize(12).text('Реестр ТК');
-  calculations.forEach(({ workProduct }) => {
-    const d = workProduct.dimensions || {};
-    doc.fontSize(10).text(`#${workProduct.tk_number || ''} ${workProduct.name || ''} (${d.length || 0}×${d.width || 0}×${d.thickness || 0}) — ${tkStatusByNumber.get(String(workProduct.tk_number)) || 'Не запускалось'}`);
+  doc.font(fonts.bold).fontSize(12).text('Реестр ТК');
+  drawTable(doc, {
+    fonts,
+    columns: [
+      { key: 'tk', width: 42 },
+      { key: 'name', width: 166 },
+      { key: 'dimensions', width: 110 },
+      { key: 'material', width: 86 },
+      { key: 'status', width: 111 }
+    ],
+    header: ['№', 'Наименование', 'Размеры, мм', 'Материал', 'Статус'],
+    rows: calculations.map(({ workProduct }) => {
+      const d = workProduct.dimensions || {};
+      return {
+        tk: String(workProduct.tk_number || ''),
+        name: cleanMarkdown(workProduct.name || ''),
+        dimensions: `${d.length || 0}×${d.width || 0}×${d.thickness || 0}`,
+        material: cleanMarkdown((workProduct.material && (workProduct.material.name || workProduct.material.type)) || ''),
+        status: cleanMarkdown(tkStatusByNumber.get(String(workProduct.tk_number)) || 'Не запускалось')
+      };
+    })
   });
 
-  doc.addPage();
-  doc.fontSize(12).text('Сводка цен');
-  calculations.forEach(({ workProduct, calcPrice, controlUnit }) => {
-    const controlPrice = Number(workProduct.control_price) || 0;
-    const unit = controlUnit === 'm2' ? 'м²' : controlUnit === 'mp' ? 'м.п.' : 'шт';
-    doc.fontSize(10).text(`#${workProduct.tk_number || ''} ${workProduct.name || ''} — ${unit}: контрольная ${controlPrice.toFixed(2)}, расчётная ${Number(calcPrice || 0).toFixed(2)}`);
+  doc.moveDown(0.5);
+  doc.font(fonts.bold).fontSize(12).text('Сводка цен');
+  drawTable(doc, {
+    fonts,
+    columns: [
+      { key: 'tk', width: 42 },
+      { key: 'name', width: 196 },
+      { key: 'unit', width: 46 },
+      { key: 'control', width: 92 },
+      { key: 'calculated', width: 96 },
+      { key: 'deviation', width: 43 }
+    ],
+    header: ['№', 'Наименование', 'Ед.', 'Контрольная', 'Расчётная', 'Δ%'],
+    rows: calculations.map(({ workProduct, calcPrice, controlUnit }) => {
+      const controlPrice = Number(workProduct.control_price) || 0;
+      const deviation = controlPrice > 0 ? ((Number(calcPrice || 0) - controlPrice) / controlPrice) * 100 : 0;
+      return {
+        tk: String(workProduct.tk_number || ''),
+        name: cleanMarkdown(workProduct.name || ''),
+        unit: controlUnit === 'm2' ? 'м²' : controlUnit === 'mp' ? 'м.п.' : 'шт',
+        control: controlPrice.toFixed(2),
+        calculated: Number(calcPrice || 0).toFixed(2),
+        deviation: `${deviation.toFixed(1)}%`
+      };
+    })
   });
 
-  const range = doc.bufferedPageRange();
-  for (let i = 0; i < range.count; i++) {
-    doc.switchToPage(i);
-    doc.fontSize(8).text(`Стр. ${i + 1} из ${range.count}`, 40, doc.page.height - 28, { align: 'center' });
-  }
+  addHeaderFooter(doc, { getHeaderText: () => 'Сводный отчёт ТК+МК' });
 
   fs.mkdirSync(outputDir, { recursive: true });
   const date = new Date().toISOString().slice(0, 10);
