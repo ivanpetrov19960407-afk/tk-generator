@@ -10,6 +10,7 @@ const JSZip = require('jszip');
 const { generateBatch, applyDefaults, normalizeFormats } = require('../generator');
 const { generateRKM } = require('../rkm/rkm-generator');
 const { validateBatchInput } = require('../validation/validator');
+const { calculateTotalCost } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
@@ -102,6 +103,21 @@ function readBody(req) {
 function sendJson(res, status, data) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(data));
+}
+
+function parseAnalyticsFilters(url) {
+  const from = url.searchParams.get('from') || null;
+  const to = url.searchParams.get('to') || null;
+  const material = url.searchParams.get('material') || null;
+  const texture = url.searchParams.get('texture') || null;
+  const groupByRaw = String(url.searchParams.get('groupBy') || 'day').toLowerCase();
+  return {
+    from,
+    to,
+    material,
+    texture,
+    groupBy: groupByRaw === 'week' ? 'week' : 'day'
+  };
 }
 
 function getPublicConfig(config) {
@@ -221,6 +237,42 @@ function createOpenApiSpec() {
           responses: {
             200: { description: 'Данные пользователя.' },
             401: { description: 'Не аутентифицирован.' }
+          }
+        }
+      },
+      '/api/analytics/summary': {
+        get: {
+          summary: 'Сводная аналитика по себестоимости.',
+          tags: ['Analytics'],
+          responses: {
+            200: { description: 'Сводная статистика.' }
+          }
+        }
+      },
+      '/api/analytics/cost-trends': {
+        get: {
+          summary: 'Тренд себестоимости по дням/неделям.',
+          tags: ['Analytics'],
+          responses: {
+            200: { description: 'Ряд для графика тренда.' }
+          }
+        }
+      },
+      '/api/analytics/materials': {
+        get: {
+          summary: 'Топ материалов по количеству и стоимости.',
+          tags: ['Analytics'],
+          responses: {
+            200: { description: 'Статистика по материалам.' }
+          }
+        }
+      },
+      '/api/analytics/textures': {
+        get: {
+          summary: 'Распределение по фактурам.',
+          tags: ['Analytics'],
+          responses: {
+            200: { description: 'Статистика по фактурам.' }
           }
         }
       }
@@ -394,12 +446,19 @@ async function createHandler(req, res, deps = {}) {
         });
         normalizedProducts.forEach((product, index) => {
           const tkResult = tkResults[index];
+          let totalCost = 0;
+          try {
+            totalCost = Number(calculateTotalCost(product).total_cost || 0);
+          } catch (error) {
+            totalCost = 0;
+          }
           repository.saveGenerationItem({
             generation_id: generationId,
             position: Number(product.tk_number || index + 1),
             product_name: product.name || null,
             material: product.material && product.material.name ? product.material.name : null,
             texture: product.texture || null,
+            total_cost: totalCost,
             status: tkResult && tkResult.success ? 'success' : 'error',
             error_message: tkResult && !tkResult.success ? tkResult.error : null,
             output_files: tkResult && tkResult.success && tkResult.filePath ? [tkResult.filePath] : []
@@ -488,8 +547,44 @@ async function createHandler(req, res, deps = {}) {
     return sendJson(res, 200, { user: req.auth.user });
   }
 
+  if (req.method === 'GET' && url.pathname === '/api/analytics/summary') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const filters = parseAnalyticsFilters(url);
+    const summary = repository.getAnalyticsSummary(filters);
+    return sendJson(res, 200, { filters, ...summary });
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/analytics/cost-trends') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const filters = parseAnalyticsFilters(url);
+    const items = repository.getAnalyticsCostTrends(filters);
+    return sendJson(res, 200, { filters, items });
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/analytics/materials') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const filters = parseAnalyticsFilters(url);
+    const limit = Number(url.searchParams.get('limit') || 10);
+    const items = repository.getAnalyticsMaterials({ ...filters, limit });
+    return sendJson(res, 200, { filters: { ...filters, limit }, items });
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/analytics/textures') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const filters = parseAnalyticsFilters(url);
+    const items = repository.getAnalyticsTextures(filters);
+    return sendJson(res, 200, { filters, items });
+  }
+
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
     const file = path.resolve(process.cwd(), 'public', 'index.html');
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(fs.readFileSync(file));
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/analytics.html') {
+    const file = path.resolve(process.cwd(), 'public', 'analytics.html');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(fs.readFileSync(file));
     return;

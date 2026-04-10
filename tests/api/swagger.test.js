@@ -20,6 +20,10 @@ function validateOpenApi3Spec(spec) {
     ['/api/generate', 'post'],
     ['/api/validate', 'post'],
     ['/api/history', 'get'],
+    ['/api/analytics/summary', 'get'],
+    ['/api/analytics/cost-trends', 'get'],
+    ['/api/analytics/materials', 'get'],
+    ['/api/analytics/textures', 'get'],
     ['/api/auth/login', 'post'],
     ['/api/auth/register', 'post'],
     ['/api/auth/me', 'get']
