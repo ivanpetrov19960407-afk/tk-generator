@@ -59,6 +59,10 @@ const DEFAULT_CONFIG = {
     accessTokenTtlSec: 900,
     refreshTokenTtlSec: 604800,
     jwtSecret: ''
+  },
+  autoUpdate: {
+    enabled: true,
+    checkInterval: '24h'
   }
 };
 
@@ -183,6 +187,15 @@ function validateConfig(config) {
   }
   if (config.auth && config.auth.refreshTokenTtlSec != null && !Number.isFinite(Number(config.auth.refreshTokenTtlSec))) {
     throw new Error('config.auth.refreshTokenTtlSec должен быть числом.');
+  }
+  if (config.autoUpdate != null && !isObject(config.autoUpdate)) {
+    throw new Error('config.autoUpdate должен быть объектом.');
+  }
+  if (config.autoUpdate && config.autoUpdate.enabled != null && typeof config.autoUpdate.enabled !== 'boolean') {
+    throw new Error('config.autoUpdate.enabled должен быть boolean.');
+  }
+  if (config.autoUpdate && config.autoUpdate.checkInterval != null && typeof config.autoUpdate.checkInterval !== 'string') {
+    throw new Error('config.autoUpdate.checkInterval должен быть строкой.');
   }
 }
 

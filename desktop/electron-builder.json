@@ -31,5 +31,12 @@
     "target": [
       "AppImage"
     ]
-  }
+  },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "ivanpetrov19960407-afk",
+      "repo": "tk-generator"
+    }
+  ]
 }

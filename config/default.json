@@ -67,5 +67,9 @@
     "refreshTokenTtlSec": 604800,
     "jwtSecret": ""
   },
-  "locale": "ru"
+  "locale": "ru",
+  "autoUpdate": {
+    "enabled": true,
+    "checkInterval": "24h"
+  }
 }
