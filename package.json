@@ -19,9 +19,9 @@
     "desktop:build:linux": "npm --prefix desktop run build:linux",
     "test:electron": "npm --prefix desktop run test:launch",
     "test:e2e": "node tests/e2e/cli.test.js && node tests/e2e/api.test.js && node tests/e2e/electron.test.js && node tests/e2e/telegram.test.js",
-    "lint": "npx --yes eslint@9.39.4 src tests",
-    "lint:fix": "npx --yes eslint@9.39.4 src tests --fix",
-    "format": "npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\""
+    "lint": "eslint src tests || npx --yes eslint@9.39.4 src tests",
+    "lint:fix": "eslint src tests --fix || npx --yes eslint@9.39.4 src tests --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\""
   },
   "keywords": [
     "технологическая карта",
