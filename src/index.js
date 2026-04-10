@@ -57,6 +57,9 @@ function printHelp() {
       --unknown-unit-policy <warning|error> Политика для нераспознанных единиц
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
+      --equipment-costs-override <file.json> Переопределить тарифы оборудования
+      --material-prices-override <file.json> Переопределить цены материалов
+      --overhead-override <file.json> Переопределить накладные расходы
       --overrides <file.json>   Переопределить операции через rules JSON
       --config <file.json|yaml> Дополнительный конфиг поверх default/local
       --config-dir <dir>        Папка с default.json и local.json
@@ -408,7 +411,10 @@ async function main() {
   if (needCostCalculation) {
     console.log('\n=== Расчёт стоимости ===');
     costs = products.map((product) => calculateTotalCost(product, {
-      laborRatesPath: args['labor-rates-override'] ? path.resolve(args['labor-rates-override']) : null
+      laborRatesPath: args['labor-rates-override'] ? path.resolve(args['labor-rates-override']) : null,
+      equipmentCostsPath: args['equipment-costs-override'] ? path.resolve(args['equipment-costs-override']) : null,
+      materialPricesPath: args['material-prices-override'] ? path.resolve(args['material-prices-override']) : null,
+      overheadPath: args['overhead-override'] ? path.resolve(args['overhead-override']) : null
     }));
 
     if (args['cost-breakdown']) {
