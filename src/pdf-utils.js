@@ -3,17 +3,24 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOCAL_FONT_DIR = path.resolve(__dirname, '..', 'assets', 'fonts');
+const PROJECT_FONT_DIR = path.resolve(__dirname, '..', 'assets', 'fonts');
+const EXECUTABLE_FONT_DIR = path.resolve(path.dirname(process.execPath || ''), 'assets', 'fonts');
 
 const FONT_CANDIDATES = {
   regular: [
-    path.join(LOCAL_FONT_DIR, 'PTSans-Regular.ttf'),
+    path.join(PROJECT_FONT_DIR, 'DejaVuSans.ttf'),
+    path.join(PROJECT_FONT_DIR, 'PTSans-Regular.ttf'),
+    path.join(EXECUTABLE_FONT_DIR, 'DejaVuSans.ttf'),
+    path.join(EXECUTABLE_FONT_DIR, 'PTSans-Regular.ttf'),
     '/usr/share/fonts/truetype/pt-sans/PTSans-Regular.ttf',
     '/usr/share/fonts/truetype/paratype/PTSans-Regular.ttf',
     '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
   ],
   bold: [
-    path.join(LOCAL_FONT_DIR, 'PTSans-Bold.ttf'),
+    path.join(PROJECT_FONT_DIR, 'DejaVuSans-Bold.ttf'),
+    path.join(PROJECT_FONT_DIR, 'PTSans-Bold.ttf'),
+    path.join(EXECUTABLE_FONT_DIR, 'DejaVuSans-Bold.ttf'),
+    path.join(EXECUTABLE_FONT_DIR, 'PTSans-Bold.ttf'),
     '/usr/share/fonts/truetype/pt-sans/PTSans-Bold.ttf',
     '/usr/share/fonts/truetype/paratype/PTSans-Bold.ttf',
     '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
@@ -40,20 +47,23 @@ function getFontPaths(custom = {}) {
 function applyDefaultFonts(doc, options = {}) {
   const fontPaths = getFontPaths(options.fonts || {});
 
-  if (fontPaths.regular) {
-    doc.registerFont('PTSans', fontPaths.regular);
-    doc.font('PTSans');
+  if (!fontPaths.regular) {
+    throw new Error('Не найден TTF-шрифт для PDF. Ожидается assets/fonts/DejaVuSans.ttf или явный options.fonts.regular.');
   }
 
+  doc.registerFont('TkRegular', fontPaths.regular);
+  doc.font('TkRegular');
+
   if (fontPaths.bold) {
-    doc.registerFont('PTSans-Bold', fontPaths.bold);
-  } else if (fontPaths.regular) {
-    doc.registerFont('PTSans-Bold', fontPaths.regular);
+    doc.registerFont('TkBold', fontPaths.bold);
+  } else {
+    doc.registerFont('TkBold', fontPaths.regular);
   }
 
   return {
-    regular: fontPaths.regular ? 'PTSans' : 'Helvetica',
-    bold: fontPaths.bold || fontPaths.regular ? 'PTSans-Bold' : 'Helvetica-Bold'
+    regular: 'TkRegular',
+    bold: 'TkBold',
+    paths: fontPaths
   };
 }
 

@@ -7,7 +7,7 @@ const { spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT, 'dist');
 const OUTPUT_EXE = path.join(DIST_DIR, 'tk-generator.exe');
-const ASSET_DIRS = ['data', 'config', 'schemas', 'templates'];
+const ASSET_DIRS = ['data', 'config', 'schemas', 'templates', 'assets'];
 
 function run(command, args) {
   const result = spawnSync(command, args, {
