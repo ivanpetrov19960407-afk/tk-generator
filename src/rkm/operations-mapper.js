@@ -1,4 +1,5 @@
 'use strict';
+const { logger } = require('../logger');
 
 const rates = require('../../data/rkm_rates.json');
 const norms = require('../../data/rkm_norms.json');
@@ -25,7 +26,7 @@ function mapOperations(product, geometry) {
   for (const op of norms.operations) {
     // Fix: проверка applies_when по whitelist — неизвестные условия пропускаются
     if (op.applies_when && !KNOWN_APPLIES_WHEN.has(op.applies_when)) {
-      console.warn(`[operations-mapper] Операция №${op.no} "${op.name}": неизвестное applies_when="${op.applies_when}", пропущена`);
+      logger.warn({ operationNo: op.no, operationName: op.name, appliesWhen: op.applies_when }, 'operations-mapper: операция пропущена из-за неизвестного applies_when');
       continue;
     }
 

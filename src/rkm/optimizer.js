@@ -1,4 +1,5 @@
 'use strict';
+const { logger } = require('../logger');
 
 const { calcGeometry } = require('./geometry-calc');
 const { mapOperations } = require('./operations-mapper');
@@ -58,7 +59,7 @@ function getControlUnit(product) {
       case 'count':  return 'piece';
       // 'unknown' — НЕ fallback в piece, логируем предупреждение
       default:
-        console.warn(`[getControlUnit] measurement_type="${product.measurement_type}" для "${product.name || 'изделие'}" — используется piece (проверьте единицу)`);
+        logger.warn({ measurementType: product.measurement_type, product: product.name || 'изделие' }, 'getControlUnit: используется piece (проверьте единицу)');
         return 'piece';
     }
   }
@@ -72,7 +73,7 @@ function getControlUnit(product) {
     case 'count':  return 'piece';
     default:
       if (rawUnit) {
-        console.warn(`[getControlUnit] Нераспознанная единица "${rawUnit}" для "${product.name || 'изделие'}" — используется piece`);
+        logger.warn({ unit: rawUnit, product: product.name || 'изделие' }, 'getControlUnit: нераспознанная единица, используется piece');
       }
       return 'piece';
   }

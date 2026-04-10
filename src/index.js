@@ -20,6 +20,7 @@ const { SUPPORTED_TEXTURES } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
 const { loadConfig, getConfig } = require('./config');
 const { generateSummaryReport } = require('./summary-report');
+const { configureLogger, logger, LEVELS } = require('./logger');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -66,6 +67,8 @@ function printHelp() {
       --overrides <file.json>   Переопределить операции через rules JSON
       --config <file.json|yaml> Дополнительный конфиг поверх default/local
       --config-dir <dir>        Папка с default.json и local.json
+      --log-level <error|warn|info|debug> Уровень логирования
+      --log-file <path>         Дублировать логи в файл
   -h, --help     Показать справку
 
 Примеры:
@@ -123,7 +126,7 @@ function parseDimensions(dimStr, nameText) {
       thickness = parseFloat(m[1]);
     } else {
       thickness = 30;
-      console.warn(`[WARN] Поз. "${dimStr}": толщина не найдена, используется 30мм по умолчанию`);
+      logger.warn({ dimensions: dimStr }, 'Толщина не найдена, используется 30мм по умолчанию');
     }
   }
 
@@ -343,11 +346,19 @@ function parseJsonInput(filePath) {
  * Main entry point
  */
 async function main() {
+  configureLogger({
+    level: String(args['log-level'] || 'info').toLowerCase(),
+    logFile: args['log-file'] || null
+  });
+
+  if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
+    throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
+  }
+
   if (args.help || !args.input) {
     printHelp();
     if (!args.input && !args.help) {
-      console.error('ОШИБКА: не указан входной файл (--input)');
-      process.exit(1);
+      throw new Error('Не указан входной файл (--input)');
     }
     return;
   }
@@ -361,58 +372,53 @@ async function main() {
   const outputDir = path.resolve(args.output);
   
   if (!fs.existsSync(inputPath)) {
-    console.error(`ОШИБКА: файл не найден: ${inputPath}`);
-    process.exit(1);
+    throw new Error(`Файл не найден: ${inputPath}`);
   }
   
-  console.log('╔════════════════════════════════════════════════╗');
-  console.log('║  Генератор ТК+МК для натурального камня v1.0  ║');
-  console.log('╚════════════════════════════════════════════════╝');
-  console.log(`\nВход: ${inputPath}`);
-  console.log(`Выход: ${outputDir}`);
+  logger.info({ inputPath, outputDir }, 'Запуск tk-generator');
   
   let products;
   let rawInput;
   const ext = path.extname(inputPath).toLowerCase();
   
   if (ext === '.xlsx' || ext === '.xls') {
-    console.log('Формат: Excel');
+    logger.info('Формат: Excel');
     rawInput = null;
     products = parseExcelInput(inputPath);
   } else if (ext === '.json') {
-    console.log('Формат: JSON');
+    logger.info('Формат: JSON');
     rawInput = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
     products = parseJsonInput(inputPath);
   } else {
-    console.error(`ОШИБКА: неподдерживаемый формат файла: ${ext}. Используйте .json или .xlsx`);
-    process.exit(1);
+    throw new Error(`Неподдерживаемый формат файла: ${ext}. Используйте .json или .xlsx`);
   }
   
-  console.log(`Найдено изделий: ${products.length}`);
+  logger.info({ totalProducts: products.length }, 'Входные данные загружены');
 
   const unknownUnitPolicy = args['unknown-unit-policy'] === 'error' ? 'error' : 'warning';
   const validationTarget = rawInput
     ? (Array.isArray(rawInput) || (rawInput && rawInput.products) ? rawInput : [rawInput])
     : products;
   const validationReport = validateBatchInput(validationTarget, { unknownUnitPolicy });
-  console.log('\n=== Валидация входных данных ===');
-  console.log(`Ошибки: ${validationReport.errors.length}, предупреждения: ${validationReport.warnings.length}`);
-  validationReport.errors.forEach((e) => console.error(`  [ERROR] ${e}`));
-  validationReport.warnings.forEach((w) => console.warn(`  [WARN] ${w}`));
+  logger.info({
+    validationErrors: validationReport.errors.length,
+    validationWarnings: validationReport.warnings.length
+  }, 'Валидация входных данных');
+  validationReport.errors.forEach((e) => logger.error({ validationError: e }, 'Ошибка валидации'));
+  validationReport.warnings.forEach((w) => logger.warn({ validationWarning: w }, 'Предупреждение валидации'));
 
   if (!validationReport.valid) {
-    console.error('\nОШИБКА: входные данные не прошли валидацию.');
-    process.exit(1);
+    throw new Error('Входные данные не прошли валидацию');
   }
   if (args['validate-only']) {
-    console.log('\n✓ Проверка завершена: ошибок нет. Генерация документов пропущена (--validate-only).');
+    logger.info('Проверка завершена: ошибок нет. Генерация документов пропущена (--validate-only)');
     return;
   }
 
   const needCostCalculation = Boolean(args['cost-breakdown'] || args['export-cost']);
   let costs = [];
   if (needCostCalculation) {
-    console.log('\n=== Расчёт стоимости ===');
+    logger.info('Расчёт стоимости');
     costs = products.map((product) => calculateTotalCost(product, {
       laborRatesPath: args['labor-rates-override'] ? path.resolve(args['labor-rates-override']) : null,
       equipmentCostsPath: args['equipment-costs-override'] ? path.resolve(args['equipment-costs-override']) : null,
@@ -422,11 +428,16 @@ async function main() {
 
     if (args['cost-breakdown']) {
       for (const item of costs) {
-        console.log(`\n[COST] ${item.product_name}`);
-        console.log(`[COST] Прямые затраты: ${formatMoneyRu(item.total_direct_cost)} ₽`);
-        console.log(`[COST] Накладные (${item.overhead_percent}%): ${formatMoneyRu(item.overhead_cost)} ₽`);
-        console.log(`[COST] Полная себестоимость: ${formatMoneyRu(item.total_cost)} ₽`);
-        console.log(`[COST] Цена продажи: ${formatMoneyRu(item.selling_price)} ₽ | Контрольная: ${formatMoneyRu(item.control_price)} ₽ | ${item.margin}`);
+        logger.info({
+          productName: item.product_name,
+          totalDirectCost: item.total_direct_cost,
+          overheadPercent: item.overhead_percent,
+          overheadCost: item.overhead_cost,
+          totalCost: item.total_cost,
+          sellingPrice: item.selling_price,
+          controlPrice: item.control_price,
+          margin: item.margin
+        }, 'Смета по изделию');
       }
     }
 
@@ -434,34 +445,36 @@ async function main() {
       const exportPath = path.resolve(args['export-cost']);
       fs.mkdirSync(path.dirname(exportPath), { recursive: true });
       fs.writeFileSync(exportPath, JSON.stringify({ generated_at: new Date().toISOString(), products: costs }, null, 2), 'utf8');
-      console.log(`[COST] Смета экспортирована: ${exportPath}`);
+      logger.info({ exportPath }, 'Смета экспортирована');
     }
   }
 
   // === Генерация ТК+МК (всегда) ===
-  console.log('\n=== Генерация ТК+МК ===');
+  logger.info('Генерация ТК+МК');
   const results = await generateBatch(products, outputDir, {
     overridesPath: args.overrides ? path.resolve(args.overrides) : null,
-    validation: { unknownUnitPolicy }
+    validation: { unknownUnitPolicy },
+    logger
   });
   const failed = results.filter(r => !r.success);
-  if (failed.length > 0) {
-    console.warn(`\n⚠ ${failed.length} ТК не сгенерированы (см. ошибки выше)`);
+  const errorByPosition = new Map();
+  for (const fail of failed) {
+    const pos = fail.product && fail.product.tk_number ? fail.product.tk_number : 'n/a';
+    if (!errorByPosition.has(pos)) errorByPosition.set(pos, []);
+    errorByPosition.get(pos).push(`ТК: ${fail.error}`);
   }
-  const successTK = results.filter(r => r.success).length;
-  console.log(`\n✓ ТК+МК: ${successTK} из ${products.length} файлов`);
 
 
   if (args.summary) {
-    console.log('\n=== Сводный отчёт по партии ===');
+    logger.info('Сводный отчёт по партии');
     const summary = await generateSummaryReport(products, results, outputDir);
-    console.log(`✓ Сводный отчёт: ${summary.file}`);
+    logger.info({ file: summary.file }, 'Сводный отчёт сформирован');
   }
 
   // === Генерация РКМ (если --rkm) ===
   if (args.rkm) {
     const doOptimize = args.optimize;
-    console.log('\n=== Генерация РКМ ===' + (doOptimize ? ' (с обратной калькуляцией)' : ''));
+    logger.info({ optimize: doOptimize }, 'Генерация РКМ');
     let rkmOk = 0;
     let rkmFail = 0;
     let rkmConverged = 0;
@@ -470,7 +483,7 @@ async function main() {
 
     for (const product of products) {
       try {
-        const result = await generateRKM(product, outputDir, { optimize: doOptimize });
+        const result = await generateRKM(product, outputDir, { optimize: doOptimize, logger });
         rkmOk++;
         if (doOptimize) {
           if (!product.control_price) {
@@ -483,20 +496,35 @@ async function main() {
         }
       } catch (err) {
         rkmFail++;
-        console.error(`[RKM] Ошибка для поз.${product.tk_number}: ${err.message}`);
+        logger.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации РКМ');
+        if (!errorByPosition.has(product.tk_number)) errorByPosition.set(product.tk_number, []);
+        errorByPosition.get(product.tk_number).push(`РКМ: ${err.message}`);
       }
     }
-    console.log(`\n✓ РКМ: ${rkmOk} из ${products.length} файлов` + (rkmFail ? ` (ошибки: ${rkmFail})` : ''));
+    logger.info({ successRkm: rkmOk, total: products.length, failedRkm: rkmFail }, 'Итоги генерации РКМ');
     if (doOptimize) {
-      console.log(`  Оптимизация: ✅ сходимость ${rkmConverged}, ❌ не вошли в коридор ${rkmNotConverged}` + (rkmNoPrice ? `, без контрольной цены ${rkmNoPrice}` : ''));
+      logger.info({ converged: rkmConverged, notConverged: rkmNotConverged, noControlPrice: rkmNoPrice }, 'Итоги оптимизации');
     }
   }
 
-  console.log('\n========== ГОТОВО ==========');
+  const failedPositions = [...errorByPosition.keys()];
+  const failedCount = failedPositions.length;
+  const successCount = products.length - failedCount;
+  logger.info(
+    { total: products.length, success: successCount, failed: failedCount },
+    `${products.length} позиции: ${successCount} успешно, ${failedCount} с ошибками`
+  );
+  if (failedCount > 0) {
+    for (const [pos, errors] of errorByPosition.entries()) {
+      logger.error({ position: pos, errors }, `Позиция ${pos}: ${errors.join('; ')}`);
+    }
+    process.exitCode = 1;
+  } else {
+    process.exitCode = 0;
+  }
 }
 
 main().catch(err => {
-  console.error(`Критическая ошибка: ${err.message}`);
-  console.error(err.stack);
-  process.exit(1);
+  logger.error({ error: err.message, stack: err.stack }, 'Критическая ошибка');
+  process.exit(2);
 });

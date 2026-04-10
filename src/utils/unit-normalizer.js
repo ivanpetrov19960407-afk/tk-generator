@@ -1,4 +1,5 @@
 'use strict';
+const { logger } = require('../logger');
 
 /**
  * unit-normalizer.js
@@ -122,7 +123,7 @@ function validateUnitConsistency(unit, measurementType, context) {
   const prefix = context ? `[${context}] ` : '';
 
   if (measurementType === 'unknown') {
-    console.warn(`${prefix}ПРЕДУПРЕЖДЕНИЕ: нераспознанная единица измерения "${unit}". Расчёт может быть некорректным.`);
+    logger.warn({ context, unit }, `${prefix}ПРЕДУПРЕЖДЕНИЕ: нераспознанная единица измерения. Расчёт может быть некорректным.`);
     return;
   }
 
@@ -153,11 +154,13 @@ function checkPriceDeviation(calcPrice, controlPrice, unit, context, maxRatio) {
   const prefix = context ? `[${context}] ` : '';
 
   if (ratio > maxRatio || ratio < (1 / maxRatio)) {
-    console.warn(
-      `${prefix}ВНИМАНИЕ: расчётная цена ${calcPrice.toFixed(2)} руб/${unit} ` +
-      `отклоняется от контрольной ${controlPrice.toFixed(2)} руб/${unit} ` +
-      `в ${ratio.toFixed(1)}x раз. Возможна ошибка единицы измерения!`
-    );
+    logger.warn({
+      context,
+      calcPrice,
+      controlPrice,
+      unit,
+      ratio
+    }, `${prefix}ВНИМАНИЕ: расчётная цена отклоняется от контрольной. Возможна ошибка единицы измерения.`);
     return false;
   }
   return true;
