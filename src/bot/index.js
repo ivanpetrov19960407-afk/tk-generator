@@ -189,10 +189,12 @@ async function runGeneration(ctx, session, products) {
 }
 
 function registerHandlers(bot) {
-  bot.use(async (ctx, next) => {
-    if (!isAllowedUser(ctx)) return;
-    return next();
-  });
+  if (typeof bot.use === 'function') {
+    bot.use(async (ctx, next) => {
+      if (!isAllowedUser(ctx)) return;
+      return next();
+    });
+  }
   bot.start(async (ctx) => {
     await ctx.reply([
       'Привет! Я бот для генерации ТК+МК и РКМ.',
@@ -205,6 +207,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('status', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     const details = [
       `Статус: ${s.lastStatus}`,
@@ -216,6 +219,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('price', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     const arg = ctx.message.text.split(' ').slice(1).join(' ').trim();
 
@@ -243,6 +247,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('generate', async (ctx) => {
+    if (!isAllowedUser(ctx)) return;
     const s = getSession(ctx.chat.id);
     s.flow = 'generate';
     s.step = 'name';
@@ -251,6 +256,7 @@ function registerHandlers(bot) {
   });
 
   bot.on('document', async (ctx) => {
+  if (!isAllowedUser(ctx)) return;
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') {
     await ctx.reply('Чтобы обработать Excel, сначала запустите /generate.');
@@ -288,6 +294,7 @@ function registerHandlers(bot) {
   });
 
   bot.on('text', async (ctx) => {
+  if (!isAllowedUser(ctx)) return;
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') return;
 
