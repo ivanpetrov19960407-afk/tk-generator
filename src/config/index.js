@@ -53,6 +53,12 @@ const DEFAULT_CONFIG = {
   },
   cost: {
     paths: {}
+  },
+  auth: {
+    enabled: false,
+    accessTokenTtlSec: 900,
+    refreshTokenTtlSec: 604800,
+    jwtSecret: ''
   }
 };
 
@@ -129,6 +135,14 @@ function applyEnvOverrides(config, env = process.env) {
       .filter((v) => Number.isFinite(v));
   }
 
+  if (env.TKG_AUTH_ENABLED != null) {
+    out.auth = out.auth || {};
+    out.auth.enabled = ['1', 'true', 'yes', 'on'].includes(String(env.TKG_AUTH_ENABLED).toLowerCase());
+  }
+  if (env.TKG_AUTH_ACCESS_TTL_SEC) out.auth.accessTokenTtlSec = Number(env.TKG_AUTH_ACCESS_TTL_SEC);
+  if (env.TKG_AUTH_REFRESH_TTL_SEC) out.auth.refreshTokenTtlSec = Number(env.TKG_AUTH_REFRESH_TTL_SEC);
+  if (env.TKG_AUTH_JWT_SECRET) out.auth.jwtSecret = env.TKG_AUTH_JWT_SECRET;
+
   return out;
 }
 
@@ -157,6 +171,18 @@ function validateConfig(config) {
   }
   if (config.cost && config.cost.paths != null && !isObject(config.cost.paths)) {
     throw new Error('config.cost.paths должен быть объектом.');
+  }
+  if (config.auth != null && !isObject(config.auth)) {
+    throw new Error('config.auth должен быть объектом.');
+  }
+  if (config.auth && config.auth.enabled != null && typeof config.auth.enabled !== 'boolean') {
+    throw new Error('config.auth.enabled должен быть boolean.');
+  }
+  if (config.auth && config.auth.accessTokenTtlSec != null && !Number.isFinite(Number(config.auth.accessTokenTtlSec))) {
+    throw new Error('config.auth.accessTokenTtlSec должен быть числом.');
+  }
+  if (config.auth && config.auth.refreshTokenTtlSec != null && !Number.isFinite(Number(config.auth.refreshTokenTtlSec))) {
+    throw new Error('config.auth.refreshTokenTtlSec должен быть числом.');
   }
 }
 

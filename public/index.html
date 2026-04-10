@@ -13,10 +13,23 @@
     .ok { color: #0f5132; background: #d1e7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
     .drop-zone { border: 2px dashed #999; border-radius: 8px; padding: 14px; margin-top: 12px; text-align: center; }
     .drop-zone.active { border-color: #1976d2; background: #eef6ff; }
+    .auth-box { border: 1px solid #d0d7de; border-radius: 8px; padding: 12px; margin-bottom: 14px; max-width: 360px; }
+    .auth-box input { width: 100%; box-sizing: border-box; margin: 6px 0; padding: 8px; }
+    .muted { color: #666; font-size: 12px; }
   </style>
 </head>
 <body>
   <h1>TK Generator — Web-интерфейс</h1>
+  <div id="authSection" class="auth-box" style="display:none">
+    <h3>Вход</h3>
+    <input id="loginUsername" placeholder="Логин" autocomplete="username" />
+    <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password" />
+    <div class="controls">
+      <button id="loginBtn">Войти</button>
+      <button id="logoutBtn" style="display:none">Выйти</button>
+    </div>
+    <div id="authStatus" class="muted"></div>
+  </div>
 
   <p>Загрузите Excel/JSON или вставьте JSON (массив products).</p>
 
@@ -45,9 +58,13 @@
     const jsonInput = document.getElementById('jsonInput');
     const messages = document.getElementById('messages');
     const dropZone = document.getElementById('dropZone');
+    const authSection = document.getElementById('authSection');
+    const authStatus = document.getElementById('authStatus');
 
     const desktopApi = window.desktopAPI || null;
     let outputDir = null;
+    let authEnabled = false;
+    let authToken = localStorage.getItem('tkg_access_token') || '';
 
     if (desktopApi) {
       document.getElementById('desktopControls').style.display = 'flex';
@@ -62,6 +79,27 @@
 
     function clearMessages() {
       messages.innerHTML = '';
+    }
+
+    function authHeaders() {
+      return authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    }
+
+    async function apiFetch(url, options = {}) {
+      const res = await fetch(url, {
+        ...options,
+        headers: { ...(options.headers || {}), ...authHeaders() }
+      });
+      if (res.status === 401 && authEnabled) {
+        renderMessage('Требуется вход в систему', 'warning');
+      }
+      return res;
+    }
+
+    function setAuthState(user) {
+      document.getElementById('loginBtn').style.display = user ? 'none' : 'inline-block';
+      document.getElementById('logoutBtn').style.display = user ? 'inline-block' : 'none';
+      authStatus.textContent = user ? `Вы вошли как ${user.username} (${user.role})` : 'Не авторизован';
     }
 
     function readProductsFromTextarea() {
@@ -83,7 +121,7 @@
 
     async function uploadExcelAndFillJson(file) {
       const fileBuffer = await file.arrayBuffer();
-      const res = await fetch('/api/upload-excel', {
+      const res = await apiFetch('/api/upload-excel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
         body: fileBuffer
@@ -114,7 +152,7 @@
       clearMessages();
       try {
         const products = readProductsFromTextarea();
-        const res = await fetch('/api/validate', {
+        const res = await apiFetch('/api/validate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ products })
@@ -168,7 +206,7 @@
       try {
         desktopApi && desktopApi.emitGenerationProgress({ status: 'Генерация', progress: 10 });
         const products = readProductsFromTextarea();
-        const res = await fetch('/api/generate', {
+        const res = await apiFetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ products })
@@ -257,6 +295,64 @@
         if (!opened) renderMessage('Сначала выберите папку вывода', 'warning');
       });
     }
+
+    async function initAuth() {
+      try {
+        const cfgRes = await fetch('/api/config');
+        const cfg = await cfgRes.json();
+        authEnabled = Boolean(cfg.auth && cfg.auth.enabled);
+        if (!authEnabled) return;
+
+        authSection.style.display = 'block';
+        if (!authToken) {
+          setAuthState(null);
+          return;
+        }
+
+        const meRes = await apiFetch('/api/auth/me');
+        if (!meRes.ok) {
+          authToken = '';
+          localStorage.removeItem('tkg_access_token');
+          setAuthState(null);
+          return;
+        }
+        const me = await meRes.json();
+        setAuthState(me.user);
+      } catch (err) {
+        renderMessage(`Ошибка инициализации auth: ${err.message}`, 'warning');
+      }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      clearMessages();
+      try {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Ошибка входа');
+        authToken = data.tokens.accessToken;
+        localStorage.setItem('tkg_access_token', authToken);
+        setAuthState(data.user);
+        renderMessage('Вход выполнен', 'ok');
+      } catch (err) {
+        setAuthState(null);
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      authToken = '';
+      localStorage.removeItem('tkg_access_token');
+      setAuthState(null);
+      renderMessage('Вы вышли из системы', 'ok');
+    });
+
+    initAuth();
   </script>
 </body>
 </html>

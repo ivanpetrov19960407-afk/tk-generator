@@ -61,5 +61,11 @@
   "cost": {
     "paths": {}
   },
+  "auth": {
+    "enabled": false,
+    "accessTokenTtlSec": 900,
+    "refreshTokenTtlSec": 604800,
+    "jwtSecret": ""
+  },
   "locale": "ru"
 }

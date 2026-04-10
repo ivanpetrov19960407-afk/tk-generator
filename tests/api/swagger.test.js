@@ -21,7 +21,7 @@ function validateOpenApi3Spec(spec) {
     ['/api/validate', 'post'],
     ['/api/history', 'get'],
     ['/api/auth/login', 'post'],
-    ['/api/auth/logout', 'post'],
+    ['/api/auth/register', 'post'],
     ['/api/auth/me', 'get']
   ];
 
