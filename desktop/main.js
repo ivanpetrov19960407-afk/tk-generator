@@ -25,6 +25,7 @@ let apiPort;
 let selectedOutputDir = null;
 let generationStatus = 'Готово';
 let stopAutoUpdateTimer = null;
+const isElectronE2E = process.env.TK_ELECTRON_E2E === '1';
 
 function createMenu() {
   const template = [
@@ -56,6 +57,7 @@ function createMenu() {
 }
 
 function ensureTray() {
+  if (isElectronE2E) return;
   if (tray || process.platform === 'darwin') return;
   const trayIcon = nativeImage.createFromDataURL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAK0lEQVR4AWP4//8/Azbw////GQYGBgb+////jwEJw6kB0QwMDAwMDAwAANV+Ezh6+U5rAAAAAElFTkSuQmCC');
   tray = new Tray(trayIcon);
@@ -113,6 +115,9 @@ async function startApiServer() {
 async function createMainWindow() {
   loadConfig();
   await startApiServer();
+  if (process.env.TK_ELECTRON_E2E_OUTPUT_DIR) {
+    selectedOutputDir = process.env.TK_ELECTRON_E2E_OUTPUT_DIR;
+  }
 
   win = new BrowserWindow({
     width: 1200,
@@ -146,7 +151,7 @@ async function createMainWindow() {
   ensureTray();
   createMenu();
 
-  if (!stopAutoUpdateTimer) {
+  if (!stopAutoUpdateTimer && !isElectronE2E) {
     stopAutoUpdateTimer = setupAutoUpdates({
       app,
       window: win,
@@ -199,6 +204,9 @@ ipcMain.on('generation-progress', (_event, payload) => {
       title: 'TK Generator',
       body: payload.message || 'Генерация завершена'
     }).show();
+    if (isElectronE2E) {
+      process.stdout.write(`NOTIFICATION_SHOWN:${payload.message || 'Генерация завершена'}\n`);
+    }
   }
 });
 

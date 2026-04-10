@@ -12,13 +12,6 @@ const { generateRKM } = require('../rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-
-if (!BOT_TOKEN) {
-  throw new Error('Не задан BOT_TOKEN в переменных окружения');
-}
-
-const bot = new Telegraf(BOT_TOKEN);
 const sessions = new Map();
 
 function getSession(chatId) {
@@ -183,64 +176,65 @@ async function runGeneration(ctx, session, products) {
   }
 }
 
-bot.start(async (ctx) => {
-  await ctx.reply([
-    'Привет! Я бот для генерации ТК+МК и РКМ.',
-    '',
-    'Команды:',
-    '/generate — пошаговый ввод параметров или отправка Excel-файла',
-    '/price <позиция> — быстрый расчёт себестоимости',
-    '/status — статус последней генерации'
-  ].join('\n'));
-});
+function registerHandlers(bot) {
+  bot.start(async (ctx) => {
+    await ctx.reply([
+      'Привет! Я бот для генерации ТК+МК и РКМ.',
+      '',
+      'Команды:',
+      '/generate — пошаговый ввод параметров или отправка Excel-файла',
+      '/price <позиция> — быстрый расчёт себестоимости',
+      '/status — статус последней генерации'
+    ].join('\n'));
+  });
 
-bot.command('status', async (ctx) => {
-  const s = getSession(ctx.chat.id);
-  const details = [
-    `Статус: ${s.lastStatus}`,
-    `Последняя генерация: ${s.lastGeneratedAt || 'ещё не запускалась'}`,
-    `Последних позиций: ${s.lastProducts.length}`
-  ];
-  if (s.lastError) details.push(`Ошибка: ${s.lastError}`);
-  await ctx.reply(details.join('\n'));
-});
+  bot.command('status', async (ctx) => {
+    const s = getSession(ctx.chat.id);
+    const details = [
+      `Статус: ${s.lastStatus}`,
+      `Последняя генерация: ${s.lastGeneratedAt || 'ещё не запускалась'}`,
+      `Последних позиций: ${s.lastProducts.length}`
+    ];
+    if (s.lastError) details.push(`Ошибка: ${s.lastError}`);
+    await ctx.reply(details.join('\n'));
+  });
 
-bot.command('price', async (ctx) => {
-  const s = getSession(ctx.chat.id);
-  const arg = ctx.message.text.split(' ').slice(1).join(' ').trim();
+  bot.command('price', async (ctx) => {
+    const s = getSession(ctx.chat.id);
+    const arg = ctx.message.text.split(' ').slice(1).join(' ').trim();
 
-  if (!arg) {
-    await ctx.reply('Использование: /price <позиция>. Например: /price 2');
-    return;
-  }
+    if (!arg) {
+      await ctx.reply('Использование: /price <позиция>. Например: /price 2');
+      return;
+    }
 
-  const product = s.lastProducts.find((p) => String(p.tk_number) === arg)
-    || s.lastProducts.find((p) => (p.name || '').toLowerCase().includes(arg.toLowerCase()));
+    const product = s.lastProducts.find((p) => String(p.tk_number) === arg)
+      || s.lastProducts.find((p) => (p.name || '').toLowerCase().includes(arg.toLowerCase()));
 
-  if (!product) {
-    await ctx.reply('Позиция не найдена в последней генерации. Сначала выполните /generate.');
-    return;
-  }
+    if (!product) {
+      await ctx.reply('Позиция не найдена в последней генерации. Сначала выполните /generate.');
+      return;
+    }
 
-  const calc = calculateTotalCost(product);
-  await ctx.reply([
-    `Позиция: ${product.tk_number} — ${product.name}`,
-    `Себестоимость: ${formatMoneyRu(calc.total_cost)} ₽`,
-    `Цена продажи: ${formatMoneyRu(calc.selling_price)} ₽`,
-    `Контрольная цена: ${formatMoneyRu(calc.control_price)} ₽`,
-    `Маржа: ${calc.margin}`
-  ].join('\n'));
-});
+    const calc = calculateTotalCost(product);
+    await ctx.reply([
+      `Позиция: ${product.tk_number} — ${product.name}`,
+      `Себестоимость: ${formatMoneyRu(calc.total_cost)} ₽`,
+      `Цена продажи: ${formatMoneyRu(calc.selling_price)} ₽`,
+      `Контрольная цена: ${formatMoneyRu(calc.control_price)} ₽`,
+      `Маржа: ${calc.margin}`
+    ].join('\n'));
+  });
 
-bot.command('generate', async (ctx) => {
-  const s = getSession(ctx.chat.id);
-  s.flow = 'generate';
-  s.step = 'name';
-  s.form = {};
-  await ctx.reply('Введите наименование изделия (или отправьте Excel-файл .xlsx одним сообщением).');
-});
+  bot.command('generate', async (ctx) => {
+    const s = getSession(ctx.chat.id);
+    s.flow = 'generate';
+    s.step = 'name';
+    s.form = {};
+    await ctx.reply('Введите наименование изделия (или отправьте Excel-файл .xlsx одним сообщением).');
+  });
 
-bot.on('document', async (ctx) => {
+  bot.on('document', async (ctx) => {
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') {
     await ctx.reply('Чтобы обработать Excel, сначала запустите /generate.');
@@ -270,9 +264,9 @@ bot.on('document', async (ctx) => {
   } finally {
     if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
   }
-});
+  });
 
-bot.on('text', async (ctx) => {
+  bot.on('text', async (ctx) => {
   const s = getSession(ctx.chat.id);
   if (s.flow !== 'generate') return;
 
@@ -318,11 +312,29 @@ bot.on('text', async (ctx) => {
     s.step = null;
     s.form = {};
   }
-});
+  });
+}
 
-bot.launch().then(() => {
-  console.log('Telegram bot started');
-});
+function createBot(options = {}) {
+  const token = options.token || process.env.BOT_TOKEN;
+  const TelegrafClass = options.TelegrafClass || Telegraf;
+  if (!token) throw new Error('Не задан BOT_TOKEN в переменных окружения');
+  const bot = new TelegrafClass(token);
+  registerHandlers(bot);
+  return bot;
+}
 
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+if (require.main === module) {
+  const bot = createBot();
+  bot.launch().then(() => {
+    console.log('Telegram bot started');
+  });
+
+  process.once('SIGINT', () => bot.stop('SIGINT'));
+  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+}
+
+module.exports = {
+  createBot,
+  parseExcelProducts
+};
