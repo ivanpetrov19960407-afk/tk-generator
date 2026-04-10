@@ -3,15 +3,9 @@
  * Takes template text from sections_template.json and parametrizes it.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { resolveRuntimeDir } = require('./runtime-paths');
 const { parametrize, TEMPLATE_PRODUCTS } = require('./operations');
 const { buildEquipmentListText, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
-
-const sectionsTemplate = JSON.parse(
-  fs.readFileSync(path.join(resolveRuntimeDir('data'), 'sections_template.json'), 'utf8')
-);
+const i18n = require('./i18n');
 
 /**
  * Material-specific physical properties for section customization.
@@ -192,26 +186,26 @@ function buildTitlePage(product) {
   
   let quantityLine = '';
   if (product.quantity && product.quantity_pieces) {
-    quantityLine = `Объём партии: ${product.quantity} (~${product.quantity_pieces} ${getPiecesWord(product.quantity_pieces)})`;
+    quantityLine = `${i18n.t('title_page.batch_volume')}: ${product.quantity} (~${product.quantity_pieces} ${getPiecesWord(product.quantity_pieces)})`;
   } else if (product.quantity_pieces) {
-    quantityLine = `Объём партии: ${product.quantity_pieces} ${getPiecesWord(product.quantity_pieces)}`;
+    quantityLine = `${i18n.t('title_page.batch_volume')}: ${product.quantity_pieces} ${getPiecesWord(product.quantity_pieces)}`;
   } else if (product.quantity) {
-    quantityLine = `Объём партии: ${product.quantity}`;
+    quantityLine = `${i18n.t('title_page.batch_volume')}: ${product.quantity}`;
   }
 
   const lines = [
-    'УТВЕРЖДАЮ',
+    i18n.t('title_page.approve'),
     '',
-    'Директор производства ________________',
+    `${i18n.t('title_page.production_director')} ________________`,
     '',
     '«___» ____________ 2026 г.',
     '',
     '',
-    'ТЕХНОЛОГИЧЕСКАЯ КАРТА',
+    i18n.t('title_page.tech_card'),
     '',
-    'МАРШРУТНАЯ КАРТА',
+    i18n.t('title_page.route_card'),
     '',
-    'производства изделия из натурального камня',
+    i18n.t('title_page.product_manufacturing'),
     '',
     `${product.name} ${dimsStr}`,
     '',
@@ -219,15 +213,15 @@ function buildTitlePage(product) {
     '',
     `${textureName} · ${edgesText} · Калибровка`,
     '',
-    'Архитектурное изделие 1-й категории с подбором по оттенку и зернистости',
+    i18n.t('title_page.architectural_product'),
     '',
     quantityLine,
     '',
-    'Разработано: ___________________ Мастер цеха',
+    `${i18n.t('title_page.developed_by')}: ___________________ Мастер цеха`,
     '',
-    'Проверено: ___________________ Директор производства',
+    `${i18n.t('title_page.reviewed_by')}: ___________________ ${i18n.t('title_page.production_director')}`,
     '',
-    `Дата разработки: ${product.date || '__ ________ 2026 г.'}`
+    `${i18n.t('title_page.date_prefix')} разработки: ${product.date || '__ ________ 2026 г.'}`
   ];
   
   return lines.join('\n');
@@ -290,6 +284,7 @@ function getPiecesWord(n) {
  * @returns {string} Parametrized section text
  */
 function buildSection(sectionNum, product) {
+  const sectionsTemplate = i18n.t('sections_template', {});
   const template = sectionsTemplate[sectionNum];
   if (!template) return null;
   
