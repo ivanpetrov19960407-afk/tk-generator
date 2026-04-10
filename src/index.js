@@ -191,7 +191,7 @@ function extractMaterial(nameText) {
   // Извлекаем материал: отсекаем "Обработка" и др. хвосты
   const matMatch = text.match(/Материал\s*[—–\-:]\s*(.+?)(?:[;,]|\s+Обработка|$)/i);
   if (!matMatch) return { type: 'мрамор', name: 'unknown' };
-  let materialName = matMatch[1].trim();
+  const materialName = matMatch[1].trim();
 
   // Detect type from first word
   const knownTypes = ['гранит', 'мрамор', 'известняк', 'мраморизированный', 'травертин', 'песчаник', 'оникс', 'габбро', 'кварцит'];

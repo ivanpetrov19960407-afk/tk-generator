@@ -1,13 +1,6 @@
-const js = require('@eslint/js');
-const n = require('eslint-plugin-n');
-
 module.exports = [
-  js.configs.recommended,
   {
     files: ['src/**/*.js', 'tests/**/*.js'],
-    plugins: {
-      n,
-    },
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
@@ -23,11 +16,19 @@ module.exports = [
         module: 'readonly',
         process: 'readonly',
         require: 'readonly',
+        URL: 'readonly',
+        fetch: 'readonly',
+        File: 'readonly',
+        DataTransfer: 'readonly',
+        document: 'readonly',
+        DragEvent: 'readonly',
         setInterval: 'readonly',
         setTimeout: 'readonly',
       },
     },
     rules: {
+      'no-undef': 'error',
+      'no-unreachable': 'error',
       'no-unused-vars': 'warn',
       'no-console': 'off',
       'prefer-const': 'error',
