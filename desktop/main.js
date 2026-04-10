@@ -1,7 +1,18 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain, Menu, Tray, Notification, shell, nativeImage } = require('electron');
+
+app.commandLine.appendSwitch('no-sandbox');
+app.commandLine.appendSwitch('disable-gpu');
+
+const electronErrorLogPath = path.join(__dirname, 'electron-error.log');
+process.on('uncaughtException', (error) => {
+  const timestamp = new Date().toISOString();
+  const details = error && error.stack ? error.stack : String(error);
+  fs.appendFileSync(electronErrorLogPath, `[${timestamp}] ${details}\n`);
+});
 
 const { createApp } = require('../src/server');
 
@@ -76,13 +87,23 @@ function updateStatus(status, progress) {
   }
 }
 
+const SERVER_START_TIMEOUT_MS = 30000;
+
 async function startApiServer() {
   const expressApp = createApp();
-  apiServer = await new Promise((resolve, reject) => {
+
+  const serverPromise = new Promise((resolve, reject) => {
     const server = expressApp.listen(0, '127.0.0.1', () => resolve(server));
     server.on('error', reject);
   });
 
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Не удалось запустить встроенный сервер за 30 секунд. Проверьте занятые порты и антивирус.'));
+    }, SERVER_START_TIMEOUT_MS);
+  });
+
+  apiServer = await Promise.race([serverPromise, timeoutPromise]);
   apiPort = apiServer.address().port;
 }
 
@@ -97,12 +118,15 @@ async function createMainWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true,
-      sandbox: true
+      contextIsolation: true
     }
   });
 
   await win.loadURL(`http://127.0.0.1:${apiPort}/`);
+
+  if (process.env.NODE_ENV === 'development') {
+    win.webContents.openDevTools();
+  }
 
   if (process.env.TK_ELECTRON_SMOKE === '1') {
     win.webContents.once('did-finish-load', () => {
