@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "generate": "node src/index.js",
-    "test": "node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/validation.test.js && node tests/config.test.js",
-    "test:generate": "node src/index.js --input examples/batch_input.json --output output/"
+    "test": "node tests/excel-import.test.js && node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/validation.test.js && node tests/config.test.js",
+    "test:generate": "node src/index.js --input examples/batch_input.json --output output/",
+    "excel:template": "node scripts/generate_excel_template.js"
   },
   "keywords": [
     "технологическая карта",

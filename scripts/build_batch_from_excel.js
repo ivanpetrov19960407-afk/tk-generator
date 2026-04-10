@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 /**
  * build_batch_from_excel.js
- * 
- * Reads the stone list Excel and generates a batch JSON for TK+MK+RKM generation.
- * 
+ *
+ * Reads Excel and generates a batch JSON for TK+MK+RKM generation.
+ *
  * Usage:
- *   node scripts/build_batch_from_excel.js <input.xlsx> [output.json]
- * 
- * Example:
- *   node scripts/build_batch_from_excel.js ../Spisok-kamnei-itogovyi_updated.xlsx examples/full_album_batch.json
+ *   node scripts/build_batch_from_excel.js <input.xlsx> [output.json] [--excel-mapping '<json>']
  */
 
 'use strict';
@@ -16,107 +13,63 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
-const { normalizeUnit, validateUnitConsistency, checkPriceDeviation } = require('../src/utils/unit-normalizer');
+const minimist = require('minimist');
+const { normalizeUnit, validateUnitConsistency } = require('../src/utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../src/config');
+const {
+  parseDimensions,
+  resolveExcelMapping,
+  validateRequiredColumns,
+  loadMappingArg
+} = require('../src/utils/excel-import');
 
-const inputFile = process.argv[2];
-const outputFile = process.argv[3] || 'examples/full_album_batch.json';
+const argv = minimist(process.argv.slice(2), {
+  string: ['excel-mapping'],
+  alias: { m: 'excel-mapping' }
+});
+
+const inputFile = argv._[0];
+const outputFile = argv._[1] || 'examples/full_album_batch.json';
 
 if (!inputFile) {
-  console.error('Usage: node scripts/build_batch_from_excel.js <input.xlsx> [output.json]');
+  console.error('Usage: node scripts/build_batch_from_excel.js <input.xlsx> [output.json] [--excel-mapping "{...}"]');
   process.exit(1);
 }
 
 loadConfig();
 
-// Material detection from full product name
 function detectMaterial(name) {
   const lower = name.toLowerCase();
-  
-  if (lower.includes('жалгыз') || lower.includes('zhalgyiz')) {
-    return { type: 'гранит', name: 'Жалгыз', density: 2700 };
-  }
-  if (lower.includes('delikato') || lower.includes('деликато')) {
-    return { type: 'мрамор', name: 'Delikato_light', density: 2700 };
-  }
-  if (lower.includes('fatima') || lower.includes('фатима')) {
-    return { type: 'известняк', name: 'Fatima', density: 2400 };
-  }
-  if (lower.includes('габбро') || lower.includes('нинимяки') || lower.includes('gabbro')) {
-    return { type: 'габбро-диабаз', name: 'Габбро-диабаз_Нинимяки', density: 2900 };
-  }
-  
-  // Fallback by rock type keywords
+  if (lower.includes('жалгыз') || lower.includes('zhalgyiz')) return { type: 'гранит', name: 'Жалгыз', density: 2700 };
+  if (lower.includes('delikato') || lower.includes('деликато')) return { type: 'мрамор', name: 'Delikato_light', density: 2700 };
+  if (lower.includes('fatima') || lower.includes('фатима')) return { type: 'известняк', name: 'Fatima', density: 2400 };
+  if (lower.includes('габбро') || lower.includes('нинимяки') || lower.includes('gabbro')) return { type: 'габбро-диабаз', name: 'Габбро-диабаз_Нинимяки', density: 2900 };
   if (lower.includes('гранит')) return { type: 'гранит', name: 'Жалгыз', density: 2700 };
   if (lower.includes('мрамор')) return { type: 'мрамор', name: 'Delikato_light', density: 2700 };
   if (lower.includes('известняк')) return { type: 'известняк', name: 'Fatima', density: 2400 };
-  
   return { type: 'гранит', name: 'Жалгыз', density: 2700 };
 }
 
-// Parse dimensions string like "2500х410х150мм" or "207х207хH650мм"
-function parseDimensions(dimStr) {
-  if (!dimStr) return null;
-  // Remove мм, mm, spaces
-  let s = dimStr.replace(/мм|mm/gi, '').trim();
-  // Handle "H" prefix for height (e.g., "207х207хH650")
-  s = s.replace(/[HhНн]/g, '');
-  // Split by х, x, X, ×
-  const parts = s.split(/[хxX×]/);
-  if (parts.length < 3) return null;
-  
-  const nums = parts.map(p => parseFloat(p.trim())).filter(n => !isNaN(n));
-  if (nums.length < 3) return null;
-  
-  // Sort to get length >= width >= thickness
-  nums.sort((a, b) => b - a);
-  return { length: nums[0], width: nums[1], thickness: nums[2] };
-}
-
-// Normalize texture string to generator format
 function normalizeTexture(textureStr) {
   if (!textureStr) return 'лощение';
   const lower = textureStr.toLowerCase().trim();
-  
-  if (lower.includes('рельефная') || lower.includes('матовая')) {
-    return 'рельефная_матовая';
-  }
-  if ((lower.includes('бучард') && lower.includes('лощ')) ||
-      (lower.includes('лощ') && lower.includes('бучард'))) {
-    return 'бучардирование_лощение';
-  }
-  if (lower.includes('бучард')) {
-    return 'бучардирование_лощение'; // Бучардирование alone → treated as бучардирование+лощение
-  }
-  if (lower.includes('лощ')) {
-    return 'лощение';
-  }
-  if (lower.includes('полировка') || lower.includes('полир')) {
-    return 'лощение'; // Fallback
-  }
-  
+
+  if (lower.includes('рельефная') || lower.includes('матовая')) return 'рельефная_матовая';
+  if ((lower.includes('бучард') && lower.includes('лощ')) || (lower.includes('лощ') && lower.includes('бучард'))) return 'бучардирование_лощение';
+  if (lower.includes('бучард')) return 'бучардирование_лощение';
+  if (lower.includes('лощ')) return 'лощение';
+  if (lower.includes('полировка') || lower.includes('полир')) return 'лощение';
   return 'лощение';
 }
 
-// Determine k_reject based on dimensions and complexity
 function determineKReject(dims, name) {
   if (!dims) return 1.4;
   const lower = name.toLowerCase();
-  
-  // Длинномер > 5м
   if (dims.length >= 5000) return 1.8;
-  
-  // Сложные профили
-  if (lower.includes('сегмент') || lower.includes('радиус') || 
-      lower.includes('объёмн') || lower.includes('объемн') ||
-      lower.includes('п-образ') || lower.includes('профил')) {
-    return 2.0;
-  }
-  
+  if (lower.includes('сегмент') || lower.includes('радиус') || lower.includes('объёмн') || lower.includes('объемн') || lower.includes('п-образ') || lower.includes('профил')) return 2.0;
   return 1.4;
 }
 
-// Determine geometry_type
 function determineGeometry(name) {
   const lower = name.toLowerCase();
   if (lower.includes('сегмент') || lower.includes('радиус')) return 'segmented';
@@ -125,101 +78,116 @@ function determineGeometry(name) {
   return 'simple';
 }
 
-// Calculate quantity_pieces from area-based quantities using measurement_type
 function calcPieces(qty, measurementType, dims) {
   if (!qty || !dims) return Math.max(1, Math.round(qty || 1));
-
   if (measurementType === 'area') {
-    // Convert m² to pieces
     const pieceArea = (dims.length / 1000) * (dims.width / 1000);
     if (pieceArea > 0) return Math.ceil(qty / pieceArea);
   }
   if (measurementType === 'length') {
-    // Convert m.p. to pieces
     const pieceLength = dims.length / 1000;
     if (pieceLength > 0) return Math.ceil(qty / pieceLength);
   }
-  if (measurementType === 'count') {
-    return Math.max(1, Math.round(qty));
-  }
+  if (measurementType === 'count') return Math.max(1, Math.round(qty));
 
-  // unknown — не делаем молчаливый fallback, возвращаем как есть с предупреждением
   console.warn(`  ПРЕДУПРЕЖДЕНИЕ: measurement_type="${measurementType}" — расчёт qty_pieces может быть некорректным`);
   return Math.max(1, Math.round(qty));
 }
 
-// Generate short_name from position number and dimensions
 function shortName(no, dims) {
   if (!dims) return `pos_${String(no).padStart(2, '0')}`;
   return `pos_${String(no).padStart(2, '0')}_${dims.length}x${dims.width}x${dims.thickness}`;
 }
 
-// ===== MAIN =====
+function readColumn(row, mapping, key) {
+  const idx = mapping[key];
+  if (idx === undefined || idx < 0) return undefined;
+  return row[idx];
+}
+
 const workbook = XLSX.readFile(path.resolve(inputFile));
 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+const headerRow = rows[0] || [];
 
-// Skip header row
+const mappingArg = loadMappingArg(argv['excel-mapping']);
+if (argv['excel-mapping'] && !mappingArg) {
+  console.error('Ошибка: --excel-mapping должен быть валидным JSON-объектом.');
+  process.exit(1);
+}
+
+const mapping = resolveExcelMapping(headerRow, mappingArg);
+const mappingValidation = validateRequiredColumns(mapping);
+if (!mappingValidation.ok) {
+  const missingList = mappingValidation.missing.join(', ');
+  let hint = '';
+  if (mappingValidation.missing.includes('dimensions')) {
+    hint = '\nПодсказка: обязательна колонка "Габаритные размеры" или явный маппинг: --excel-mapping "{\"dimensions\":\"Название колонки\"}"';
+  }
+  console.error(`Ошибка: не найдены обязательные колонки: ${missingList}.${hint}`);
+  process.exit(1);
+}
+
 const products = [];
-let skipped = 0;
+const rowErrors = [];
 
 for (let i = 1; i < rows.length; i++) {
   const row = rows[i];
-  if (!row || !row[0]) continue;
-  
-  const no = row[0];
-  const fullName = (row[1] || '').toString();
-  const textureRaw = (row[2] || '').toString();
-  const dimsRaw = (row[3] || '').toString();
-  const unit = (row[4] || '').toString();
-  const qtyRaw = row[5];
-  const controlPriceRaw = row[6]; // Колонка G — контрольная цена за ед.изм. с НДС
-  
-  const dims = parseDimensions(dimsRaw);
-  if (!dims) {
-    console.warn(`  ПРОПУСК поз.${no}: не удалось разобрать размеры "${dimsRaw}"`);
-    skipped++;
+  const no = readColumn(row, mapping, 'position');
+  if (no === '' || no === null || no === undefined) continue;
+
+  const excelRowNumber = i + 1;
+  const fullName = String(readColumn(row, mapping, 'name') || '');
+  const textureRaw = String(readColumn(row, mapping, 'texture') || '');
+  const dimsRaw = String(readColumn(row, mapping, 'dimensions') || '');
+  const unitRaw = String(readColumn(row, mapping, 'unit') || '');
+  const qtyRaw = readColumn(row, mapping, 'quantity');
+  const controlPriceRaw = readColumn(row, mapping, 'controlPrice');
+
+  const parsedDims = parseDimensions(dimsRaw);
+  if (!parsedDims.value) {
+    rowErrors.push(`Строка ${excelRowNumber} (поз. ${no}): ошибка размеров — ${parsedDims.error}`);
     continue;
   }
-  
+
   const material = detectMaterial(fullName);
   const texture = normalizeTexture(textureRaw);
-  const k_reject = determineKReject(dims, fullName);
+  const kReject = determineKReject(parsedDims.value, fullName);
 
-  // Нормализация единицы измерения
-  const { unit: normalizedUnit, measurement_type } = normalizeUnit(unit);
-  validateUnitConsistency(normalizedUnit, measurement_type, `Поз.${no}`);
-  const qty_pieces = calcPieces(qtyRaw, measurement_type, dims);
-  
-  // Парсим контрольную цену (может быть число или строка с пробелами/запятыми)
-  let control_price = null;
+  const { unit: normalizedUnit, measurement_type } = normalizeUnit(unitRaw);
+  try {
+    validateUnitConsistency(normalizedUnit, measurement_type, `Строка ${excelRowNumber}, поз.${no}`);
+  } catch (err) {
+    rowErrors.push(`Строка ${excelRowNumber} (поз. ${no}): ${err.message}`);
+    continue;
+  }
+
+  const qtyPieces = calcPieces(qtyRaw, measurement_type, parsedDims.value);
+
+  let controlPrice = null;
   if (controlPriceRaw !== undefined && controlPriceRaw !== null && controlPriceRaw !== '') {
     const parsed = parseFloat(String(controlPriceRaw).replace(/\s/g, '').replace(',', '.'));
-    if (!isNaN(parsed) && parsed > 0) {
-      control_price = parsed;
-    }
+    if (!Number.isNaN(parsed) && parsed > 0) controlPrice = parsed;
   }
 
   const product = {
     tk_number: no,
     name: fullName,
-    short_name: shortName(no, dims),
-    dimensions: dims,
-    material: material,
-    texture: texture,
-    quantity: `${qtyRaw} ${normalizedUnit || unit}`,
-    quantity_pieces: qty_pieces,
-    control_unit: normalizedUnit || unit, // нормализованная единица измерения
-    measurement_type: measurement_type, // "area" | "length" | "count" | "unknown"
+    short_name: shortName(no, parsedDims.value),
+    dimensions: parsedDims.value,
+    material,
+    texture,
+    quantity: `${qtyRaw} ${normalizedUnit || unitRaw}`,
+    quantity_pieces: qtyPieces,
+    control_unit: normalizedUnit || unitRaw,
+    measurement_type,
     edges: 'калибровка по всем сторонам, фаски 5мм',
     geometry_type: determineGeometry(fullName),
     category: '1',
-    packaging: dims.length >= 1500 ? 'усиленная' : 'стандартная',
+    packaging: parsedDims.value.length >= 1500 ? 'усиленная' : 'стандартная',
     rkm: {
-      k_reject: k_reject,
-      transport: {
-        ...getConfig().rkm.logisticsDefaults
-      },
+      k_reject: kReject,
+      transport: { ...getConfig().rkm.logisticsDefaults },
       material_prices: {
         diamond_discs: 10000,
         diamond_milling_heads: 8000,
@@ -227,56 +195,27 @@ for (let i = 1; i < rows.length; i++) {
         abrasives: 6500,
         coolant_chemistry: 1200,
         protective_materials: 800,
-        packaging: dims.length >= 1500 ? 18000 : 5000,
+        packaging: parsedDims.value.length >= 1500 ? 18000 : 5000,
         marking: 1500,
         ppe: 600
       }
     }
   };
 
-  // Добавляем контрольную цену если есть
-  if (control_price !== null) {
-    product.control_price = control_price;
-  }
-
-  // Sanity-проверка: measurement_type = "unknown" → предупреждение
-  if (measurement_type === 'unknown') {
-    console.warn(`  ПРЕДУПРЕЖДЕНИЕ Поз.${no}: единица "${unit}" не распознана (measurement_type=unknown). Проверьте данные.`);
-  }
-
+  if (controlPrice !== null) product.control_price = controlPrice;
   products.push(product);
+}
+
+if (rowErrors.length > 0) {
+  console.error('Найдены ошибки в строках Excel:');
+  rowErrors.forEach((e) => console.error(`  - ${e}`));
+  console.error(`\nИтого ошибок: ${rowErrors.length}. Исправьте данные и повторите импорт.`);
+  process.exit(1);
 }
 
 const output = { products };
 const outputPath = path.resolve(outputFile);
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2), 'utf8');
 
-console.log(`\n✓ Сформировано ${products.length} позиций (пропущено: ${skipped})`);
+console.log(`\n✓ Сформировано ${products.length} позиций`);
 console.log(`✓ Сохранено: ${outputPath}`);
-
-// Summary by material
-const byMat = {};
-products.forEach(p => {
-  const key = p.material.name;
-  byMat[key] = (byMat[key] || 0) + 1;
-});
-console.log('\nПо материалам:');
-Object.entries(byMat).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => console.log(`  ${k}: ${v}`));
-
-// Summary by texture
-const byTex = {};
-products.forEach(p => {
-  byTex[p.texture] = (byTex[p.texture] || 0) + 1;
-});
-console.log('\nПо фактуре:');
-Object.entries(byTex).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => console.log(`  ${k}: ${v}`));
-
-// Summary: control prices
-const withPrice = products.filter(p => p.control_price);
-console.log(`\nКонтрольные цены: ${withPrice.length} из ${products.length} позиций`);
-if (withPrice.length > 0) {
-  console.log('  Примеры:');
-  withPrice.slice(0, 5).forEach(p => {
-    console.log(`    Поз.${p.tk_number}: ${p.control_price.toFixed(2)} руб/${p.control_unit || 'ед'}`);
-  });
-}

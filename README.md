@@ -202,6 +202,25 @@ node src/index.js --input examples/batch_small.json --overrides ./examples/opera
 | `packaging` | Тип упаковки | стандартная |
 | `date` | Дата разработки | 02 апреля 2026 г. |
 
+#### Официальный шаблон импорта и явный mapping колонок
+
+Для программной загрузки используйте официальный шаблон, который генерируется локально:
+
+```bash
+npm run excel:template
+```
+
+По умолчанию будет создан файл `templates/input_template.xlsx` (локально, без хранения бинарного файла в репозитории).
+
+Импорт из Excel с явным сопоставлением колонок:
+
+```bash
+node scripts/build_batch_from_excel.js ./input.xlsx ./examples/full_album_batch.json \
+  --excel-mapping '{"position":"№","name":"Наименование изделия","texture":"Фактура","dimensions":"Габаритные размеры","unit":"Ед. изм.","quantity":"Кол-во","controlPrice":"Контрольная цена за ед.изм. с НДС"}'
+```
+
+Если колонка `Габаритные размеры` отсутствует (и не передан `--excel-mapping` для `dimensions`), импорт завершится ошибкой с подсказкой.
+
 ## Поддерживаемые типы фактуры
 
 | Значение | Описание | Операции 17–20 |
