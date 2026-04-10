@@ -725,6 +725,15 @@ function runWatchMode({ inputPath, outputDir }) {
 }
 
 
+function getExpectedUpdateHash(config, version, assetName) {
+  const hashes = config && config.autoUpdate && config.autoUpdate.trustedHashes;
+  if (!hashes || typeof hashes !== 'object') return null;
+  const byVersion = hashes[version];
+  if (typeof byVersion === 'string') return byVersion;
+  if (byVersion && typeof byVersion === 'object' && assetName) return byVersion[assetName] || null;
+  return null;
+}
+
 async function handleStandaloneUpdateCli() {
   const currentVersion = require('../package.json').version;
 
@@ -740,7 +749,9 @@ async function handleStandaloneUpdateCli() {
   }
 
   if (args['self-update']) {
-    const result = await performStandaloneSelfUpdate({ currentVersion });
+    const update = await checkForStandaloneUpdate({ currentVersion });
+    const expectedHash = getExpectedUpdateHash(getConfig(), update.latestVersion, update.asset && update.asset.name);
+    const result = await performStandaloneSelfUpdate({ currentVersion, expectedHash });
     logger.info({
       currentVersion: result.currentVersion,
       latestVersion: result.latestVersion,
@@ -800,7 +811,12 @@ async function maybeRunStandaloneAutoUpdate(config) {
     return;
   }
 
-  const result = await performStandaloneSelfUpdate({ currentVersion });
+  const expectedHash = getExpectedUpdateHash(config, update.latestVersion, update.asset && update.asset.name);
+  if (!expectedHash) {
+    logger.warn({ latestVersion: update.latestVersion }, 'Автообновление пропущено: нет trusted hash в конфиге');
+    return;
+  }
+  const result = await performStandaloneSelfUpdate({ currentVersion, expectedHash });
   console.log(result.message);
 }
 
@@ -822,9 +838,12 @@ async function main() {
     configPath: args.config ? path.resolve(args.config) : null
   });
 
+  const runtimeConfig = getConfig();
   const pluginReport = loadPlugins({
     pluginsDir: path.resolve(process.cwd(), 'plugins'),
-    disabledPlugins: normalizeDisabledPlugins(args['disable-plugin'])
+    disabledPlugins: normalizeDisabledPlugins(args['disable-plugin']),
+    pluginsEnabled: runtimeConfig.plugins_enabled !== false,
+    allowedPlugins: runtimeConfig.allowed_plugins || []
   });
   if (pluginReport.errors.length > 0) {
     pluginReport.errors.forEach((e) => logger.error({ plugin: e.name, error: e.error }, 'Ошибка загрузки плагина'));

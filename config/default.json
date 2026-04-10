@@ -63,7 +63,7 @@
   },
   "auth": {
     "enabled": false,
-    "accessTokenTtlSec": 900,
+    "accessTokenTtlSec": 3600,
     "refreshTokenTtlSec": 604800,
     "jwtSecret": ""
   },
@@ -71,5 +71,9 @@
   "autoUpdate": {
     "enabled": true,
     "checkInterval": "24h"
-  }
+  },
+  "plugins_enabled": false,
+  "allowed_plugins": [
+    "default-materials"
+  ]
 }

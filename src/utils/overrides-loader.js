@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolvePathInAllowedDir } = require('./security');
 
 function readJsonFileStrict(filePath) {
   try {
@@ -62,7 +63,7 @@ function matchRule(product, rule) {
 function loadOverridesFile(filePath) {
   if (!filePath) return null;
 
-  const resolved = path.resolve(filePath);
+  const resolved = resolvePathInAllowedDir(path.resolve(process.cwd(), 'overrides'), filePath);
   const data = readJsonFileStrict(resolved);
 
   if (!data || typeof data !== 'object') {

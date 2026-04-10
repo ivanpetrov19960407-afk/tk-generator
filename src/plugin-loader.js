@@ -80,7 +80,13 @@ function resolveLoadOrder(plugins) {
 function loadPlugins(options = {}) {
   const pluginsDir = options.pluginsDir || path.resolve(process.cwd(), 'plugins');
   const disabled = new Set((options.disabledPlugins || []).map((x) => String(x).trim()).filter(Boolean));
+  const allowedPlugins = new Set((options.allowedPlugins || []).map((x) => String(x).trim()).filter(Boolean));
+  const pluginsEnabled = options.pluginsEnabled !== false;
   const report = [];
+
+  if (!pluginsEnabled) {
+    return { pluginsDir, loaded: [], skipped: [{ name: '*', status: 'disabled', reason: 'plugins_enabled=false' }], errors: [], report: [{ name: '*', status: 'disabled', reason: 'plugins_enabled=false' }] };
+  }
 
   if (!fs.existsSync(pluginsDir)) {
     return { pluginsDir, loaded: [], skipped: [], errors: [], report };
@@ -107,12 +113,17 @@ function loadPlugins(options = {}) {
       continue;
     }
 
+    if (allowedPlugins.size > 0 && !allowedPlugins.has(manifest.name)) {
+      report.push({ name: manifest.name, status: 'error', reason: 'Plugin not allowed' });
+      continue;
+    }
+
     candidates.push({ manifest, pluginPath, indexPath, dirName: dirEntry.name });
   }
 
   const ordered = resolveLoadOrder(candidates);
   const loaded = [];
-  const errors = [];
+  const errors = report.filter((x) => x.status === 'error').map((x) => ({ name: x.name, error: x.reason }));
 
   for (const item of ordered) {
     try {

@@ -15,6 +15,7 @@ const { getConfig } = require('../config');
 const { logger } = require('../logger');
 const { Profiler, nowMs } = require('../utils/perf');
 const { hashInput, createManifest } = require('../utils/cache');
+const { sanitizeName, ensureSafePath } = require('../utils/security');
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
@@ -191,9 +192,9 @@ async function generateRKM(product, outputDir, options = {}) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const shortId = workProduct.short_name || `pos_${String(workProduct.tk_number || 0).padStart(2, '0')}`;
+  const shortId = sanitizeName(workProduct.short_name || `pos_${String(workProduct.tk_number || 0).padStart(2, '0')}`);
   const fileName = `RKM_${shortId}.xlsx`;
-  const filePath = path.join(outputDir, fileName);
+  const filePath = ensureSafePath(outputDir, fileName).finalPath;
 
   await profiler.measure('rkm.writeXlsx', async () => wb.xlsx.writeFile(filePath));
   log.info({ tkNumber: product.tk_number, filePath }, 'Файл РКМ сохранён');
@@ -230,9 +231,9 @@ async function generateRKMBatch(products, outputDir, options = {}) {
       const i = index++;
       if (i >= products.length) break;
       const product = products[i];
-      const shortId = product.short_name || `pos_${String(product.tk_number || 0).padStart(2, '0')}`;
+      const shortId = sanitizeName(product.short_name || `pos_${String(product.tk_number || 0).padStart(2, '0')}`);
       const fileName = `RKM_${shortId}.xlsx`;
-      const filePath = path.join(outputDir, fileName);
+      const filePath = ensureSafePath(outputDir, fileName).finalPath;
       const inputHash = hashInput({ product, optimize: Boolean(options.optimize) });
       const cacheKey = `rkm:${product.tk_number}:${shortId}`;
 

@@ -11,8 +11,20 @@ const { generateDocument, applyDefaults } = require('../generator');
 const { generateRKM } = require('../rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
+const { sanitizeName, ensureSafePath } = require('../utils/security');
 
 const sessions = new Map();
+
+const BOT_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const ALLOWED_USERS = String(process.env.BOT_ALLOWED_USERS || '')
+  .split(',')
+  .map((id) => Number(id.trim()))
+  .filter((id) => Number.isInteger(id));
+
+function isAllowedUser(ctx) {
+  if (!ALLOWED_USERS.length) return true;
+  return Boolean(ctx && ctx.from && ALLOWED_USERS.includes(Number(ctx.from.id)));
+}
 
 function getSession(chatId) {
   if (!sessions.has(chatId)) {
@@ -177,6 +189,10 @@ async function runGeneration(ctx, session, products) {
 }
 
 function registerHandlers(bot) {
+  bot.use(async (ctx, next) => {
+    if (!isAllowedUser(ctx)) return;
+    return next();
+  });
   bot.start(async (ctx) => {
     await ctx.reply([
       'Привет! Я бот для генерации ТК+МК и РКМ.',
@@ -242,13 +258,18 @@ function registerHandlers(bot) {
   }
 
   const doc = ctx.message.document;
+  if (doc.file_size && Number(doc.file_size) > BOT_MAX_UPLOAD_BYTES) {
+    await ctx.reply('Файл слишком большой: максимум 10MB.');
+    return;
+  }
   const ext = path.extname(doc.file_name || '').toLowerCase();
   if (ext !== '.xlsx' && ext !== '.xls') {
     await ctx.reply('Поддерживаются только Excel-файлы .xlsx/.xls');
     return;
   }
 
-  const tmpFile = path.join(os.tmpdir(), `tg-upload-${Date.now()}-${doc.file_name}`);
+  const safeFileName = sanitizeName((doc.file_name || '').replace(/\.[^.]+$/, ''), 'upload') + path.extname(doc.file_name || '.xlsx').toLowerCase();
+  const tmpFile = ensureSafePath(os.tmpdir(), `tg-upload-${Date.now()}-${safeFileName}`).finalPath;
   try {
     await ctx.reply('Получил файл, обрабатываю...');
     await downloadTelegramFile(ctx, doc.file_id, tmpFile);

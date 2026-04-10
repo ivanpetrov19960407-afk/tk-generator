@@ -126,6 +126,17 @@ function sha256File(filePath) {
   return hash.digest('hex');
 }
 
+function verifyFileHash(filePath, expectedHash) {
+  if (!expectedHash) {
+    throw new Error('Expected update hash is required for secure update.');
+  }
+  const hash = sha256File(filePath);
+  if (hash !== String(expectedHash).toLowerCase()) {
+    throw new Error('Invalid update hash');
+  }
+  return hash;
+}
+
 function readAutoUpdateState(filePath = AUTO_UPDATE_STATE_FILE) {
   if (!fs.existsSync(filePath)) return {};
   try {
@@ -191,7 +202,8 @@ async function performStandaloneSelfUpdate({
   currentVersion,
   executablePath = process.execPath,
   platform,
-  arch
+  arch,
+  expectedHash
 }) {
   const info = await checkForStandaloneUpdate({ currentVersion, platform, arch });
   if (!info.hasUpdate) {
@@ -210,7 +222,8 @@ async function performStandaloneSelfUpdate({
   const downloadedFile = path.join(downloadDir, `${info.asset.name}`);
   await downloadFile(info.asset.browser_download_url, downloadedFile);
 
-  const checksum = sha256File(downloadedFile);
+  const trustedHash = expectedHash || (info.asset && info.asset.sha256) || null;
+  const checksum = verifyFileHash(downloadedFile, trustedHash);
 
   const preparedPath = `${executablePath}.update-${info.latestVersion}.zip`;
   fs.copyFileSync(downloadedFile, preparedPath);
@@ -236,5 +249,6 @@ module.exports = {
   markAutoUpdateChecked,
   fetchLatestRelease,
   checkForStandaloneUpdate,
-  performStandaloneSelfUpdate
+  performStandaloneSelfUpdate,
+  verifyFileHash
 };

@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { sanitizeCsvValue } = require('./utils/security');
 
 function toNumber(value) {
   const n = Number(value);
@@ -26,7 +27,8 @@ function xmlEscape(value) {
 }
 
 function csvEscape(value) {
-  const raw = String(value == null ? '' : value);
+  const normalized = sanitizeCsvValue(value);
+  const raw = String(normalized == null ? '' : normalized);
   const escaped = raw.replace(/"/g, '""');
   return /[",\n;]/.test(raw) ? `"${escaped}"` : escaped;
 }
