@@ -3,5 +3,16 @@
   "version": "1.0.1",
   "private": true,
   "description": "Electron shell for TK Generator",
-  "main": "main.js"
+  "main": "main.js",
+  "scripts": {
+    "dev": "electron main.js",
+    "build:win": "electron-builder --projectDir .. --config ../desktop/electron-builder.json --win nsis",
+    "build:mac": "electron-builder --projectDir .. --config ../desktop/electron-builder.json --mac dmg",
+    "build:linux": "electron-builder --projectDir .. --config ../desktop/electron-builder.json --linux AppImage",
+    "test:launch": "node ../tests/electron/launch.test.js"
+  },
+  "devDependencies": {
+    "electron": "35.7.5",
+    "electron-builder": "26.8.1"
+  }
 }

@@ -3,9 +3,11 @@
 const assert = require('assert');
 const { spawnSync } = require('child_process');
 
+const path = require('path');
+
 let electronPath;
 try {
-  electronPath = require('electron');
+  electronPath = require(path.resolve(__dirname, '../../desktop/node_modules/electron'));
 } catch (_error) {
   console.log('SKIP: electron dependency is not installed in this environment.');
   process.exit(0);

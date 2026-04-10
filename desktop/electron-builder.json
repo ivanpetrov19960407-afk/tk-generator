@@ -1,0 +1,35 @@
+{
+  "appId": "com.tk.generator.desktop",
+  "productName": "TK Generator",
+  "directories": {
+    "output": "dist-electron"
+  },
+  "files": [
+    "desktop/**/*",
+    "src/**/*",
+    "public/**/*",
+    "data/**/*",
+    "templates/**/*",
+    "config/**/*",
+    "vendor/**/*",
+    "package.json"
+  ],
+  "extraMetadata": {
+    "main": "desktop/main.js"
+  },
+  "win": {
+    "target": [
+      "nsis"
+    ]
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ]
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ]
+  }
+}
