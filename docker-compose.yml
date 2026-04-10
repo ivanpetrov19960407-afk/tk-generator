@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-local}/tk-generator:latest
+    container_name: tk-generator-web
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      TKG_AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      TKG_AUTH_ADMIN_USERNAME: ${ADMIN_USER:-admin}
+      TKG_AUTH_ADMIN_PASSWORD: ${ADMIN_PASS:-change-me}
+    ports:
+      - "3000:3000"
+    volumes:
+      - tk_shared:/app/data
+      - tk_shared:/app/output
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http=require('http');const req=http.get('http://127.0.0.1:3000/api/health',res=>process.exit(res.statusCode===200?0:1));req.on('error',()=>process.exit(1));"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-local}/tk-generator:latest
+    container_name: tk-generator-bot
+    depends_on:
+      web:
+        condition: service_healthy
+    command: ["node", "src/bot/index.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TKG_AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      TKG_AUTH_ADMIN_USERNAME: ${ADMIN_USER:-admin}
+      TKG_AUTH_ADMIN_PASSWORD: ${ADMIN_PASS:-change-me}
+    volumes:
+      - tk_shared:/app/data
+      - tk_shared:/app/output
+    restart: unless-stopped
+
+volumes:
+  tk_shared:
+    driver: local
