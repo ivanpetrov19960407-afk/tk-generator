@@ -23,6 +23,7 @@ const { validateBatchInput } = require('./validation/validator');
 const { loadConfig, getConfig } = require('./config');
 const { generateSummaryReport } = require('./summary-report');
 const { configureLogger, logger, LEVELS } = require('./logger');
+const { createRepository } = require('./db/repository');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -80,6 +81,9 @@ function printHelp() {
       --log-file <path>         Дублировать логи в файл
       --template <path.docx>    Пользовательский DOCX-шаблон для ТК+МК
       --watch                   Режим разработки: следить за файлами и перегенерировать 1 тестовую позицию
+      --history                 Показать историю генераций (последние 20 запусков)
+      --history-detail <id>     Показать детали запуска по ID
+      --stats                   Показать агрегированную статистику генераций
   -h, --help     Показать справку
 
 Примеры:
@@ -374,6 +378,7 @@ function formatElapsedMs(ms) {
 }
 
 async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
+  const runStartedAt = nowMs();
   loadConfig({
     configDir: args['config-dir'] ? path.resolve(args['config-dir']) : null,
     configPath: args.config ? path.resolve(args.config) : null
@@ -575,6 +580,40 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
   } else {
     process.exitCode = 0;
   }
+
+  const repository = createRepository();
+  const generationId = repository.saveGeneration({
+    timestamp: new Date().toISOString(),
+    input_file: inputPath,
+    products_count: effectiveProducts.length,
+    success_count: successCount,
+    error_count: failedCount,
+    duration_ms: Math.round(nowMs() - runStartedAt),
+    output_dir: outputDir
+  });
+
+  for (let i = 0; i < effectiveProducts.length; i++) {
+    const product = effectiveProducts[i];
+    const tkResult = results[i];
+    const messages = errorByPosition.get(product.tk_number) || [];
+    repository.saveGenerationItem({
+      generation_id: generationId,
+      position: Number(product.tk_number || i + 1),
+      product_name: product.name || null,
+      material: product.material && product.material.name ? product.material.name : null,
+      texture: product.texture || null,
+      status: messages.length > 0 ? 'error' : 'success',
+      error_message: messages.length > 0 ? messages.join('; ') : null,
+      output_files: tkResult && tkResult.success && tkResult.filePath ? [tkResult.filePath] : []
+    });
+  }
+
+  repository.saveAuditLog({
+    action: 'cli.generate',
+    user: process.env.USER || process.env.USERNAME || 'cli',
+    details: { generationId, inputPath, outputDir, watchMode },
+    ip: 'local'
+  });
 }
 
 function runWatchMode({ inputPath, outputDir }) {
@@ -656,6 +695,26 @@ async function main() {
 
   if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
     throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
+  }
+
+  if (args.history || args['history-detail'] || args.stats) {
+    const repository = createRepository();
+    if (args.history) {
+      const data = repository.getGenerations({ page: Number(args.page || 1), pageSize: Number(args.limit || 20) });
+      console.log(JSON.stringify(data, null, 2));
+      return;
+    }
+    if (args['history-detail']) {
+      const item = repository.getGenerationById(Number(args['history-detail']));
+      if (!item) throw new Error(`Запуск с id=${args['history-detail']} не найден`);
+      console.log(JSON.stringify(item, null, 2));
+      return;
+    }
+    if (args.stats) {
+      const stats = repository.getStats({ from: args.from || null, to: args.to || null });
+      console.log(JSON.stringify(stats, null, 2));
+      return;
+    }
   }
 
   if (args.help || !args.input) {

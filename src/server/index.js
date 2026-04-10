@@ -13,6 +13,7 @@ const { validateBatchInput } = require('../validation/validator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
+const { createRepository } = require('../db/repository');
 
 function parseProductsPayload(body) {
   if (Array.isArray(body)) return body;
@@ -114,6 +115,7 @@ function getPublicConfig(config) {
 
 async function createHandler(req, res) {
   const url = new URL(req.url, 'http://localhost');
+  const repository = createRepository();
 
   if (req.method === 'GET' && url.pathname === '/api/config') {
     return sendJson(res, 200, getPublicConfig(getConfig()));
@@ -148,10 +150,41 @@ async function createHandler(req, res) {
       const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-generator-api-'));
       try {
         const normalizedProducts = products.map((p) => applyDefaults(p));
+        const startedAt = Date.now();
         const tkResults = await generateBatch(normalizedProducts, tmpDir, { validation: { unknownUnitPolicy: 'warning' } });
         for (const product of normalizedProducts) {
           await generateRKM(product, tmpDir, { optimize: false });
         }
+
+        const failed = tkResults.filter((r) => !r.success).length;
+        const generationId = repository.saveGeneration({
+          timestamp: new Date().toISOString(),
+          input_file: 'api:/api/generate',
+          products_count: normalizedProducts.length,
+          success_count: normalizedProducts.length - failed,
+          error_count: failed,
+          duration_ms: Date.now() - startedAt,
+          output_dir: tmpDir
+        });
+        normalizedProducts.forEach((product, index) => {
+          const tkResult = tkResults[index];
+          repository.saveGenerationItem({
+            generation_id: generationId,
+            position: Number(product.tk_number || index + 1),
+            product_name: product.name || null,
+            material: product.material && product.material.name ? product.material.name : null,
+            texture: product.texture || null,
+            status: tkResult && tkResult.success ? 'success' : 'error',
+            error_message: tkResult && !tkResult.success ? tkResult.error : null,
+            output_files: tkResult && tkResult.success && tkResult.filePath ? [tkResult.filePath] : []
+          });
+        });
+        repository.saveAuditLog({
+          action: 'api.generate',
+          user: req.headers['x-user'] || 'api',
+          details: { generationId, method: req.method, path: req.url },
+          ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
+        });
 
         const zip = new JSZip();
         for (const file of fs.readdirSync(tmpDir)) {
@@ -173,6 +206,32 @@ async function createHandler(req, res) {
       return sendJson(res, 500, { error: error.message });
     }
     return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/history') {
+    const page = Number(url.searchParams.get('page') || 1);
+    const pageSize = Number(url.searchParams.get('pageSize') || 20);
+    const data = repository.getGenerations({ page, pageSize });
+    repository.saveAuditLog({
+      action: 'api.history.list',
+      user: req.headers['x-user'] || 'api',
+      details: { page, pageSize },
+      ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
+    });
+    return sendJson(res, 200, data);
+  }
+
+  if (req.method === 'GET' && /^\/api\/history\/\d+$/.test(url.pathname)) {
+    const id = Number(url.pathname.split('/').pop());
+    const data = repository.getGenerationById(id);
+    if (!data) return sendJson(res, 404, { error: 'Not Found' });
+    repository.saveAuditLog({
+      action: 'api.history.detail',
+      user: req.headers['x-user'] || 'api',
+      details: { id },
+      ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
+    });
+    return sendJson(res, 200, data);
   }
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
