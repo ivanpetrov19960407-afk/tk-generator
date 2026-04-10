@@ -21,7 +21,8 @@
     "test:e2e": "node tests/e2e/cli.test.js && node tests/e2e/api.test.js && node tests/e2e/electron.test.js && node tests/e2e/telegram.test.js",
     "lint": "eslint src tests || npx --yes eslint@9.39.4 src tests",
     "lint:fix": "eslint src tests --fix || npx --yes eslint@9.39.4 src tests --fix",
-    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\""
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\"",
+    "fonts:setup": "node scripts/setup-fonts.js"
   },
   "keywords": [
     "технологическая карта",

@@ -1,15 +1,28 @@
-# Fonts for PDF rendering
+# Fonts for PDF rendering (no binary files in repo)
 
-This project expects the following font files for best Cyrillic output:
+This repository does **not** store binary font files.
 
-- `assets/fonts/PTSans-Regular.ttf`
-- `assets/fonts/PTSans-Bold.ttf`
+To get deterministic Cyrillic PDF output, provide these files locally:
 
-Binary font files are not committed in this repository snapshot.
+- `assets/fonts/DejaVuSans.ttf`
+- `assets/fonts/DejaVuSans-Bold.ttf`
 
-`src/pdf-utils.js` uses the following fallback chain:
-1. Local `assets/fonts/PTSans-*.ttf`
-2. System PT Sans paths (if installed)
-3. DejaVu Sans system fonts
+## Fast setup
 
-To force a custom font path at runtime, pass `options.fonts.regular` and `options.fonts.bold` to PDF builders.
+Run:
+
+```bash
+npm run fonts:setup
+```
+
+The script tries to:
+1. Copy DejaVu fonts from common Linux system paths.
+2. Copy from custom paths via environment variables:
+   - `TKG_FONT_REGULAR=/path/to/font.ttf`
+   - `TKG_FONT_BOLD=/path/to/font-bold.ttf`
+
+If fonts are still missing, PDF generation will fail fast with a clear error.
+
+## Standalone build
+
+`scripts/build-binary.js` copies `assets/`, so once fonts are present in `assets/fonts`, they are shipped with the standalone binary.
