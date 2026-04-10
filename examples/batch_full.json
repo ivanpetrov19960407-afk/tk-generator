@@ -1,0 +1,4236 @@
+{
+  "products": [
+    {
+      "tk_number": 1,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - ступень фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 2500х410х150мм",
+      "short_name": "pos_01_2500x410x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 410,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "25 шт",
+      "quantity_pieces": 25,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 555579.63
+    },
+    {
+      "tk_number": 2,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита площадки с дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 600х300х30мм, калибровка по обеим сторонам 600 и по обеим сторонам 300, со шлифовкой по всем четырем сторонам и фасками 5мм по сторонам 600",
+      "short_name": "pos_02_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "601.8 кв.м.",
+      "quantity_pieces": 3344,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 39467.64
+    },
+    {
+      "tk_number": 3,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: накрывная плита на цоколь, со сложным фигурным резом профиля и ручной доработкой поверхностей; (верхний кант прямолинейный - профиль хонет, нижний кант криволинейный - профиль фигурный) материал — мраморизированный известняк «Fatima» (Португалия); обработка лицевой поверхности — лощение; размеры 1700х80х60мм.",
+      "short_name": "pos_03_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт",
+      "quantity_pieces": 75,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 150615.87
+    },
+    {
+      "tk_number": 4,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное  из полнотелого натурального камня с толщиной t=160, с радиусом от R510, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 16 колонн), деталь 1 — основание колонны, сложной конфигурации, с ручной доработкой поверхностей; материал — гранит м-ния Жалгыз; обработка поверхности — лощение; размеры 695х695х160мм; см. чертеж.",
+      "short_name": "pos_04_695x695x160",
+      "dimensions": {
+        "length": 695,
+        "width": 695,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 350595
+    },
+    {
+      "tk_number": 5,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=65,  из полнотелого натурального камня с толщиной t=160, с радиусом от R510, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 16 колонн),  деталь 2 — сложной конфигурации, фигурная фаска 5мм, с ручной доработкой поверхностей; материал — гранит м-ния Жалгыз; обработка поверхности — лощение; размеры 690х690х160мм; см. чертеж.",
+      "short_name": "pos_05_690x690x160",
+      "dimensions": {
+        "length": 690,
+        "width": 690,
+        "thickness": 160
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 388710
+    },
+    {
+      "tk_number": 6,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с кантом сложной конфигурации: с радиусом канта  R=45, шириной канта 115мм,   из полнотелого натурального камня с толщиной t=225, с   радиусом изделия от R510, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 16 колонн),  деталь 3 — сложной конфигурации, фигурная фаска 5мм, с ручной доработкой поверхности; материал — гранит м-ния Жалгыз; обработка поверхности — лощение; размеры 630х630х225мм; см. чертеж.",
+      "short_name": "pos_06_630x630x225",
+      "dimensions": {
+        "length": 630,
+        "width": 630,
+        "thickness": 225
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "64 шт.",
+      "quantity_pieces": 64,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 535500
+    },
+    {
+      "tk_number": 7,
+      "name": "Изделие индивидуальное объемное, радиусное  из полнотелого натурального камня с толщиной t=170, с радиусом R=70, с калибровкой и полировкой торцевых частей изделия: сложной конфигурации, с ручной доработкой поверхности: карниз фигурный, мраморизированный, сложного профиля, с ручной доработкой поверхности; материал — известняк «Fatima» (Португалия); обработка поверхности — лощение; размеры 1700х135х170мм.",
+      "short_name": "pos_07_1700x170x135",
+      "dimensions": {
+        "length": 1700,
+        "width": 170,
+        "thickness": 135
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "75 шт",
+      "quantity_pieces": 75,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 384206.88
+    },
+    {
+      "tk_number": 8,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - бортовой камень из гранита «Габбро-диабаз»; обработка поверхности — бучардирование; размеры 1000х250х100мм.,  сложной конфигурации, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей.",
+      "short_name": "pos_08_1000x250x100",
+      "dimensions": {
+        "length": 1000,
+        "width": 250,
+        "thickness": 100
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "720 шт",
+      "quantity_pieces": 720,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 55125
+    },
+    {
+      "tk_number": 9,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х100х80, калибровка по обоим сторонам 200 и по обеим сторонам 100, со шлифовкой по всем четырем сторонам и ручной доработкой поверхностей",
+      "short_name": "pos_09_200x100x80",
+      "dimensions": {
+        "length": 200,
+        "width": 100,
+        "thickness": 80
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "324 кв.м.",
+      "quantity_pieces": 16200,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 26628
+    },
+    {
+      "tk_number": 10,
+      "name": "Натуральный камень \"Габбро-диабаз\" (брусчатка) бучардированный, габаритные размеры 200х200х80, калибровка по четырем сторонам 200, со шлифовкой по всем четырем сторонам и ручной доработкой поверхностей",
+      "short_name": "pos_10_200x200x80",
+      "dimensions": {
+        "length": 200,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "габбро-диабаз",
+        "name": "Габбро-диабаз_Нинимяки",
+        "density": 2900
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "396 кв.м.",
+      "quantity_pieces": 9900,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 26628
+    },
+    {
+      "tk_number": 11,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: балясины для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный профиль с фигурными верхним и нижним кантом, вазаобразным стволом с рельефным декором в средней части, двухрадиусным основанием под декоративным элементом с радиусом 13 мм, 20 мм и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей и резов: Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 207х207хH650мм,",
+      "short_name": "pos_11_650x207x207",
+      "dimensions": {
+        "length": 650,
+        "width": 207,
+        "thickness": 207
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "176 шт",
+      "quantity_pieces": 176,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 226140
+    },
+    {
+      "tk_number": 12,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора - облицовочная плита с тройной декоративной выборкой лицевой стороны на глубину каждой выборки 10мм, цельная, сложной конфигурации, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей и резов; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 400х650х60мм, см. эскиз (деталь 1)",
+      "short_name": "pos_12_650x400x60",
+      "dimensions": {
+        "length": 650,
+        "width": 400,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт",
+      "quantity_pieces": 80,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 288360
+    },
+    {
+      "tk_number": 13,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: фигурная накрывная плита, со сложным фигурным резом профиля, с кантом радиусом R=20 и выборкой 25мм по лицевым сторонам, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей и резов; Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 570х570х135мм, см. эскиз (деталь 2)",
+      "short_name": "pos_13_570x570x135",
+      "dimensions": {
+        "length": 570,
+        "width": 570,
+        "thickness": 135
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "20 шт",
+      "quantity_pieces": 20,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 29547
+    },
+    {
+      "tk_number": 14,
+      "name": "Изделие индивидуальное, архитектурное, сегментное, 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: облицовочная плита, фигурное основание балясин, со сложным фигурным резом профиля, и выборкой 20мм с двойным радиусом R=25 по верхней части лицевой стороны 570, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей и резов: Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 550х550х215мм, см. эскиз (деталь 3)",
+      "short_name": "pos_14_550x550x215",
+      "dimensions": {
+        "length": 550,
+        "width": 550,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "80 шт",
+      "quantity_pieces": 80,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 107415
+    },
+    {
+      "tk_number": 15,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: фигурный поручень, со сложным фигурным резом профиля, с выборкой 25мм и с закругленным двухрадиусным кантом радиусом R=22° и R=12° по сторонам 1700, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 1700х376х133 мм., см. эскиз",
+      "short_name": "pos_15_1700x376x133",
+      "dimensions": {
+        "length": 1700,
+        "width": 376,
+        "thickness": 133
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт",
+      "quantity_pieces": 37,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 289023
+    },
+    {
+      "tk_number": 16,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: фигурное основание балясин, со сложным фигурным резом профиля: верхний кант с выборкой 45мм и двухрадиусный кант R=25°, нижний кант прямолинейный, по двум сторонам 1700, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 1700х300х215 мм., см. эскиз",
+      "short_name": "pos_16_1700x300x215",
+      "dimensions": {
+        "length": 1700,
+        "width": 300,
+        "thickness": 215
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "37 шт",
+      "quantity_pieces": 37,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 164304
+    },
+    {
+      "tk_number": 17,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное из полнотелого натурального камня с толщиной t=98, с радиусом от R425°, лощеной фактуры, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 4 колонн), деталь 1 — основание колонны, сложной конфигурации, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 430х430х98мм; см. чертеж.",
+      "short_name": "pos_17_430x430x98",
+      "dimensions": {
+        "length": 430,
+        "width": 430,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 236700
+    },
+    {
+      "tk_number": 18,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, с формной канта R=30°, из полнотелого натурального камня с толщиной t=75, с радиусом от 425°, лощеной фактуры, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 4 колонн), деталь 2 — основание колонны сложной конфигурации, фигурная фаска, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 425х425х75мм; см. чертеж.",
+      "short_name": "pos_18_425x425x75",
+      "dimensions": {
+        "length": 425,
+        "width": 425,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 236700
+    },
+    {
+      "tk_number": 19,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 70мм с двухрадиусным кантом R=38° и R=42°, из полнотелого натурального камня с толщиной t=105, с радиусом изделия от R425°, лощеной фактуры, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 4 колонн), деталь 3 — основание колонны сложной конфигурации, фигурная фаска, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 390х390х105мм; см. чертеж.",
+      "short_name": "pos_19_390x390x105",
+      "dimensions": {
+        "length": 390,
+        "width": 390,
+        "thickness": 105
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 236700
+    },
+    {
+      "tk_number": 20,
+      "name": "Изделие индивидуальное объемное сегментное, радиусное, сложной конфигурации, с фигурным резом профиля: выборка 10мм с радиусом канта R=10°, из полнотелого натурального камня с толщиной t=66мм, с радиусом изделия от R425°, лощеной фактуры, с калибровкой и полировкой торцевых частей изделия: облицовка базы колонн (по 4 сегмента на каждую из 4 колонн), деталь 4 — основание колонны сложной конфигурации, фигурная фаска, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 320х320х66мм; см. чертеж.",
+      "short_name": "pos_20_320x320x66",
+      "dimensions": {
+        "length": 320,
+        "width": 320,
+        "thickness": 66
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "16 шт.",
+      "quantity_pieces": 16,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 222570
+    },
+    {
+      "tk_number": 21,
+      "name": "Изделие индивидуальное объемное, П-образное, из монолитного блока с толщиной t=90, лощеной фактуры, с калибровкой и полировкой всех частей изделия: деталь 1 — основание пилястры, сложной конфигурации, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 730х240х90мм; см. чертеж.",
+      "short_name": "pos_21_730x240x90",
+      "dimensions": {
+        "length": 730,
+        "width": 240,
+        "thickness": 90
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "volume",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 236700
+    },
+    {
+      "tk_number": 22,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиусом R=10 и основанием профиля хонет; центральный кант - криволинейного реза профиля, двухрадиусный R=20 и R=33 и основанием из профиля хонет; нижний кант - радиусный, с округлым профилем R=25. Изделие выполнено с запилом торца под 45°, с калибровкой и полировкой торцевых частей изделия для облицовки базы пилястр, детали 2,3 — основание пилястры сложной конфигурации, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 240х56х228мм; см. чертеж.",
+      "short_name": "pos_22_240x228x56",
+      "dimensions": {
+        "length": 240,
+        "width": 228,
+        "thickness": 56
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "44 шт.",
+      "quantity_pieces": 44,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 236700
+    },
+    {
+      "tk_number": 23,
+      "name": "Изделие индивидуальное объемное, из монолитного блока с толщиной t=228, с трехплоскостным кантом: верхний кант - с радиусом R=10 и основанием профиля хонет; центральный кант - криволинейного реза профиля, двухрадиусный R=20 и R=33 и основанием из профиля хонет; нижний кант - радиусный, с округлым профилем R=25. Изделие выполнено с запилом торца под 45°, с калибровкой и полировкой торцевых частей изделия для облицовки базы пилястр, деталь 4 — основание пилястры сложной конфигурации, с ручной доработкой поверхности: Материал — мрамор Delikato light; обработка поверхности — рельефная матовая; размеры 730х56х228мм; см. чертеж.",
+      "short_name": "pos_23_730x228x56",
+      "dimensions": {
+        "length": 730,
+        "width": 228,
+        "thickness": 56
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "рельефная_матовая",
+      "quantity": "22 шт.",
+      "quantity_pieces": 22,
+      "control_unit": "шт.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 222570
+    },
+    {
+      "tk_number": 24,
+      "name": "Изделие индивидуальное архитектурное, сегментное, 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с радиусом по внутренней дуге R=1760 с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1960х300х60мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_24_1960x300x60",
+      "dimensions": {
+        "length": 1960,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 97380
+    },
+    {
+      "tk_number": 25,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1000х300х60мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_25_1000x300x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт",
+      "quantity_pieces": 4,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 80370
+    },
+    {
+      "tk_number": 26,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15 и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1000х80х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_26_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 27360
+    },
+    {
+      "tk_number": 27,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с запилом под 45* и механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1000х600х60мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_27_1000x600x60",
+      "dimensions": {
+        "length": 1000,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "2 шт",
+      "quantity_pieces": 2,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 71700
+    },
+    {
+      "tk_number": 28,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с запилом под 45* и механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 2200х600х60мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_28_2200x600x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 600,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 80370
+    },
+    {
+      "tk_number": 29,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 2200х400х60мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_29_2200x400x60",
+      "dimensions": {
+        "length": 2200,
+        "width": 400,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 80370
+    },
+    {
+      "tk_number": 30,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1000х300х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_30_1000x300x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт/",
+      "quantity_pieces": 51,
+      "control_unit": "шт/",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 50370
+    },
+    {
+      "tk_number": 31,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1000х80х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_31_1000x80x30",
+      "dimensions": {
+        "length": 1000,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "51 шт",
+      "quantity_pieces": 51,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 27360
+    },
+    {
+      "tk_number": 32,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25 и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1500х300х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_32_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "56 шт",
+      "quantity_pieces": 56,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 57600
+    },
+    {
+      "tk_number": 33,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, треугольная, сложной конфигурации, крупноформатная с закругленным кантом (капельником) R=25° и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1610х800х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_33_1610x800x30",
+      "dimensions": {
+        "length": 1610,
+        "width": 800,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 78450
+    },
+    {
+      "tk_number": 34,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, ромбовидная, крупноформатная с закругленным кантом (капельником) R=25° и пазом для подступенка 20х5мм, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1800х825х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_34_1800x825x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 825,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "3 шт",
+      "quantity_pieces": 3,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 86100
+    },
+    {
+      "tk_number": 35,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 1700х80х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_35_1700x80x30",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "53 шт",
+      "quantity_pieces": 53,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 45300
+    },
+    {
+      "tk_number": 36,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита площадки с дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — бучардирование+лощение; габаритные размеры 600х300х20мм, калибровка по четырем сторонам 600, со шлифовкой по всем сторонам и фасками 5мм",
+      "short_name": "pos_36_600x300x20",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 20
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "4.65 кв.м.",
+      "quantity_pieces": 26,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 31560
+    },
+    {
+      "tk_number": 37,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита площадки с дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — бучардирование+лощение; габаритные размеры 1800х950х60мм, калибровка по четырем сторонам 600, со шлифовкой по всем сторонам и фасками 5мм",
+      "short_name": "pos_37_1800x950x60",
+      "dimensions": {
+        "length": 1800,
+        "width": 950,
+        "thickness": 60
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 522180
+    },
+    {
+      "tk_number": 38,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: плита напольная с дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light Обработка поверхности — лощение; габаритные размеры 700х700х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по четырем сторонам",
+      "short_name": "pos_38_700x700x30",
+      "dimensions": {
+        "length": 700,
+        "width": 700,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1252.1 кв.м.",
+      "quantity_pieces": 2556,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 36600
+    },
+    {
+      "tk_number": 39,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1290х300х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_39_1290x300x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт",
+      "quantity_pieces": 22,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 64500
+    },
+    {
+      "tk_number": 40,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1290х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_40_1290x120x30",
+      "dimensions": {
+        "length": 1290,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "22 шт",
+      "quantity_pieces": 22,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 34050
+    },
+    {
+      "tk_number": 41,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1650х300х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_41_1650x300x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт",
+      "quantity_pieces": 35,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 82500
+    },
+    {
+      "tk_number": 42,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1650х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_42_1650x120x30",
+      "dimensions": {
+        "length": 1650,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "35 шт",
+      "quantity_pieces": 35,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 35790
+    },
+    {
+      "tk_number": 43,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1500х300х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по сторонам 300",
+      "short_name": "pos_43_1500x300x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт",
+      "quantity_pieces": 17,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 75150
+    },
+    {
+      "tk_number": 44,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1500х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_44_1500x120x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "17 шт",
+      "quantity_pieces": 17,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 32535
+    },
+    {
+      "tk_number": 45,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1800х300х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по сторонам 300",
+      "short_name": "pos_45_1800x300x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт",
+      "quantity_pieces": 15,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 76302
+    },
+    {
+      "tk_number": 46,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1800х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_46_1800x120x30",
+      "dimensions": {
+        "length": 1800,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "15 шт",
+      "quantity_pieces": 15,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 34830
+    },
+    {
+      "tk_number": 47,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1200х300х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по сторонам 300",
+      "short_name": "pos_47_1200x300x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 60120
+    },
+    {
+      "tk_number": 48,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 1200х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_48_1200x120x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "32 шт",
+      "quantity_pieces": 32,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 27360
+    },
+    {
+      "tk_number": 49,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 2200х300х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по сторонам 300",
+      "short_name": "pos_49_2200x300x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт",
+      "quantity_pieces": 27,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 110220
+    },
+    {
+      "tk_number": 50,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 2200х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_50_2200x120x30",
+      "dimensions": {
+        "length": 2200,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27 шт",
+      "quantity_pieces": 27,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 47700
+    },
+    {
+      "tk_number": 51,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 2600х300х30мм, калибровка по всем сторонам, со шлифовкой и фасками 5мм по сторонам 300",
+      "short_name": "pos_51_2600x300x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт",
+      "quantity_pieces": 9,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 130350
+    },
+    {
+      "tk_number": 52,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 2600х120х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_52_2600x120x30",
+      "dimensions": {
+        "length": 2600,
+        "width": 120,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "9 шт",
+      "quantity_pieces": 9,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 56400
+    },
+    {
+      "tk_number": 53,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: плита напольная с дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — лощение; габаритные размеры 600х600х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем четырем сторонам",
+      "short_name": "pos_53_600x600x30",
+      "dimensions": {
+        "length": 600,
+        "width": 600,
+        "thickness": 30
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "122.6 кв.м.",
+      "quantity_pieces": 341,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 33800
+    },
+    {
+      "tk_number": 54,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: балясины для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный контур с профилированной базой, вазаобразным стволом с двухрадиусным рельефным декором в средней части, основанием под декоративным элементом и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 190х165хH590мм",
+      "short_name": "pos_54_590x190x165",
+      "dimensions": {
+        "length": 590,
+        "width": 190,
+        "thickness": 165
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "48 шт",
+      "quantity_pieces": 48,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 93600
+    },
+    {
+      "tk_number": 55,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: балясины (половина) для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный контур с профилированной базой (плинтом), вазаобразным стволом с двухрадиусным рельефным декором в средней части, основанием под декоративным элементом и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 98х165хH590мм",
+      "short_name": "pos_55_590x165x98",
+      "dimensions": {
+        "length": 590,
+        "width": 165,
+        "thickness": 98
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 77700
+    },
+    {
+      "tk_number": 56,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: угловые полукруглые балясины для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный контур с профилированной базой (плинтом), вазаобразным стволом с двухрадиусным рельефным декором в средней части, основанием под декоративным элементом и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 205х205хH590мм",
+      "short_name": "pos_56_590x205x205",
+      "dimensions": {
+        "length": 590,
+        "width": 205,
+        "thickness": 205
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "4 шт",
+      "quantity_pieces": 4,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 110100
+    },
+    {
+      "tk_number": 57,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: прямые балясины для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный контур с профилированной базой (плинтом), вазаобразным стволом с двухрадиусным рельефным декором в средней части, основанием под декоративным элементом и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 350х165хH590мм",
+      "short_name": "pos_57_590x350x165",
+      "dimensions": {
+        "length": 590,
+        "width": 350,
+        "thickness": 165
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 101550
+    },
+    {
+      "tk_number": 58,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: первая круглая балясина для внутренней отделки лестниц, сложной конфигурации по профилю (фигурный контур с профилированной базой (плинтом), вазаобразным стволом с двухрадиусным рельефным декором в средней части, основанием под декоративным элементом и резной капителью), с механизированной обработкой кромок (калибровка основания и верха) и ручной художественной доработкой поверхностей; Материал — мрамор Delikato light; Обработка - лощение, габаритные размеры 270х260хH590мм",
+      "short_name": "pos_58_590x270x260",
+      "dimensions": {
+        "length": 590,
+        "width": 270,
+        "thickness": 260
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "1 шт",
+      "quantity_pieces": 1,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 113970
+    },
+    {
+      "tk_number": 59,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: фигурный поручень, со сложным фигурным резом профиля, с закругленным кантом по двум сторонам радиусами R=40°, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 1700х239хH235мм",
+      "short_name": "pos_59_1700x239x235",
+      "dimensions": {
+        "length": 1700,
+        "width": 239,
+        "thickness": 235
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 183600
+    },
+    {
+      "tk_number": 60,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: фигурное основание под балясины, со сложным фигурным резом профиля, с закругленными кантами по двум сторонам: верхний кант радиусом R=6°, средний кант радиусом R=9°, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Материал — мрамор Delikato light; обработка лицевой поверхности — лощение; размеры 1700х235хH75мм",
+      "short_name": "pos_60_1700x235x75",
+      "dimensions": {
+        "length": 1700,
+        "width": 235,
+        "thickness": 75
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 119970
+    },
+    {
+      "tk_number": 61,
+      "name": "Изделие индивидуальное, сегментное, архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - ступень фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 2500х390х150мм",
+      "short_name": "pos_61_2500x390x150",
+      "dimensions": {
+        "length": 2500,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 514197.44999999995
+    },
+    {
+      "tk_number": 62,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - ступень фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 2165х390х150мм",
+      "short_name": "pos_62_2165x390x150",
+      "dimensions": {
+        "length": 2165,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "62 шт",
+      "quantity_pieces": 62,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 509849.55000000005
+    },
+    {
+      "tk_number": 63,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - ступень фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 2650х390х150мм",
+      "short_name": "pos_63_2650x390x150",
+      "dimensions": {
+        "length": 2650,
+        "width": 390,
+        "thickness": 150
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 517483.62
+    },
+    {
+      "tk_number": 64,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - с декоративной выборкой лицевой стороны на глубину 15мм, цельная, сложной конфигурации, с профилем - хонет, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Гранит м-ния Жалгыз; обработка поверхности — лощение; габаритные размеры изделия 900х400х80мм",
+      "short_name": "pos_64_900x400x80",
+      "dimensions": {
+        "length": 900,
+        "width": 400,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "120 шт",
+      "quantity_pieces": 120,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 426636
+    },
+    {
+      "tk_number": 65,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: накрывная плита, со сложным фигурным резом профиля, с закругленным кантом (капельником) диаметром R=20 по всем четырем сторонам, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; материал — гранит м-ния Жалгыз; обработка лицевой поверхности — лощение; размеры 500х500х80мм",
+      "short_name": "pos_65_500x500x80",
+      "dimensions": {
+        "length": 500,
+        "width": 500,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "30 шт",
+      "quantity_pieces": 30,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 228249
+    },
+    {
+      "tk_number": 66,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: фигурные поручни на лестницах входных групп, с закругленным кантом (капельником) диаметром R=20 по длинным сторонам, с механизированной обработкой кромок (калибровка), с фаской по углам 5мм и с ручной доработкой поверхностей; материал — гранит м-ния Жалгыз; обработка лицевой поверхности — лощение; размеры 1700х120х60мм",
+      "short_name": "pos_66_1700x120x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 120,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "27.7 м.пог.",
+      "quantity_pieces": 17,
+      "control_unit": "м.пог.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 448336.71
+    },
+    {
+      "tk_number": 67,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25 с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 1500х355х50мм",
+      "short_name": "pos_67_1500x355x50",
+      "dimensions": {
+        "length": 1500,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 229950
+    },
+    {
+      "tk_number": 68,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; размеры 1500х85х20мм",
+      "short_name": "pos_68_1500x85x20",
+      "dimensions": {
+        "length": 1500,
+        "width": 85,
+        "thickness": 20
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "24 шт",
+      "quantity_pieces": 24,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 125968.5
+    },
+    {
+      "tk_number": 69,
+      "name": "Изделие индивидуальное, с двойным кантом, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: накрывная плита на цоколь, со сложным фигурным резом профиля и ручной доработкой поверхностей; (верхний кант прямолинейный - профиль хонет, нижний кант криволинейный - профиль фигурный); материал — мраморизированный известняк «Fatima» (Португалия); обработка лицевой поверхности — лощение; размеры 1700х80х60мм",
+      "short_name": "pos_69_1700x80x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 80,
+        "thickness": 60
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "лощение",
+      "quantity": "230 пог.м.",
+      "quantity_pieces": 136,
+      "control_unit": "пог.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 167309.01
+    },
+    {
+      "tk_number": 70,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: деталь 1 - наклонная плита сложной конфигурации, с конфигурацией по торцевых частей изделия \"ласточкин хвост\" (для стыковки сегментов) под углом 45°, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей с фаской 5мм по острым углам изделия; Материал — гранит Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 1850х470х80мм",
+      "short_name": "pos_70_1850x470x80",
+      "dimensions": {
+        "length": 1850,
+        "width": 470,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 546525
+    },
+    {
+      "tk_number": 71,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: деталь 1 - наклонная плита сложной конфигурации, с конфигурацией по торцевых частей изделия \"ласточкин хвост\" (для стыковки сегментов) под углом 45°, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей с фаской 5мм по острым углам изделия; Материал — гранит Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 1600х200х80мм",
+      "short_name": "pos_71_1600x200x80",
+      "dimensions": {
+        "length": 1600,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "10 шт",
+      "quantity_pieces": 10,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 519750
+    },
+    {
+      "tk_number": 72,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: деталь 1 - наклонная плита сложной конфигурации, с конфигурацией по торцевых частей изделия \"ласточкин хвост\" (для стыковки сегментов) под углом 45°, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей с фаской 5мм по острым углам изделия; Материал — гранит Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 1655х200х80мм",
+      "short_name": "pos_72_1655x200x80",
+      "dimensions": {
+        "length": 1655,
+        "width": 200,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт",
+      "quantity_pieces": 5,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 212625
+    },
+    {
+      "tk_number": 73,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: деталь 3 - сечение прямоугольного треугольника с углами 26° и 64°, закругленным кантом декоративной выборки радиусом R=20 и шириной выборки 25мм по периметру изделия, с механизированной обработкой кромок (калибровка) и фасками 5мм, с ручной доработкой поверхностей; Материал — гранит Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 2280х1135х40мм",
+      "short_name": "pos_73_2280x1135x40",
+      "dimensions": {
+        "length": 2280,
+        "width": 1135,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "5 шт",
+      "quantity_pieces": 5,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 803250
+    },
+    {
+      "tk_number": 74,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня объемное сегментное, радиусное из полнотелого натурального камня с толщиной 50мм, с радиусом от R25 с калибровкой и полировкой торцевых частей изделия, деталь 1 — база облицовки колонны, сложной конфигурации, с ручной доработкой поверхностей; Гранит м-ния Жалгыз; Обработка поверхности — лощение, бучардирование; габаритные размеры 495х50х90мм",
+      "short_name": "pos_74_495x90x50",
+      "dimensions": {
+        "length": 495,
+        "width": 90,
+        "thickness": 50
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 217350
+    },
+    {
+      "tk_number": 75,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, объемное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня - с декоративной радиусной R=10 выборкой лицевой стороны на глубину 15мм, цельная, сложной конфигурации, с профилем - хонет, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Гранит м-ния Жалгыз; Обработка поверхности — лощение, бучардирование; габаритные размеры 1655х410х90мм",
+      "short_name": "pos_75_1655x410x90",
+      "dimensions": {
+        "length": 1655,
+        "width": 410,
+        "thickness": 90
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 539595
+    },
+    {
+      "tk_number": 76,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, объемное, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: накрывная плита, со сложным фигурным резом профиля, с закругленным двухрадиусным кантом радиусами R=15 по лицевым сторонам, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей; Гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 480х75х90мм",
+      "short_name": "pos_76_480x90x75",
+      "dimensions": {
+        "length": 480,
+        "width": 90,
+        "thickness": 75
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 228242.69999999998
+    },
+    {
+      "tk_number": 77,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: стеновая плита цельная, с дополнительной чистовой обработкой и с фасками 5мм и ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 1380х225х80мм",
+      "short_name": "pos_77_1380x225x80",
+      "dimensions": {
+        "length": 1380,
+        "width": 225,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 476314.64999999997
+    },
+    {
+      "tk_number": 78,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: стеновая плита цельная, с дополнительной чистовой обработкой и с фасками 5мм и ручной доработкой поверхностей; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 1255х255х80мм",
+      "short_name": "pos_78_1255x255x80",
+      "dimensions": {
+        "length": 1255,
+        "width": 255,
+        "thickness": 80
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 469737.44999999995
+    },
+    {
+      "tk_number": 79,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита площадки с декоративной выборкой 25мм на глубину с закругленным во внутрь кантом выборки радиусом R=20 по периметру, с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей и с фасками 5мм; Материал — гранит м-ния Жалгыз; Обработка поверхности — бучардирование, лощение; габаритные размеры 2360х1255х40мм",
+      "short_name": "pos_79_2360x1255x40",
+      "dimensions": {
+        "length": 2360,
+        "width": 1255,
+        "thickness": 40
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "3 шт",
+      "quantity_pieces": 3,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 811125
+    },
+    {
+      "tk_number": 80,
+      "name": "Изделие индивидуальное, архитектурное 1-й категории, калиброванное с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: фигурный молдинг, с верхним закругленным двухрадиусным кантом по R=15 на лицевой стороне с фасками 5мм, с механизированной обработкой кромок (калибровка), с ручной доработкой поверхностей; материал — гранит м-ния Жалгыз; обработка лицевой поверхности — бучардирование, лощение; размеры 1700х75х60мм",
+      "short_name": "pos_80_1700x75x60",
+      "dimensions": {
+        "length": 1700,
+        "width": 75,
+        "thickness": 60
+      },
+      "material": {
+        "type": "гранит",
+        "name": "Жалгыз",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "27.7 м.пог.",
+      "quantity_pieces": 17,
+      "control_unit": "м.пог.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 278775
+    },
+    {
+      "tk_number": 81,
+      "name": "Изделие индивидуальное сегментное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального мрамора - ступень фигурная, цельная, сложной конфигурации, с закругленным кантом (капельником) R=25° и профилем хонет с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 650х1500х150мм",
+      "short_name": "pos_81_1500x650x150",
+      "dimensions": {
+        "length": 1500,
+        "width": 650,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "12 шт",
+      "quantity_pieces": 12,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 108675
+    },
+    {
+      "tk_number": 82,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального мрамора - ступень фигурная, цельная, сложной конфигурации, с профилем хонет с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1200х370х150мм",
+      "short_name": "pos_82_1200x370x150",
+      "dimensions": {
+        "length": 1200,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "16 шт",
+      "quantity_pieces": 16,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 224910
+    },
+    {
+      "tk_number": 83,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального мрамора - ступень фигурная, цельная, сложной конфигурации, с профилем хонет с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1300х370х150мм",
+      "short_name": "pos_83_1300x370x150",
+      "dimensions": {
+        "length": 1300,
+        "width": 370,
+        "thickness": 150
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "8 шт",
+      "quantity_pieces": 8,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 242770.5
+    },
+    {
+      "tk_number": 84,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1050х355х50мм",
+      "short_name": "pos_84_1050x355x50",
+      "dimensions": {
+        "length": 1050,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт",
+      "quantity_pieces": 36,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 93734.54999999999
+    },
+    {
+      "tk_number": 85,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей:; Материал — мрамор Delikato light Обработка поверхности — бучардирование, лощение; габаритные размеры 1050х85х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_85_1050x85x30",
+      "dimensions": {
+        "length": 1050,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "36 шт",
+      "quantity_pieces": 36,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 29547
+    },
+    {
+      "tk_number": 86,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1200х355х50мм",
+      "short_name": "pos_86_1200x355x50",
+      "dimensions": {
+        "length": 1200,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт",
+      "quantity_pieces": 54,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 107415
+    },
+    {
+      "tk_number": 87,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей:; Материал — мрамор Delikato light Обработка поверхности — бучардирование, лощение; габаритные размеры 1200х85х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_87_1200x85x30",
+      "dimensions": {
+        "length": 1200,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "54 шт",
+      "quantity_pieces": 54,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 33799.5
+    },
+    {
+      "tk_number": 88,
+      "name": "Изделие индивидуальное архитектурное 1-й категории, с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин, элемент высокоточного индивидуального изготовления из натурального камня - проступь фигурная, сложной конфигурации, с закругленным кантом (капельником) R=25° с механизированной обработкой кромок (калибровка) и с ручной доработкой поверхностей: Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1300х355х50мм",
+      "short_name": "pos_88_1300x355x50",
+      "dimensions": {
+        "length": 1300,
+        "width": 355,
+        "thickness": 50
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт",
+      "quantity_pieces": 38,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "profiled",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 116046
+    },
+    {
+      "tk_number": 89,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления, сложной конфигурации с \"лобиком\" 50мм, из натурального камня: фигурный подступенок с радиусной выборкой 10мм, радиус R до 15° и шлифовкой по лицевой части изделия, дополнительной чистовой обработкой и с ручной доработкой поверхностей:; Материал — мрамор Delikato light Обработка поверхности — бучардирование, лощение; габаритные размеры 1300х85х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_89_1300x85x30",
+      "dimensions": {
+        "length": 1300,
+        "width": 85,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "38 шт",
+      "quantity_pieces": 38,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "segmented",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 2,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 36603
+    },
+    {
+      "tk_number": 90,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита площадки с дополнительной чистовой обработкой; Материал — мрамор Delikato light; Обработка поверхности — бучардирование, лощение; габаритные размеры 1250х1500х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_90_1500x1250x30",
+      "dimensions": {
+        "length": 1500,
+        "width": 1250,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "6 шт",
+      "quantity_pieces": 6,
+      "control_unit": "шт",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "усиленная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 18000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 144750
+    },
+    {
+      "tk_number": 91,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального камня: плита цоколя с дополнительной чистовой обработкой и ручной доработкой поверхностей; материал — мраморизированный известняк «Fatima» (Португалия); Обработка поверхности — бучардирование, лощение; габаритные размеры 600х300х30мм, калибровка по обеим сторонам 600 и по обеим сторонам 300, со шлифовкой по всем четырем сторонам и фасками 5мм по сторонам 600",
+      "short_name": "pos_91_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "известняк",
+        "name": "Fatima",
+        "density": 2400
+      },
+      "texture": "бучардирование_лощение",
+      "quantity": "350 кв.м.",
+      "quantity_pieces": 1945,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 60333
+    },
+    {
+      "tk_number": 92,
+      "name": "Изделие индивидуальное архитектурное 1-й категории с подбором по оттенку и зернистости с минимальным содержанием жил и микротрещин элемент высокоточного индивидуального изготовления из натурального мрамора: плита напольная с дополнительной чистовой обработкой и с ручной доработкой поверхностей; Материал — мрамор Delikato light; Обработка поверхности — лощение; габаритные размеры 600х300х30мм, калибровка по четырем сторонам, со шлифовкой и фасками 5мм по всем сторонам",
+      "short_name": "pos_92_600x300x30",
+      "dimensions": {
+        "length": 600,
+        "width": 300,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato_light",
+        "density": 2700
+      },
+      "texture": "лощение",
+      "quantity": "371.2 кв.м.",
+      "quantity_pieces": 2063,
+      "control_unit": "кв.м.",
+      "edges": "калибровка по всем сторонам, фаски 5мм",
+      "geometry_type": "simple",
+      "category": "1",
+      "packaging": "стандартная",
+      "rkm": {
+        "k_reject": 1.4,
+        "transport": {
+          "distance_km": 940,
+          "tariff_rub_km": 120,
+          "trips": 1,
+          "loading": 25000,
+          "unloading": 35000,
+          "insurance_pct": 0.005
+        },
+        "material_prices": {
+          "diamond_discs": 10000,
+          "diamond_milling_heads": 8000,
+          "bush_hammer_heads_price": 8500,
+          "abrasives": 6500,
+          "coolant_chemistry": 1200,
+          "protective_materials": 800,
+          "packaging": 5000,
+          "marking": 1500,
+          "ppe": 600
+        }
+      },
+      "control_price": 34400
+    }
+  ]
+}

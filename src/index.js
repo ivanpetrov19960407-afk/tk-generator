@@ -4,8 +4,8 @@
  * index.js — CLI entry point for TK Generator
  * 
  * Usage:
- *   node src/index.js --input examples/sample_product.json --output output/
- *   node src/index.js --input examples/batch_input.json --output output/
+ *   node src/index.js --input examples/product_minimal.json --output output/
+ *   node src/index.js --input examples/batch_small.json --output output/
  *   node src/index.js --input examples/sample_input.xlsx --output output/
  */
 
@@ -56,22 +56,22 @@ function printHelp() {
 
 Примеры:
   # Один продукт (JSON)
-  node src/index.js --input examples/sample_product.json --output output/
+  node src/index.js --input examples/product_minimal.json --output output/
 
   # Пакетная генерация (JSON)
-  node src/index.js --input examples/batch_input.json --output output/
+  node src/index.js --input examples/batch_small.json --output output/
 
   # Из Excel файла
   node src/index.js --input examples/sample_input.xlsx --output output/
 
   # РКМ с обратной калькуляцией по контрольным ценам
-  node src/index.js --input examples/full_album_batch.json --rkm --optimize --output output/
+  node src/index.js --input examples/batch_full.json --rkm --optimize --output output/
 
   # Вывести смету по операциям
-  node src/index.js --input examples/batch_input.json --cost-breakdown
+  node src/index.js --input examples/batch_small.json --cost-breakdown
 
   # Экспорт смет в JSON
-  node src/index.js --input examples/batch_input.json --export-cost output/costs.json
+  node src/index.js --input examples/batch_small.json --export-cost output/costs.json
 
 Поддерживаемые фактуры:
 ${SUPPORTED_TEXTURES.map(t => `  - ${t}`).join('\n')}
@@ -313,6 +313,18 @@ function parseExcelInput(filePath) {
  */
 function parseJsonInput(filePath) {
   const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+  // Legacy single-record format used by early prompts
+  if (data && typeof data === 'object' && data.USER_INPUT) {
+    throw new Error([
+      'Обнаружен устаревший формат JSON (поле USER_INPUT).',
+      'Используйте актуальный формат products[].',
+      'См. README раздел "Формат входных данных" и примеры:',
+      '  - examples/product_minimal.json',
+      '  - examples/batch_small.json',
+      '  - examples/batch_full.json'
+    ].join('\n'));
+  }
   
   // Support both { products: [...] } and single product or array
   if (data.products && Array.isArray(data.products)) {
