@@ -31,7 +31,7 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache', 'export-1c', 'export-1c-csv', 'watch'],
   default: {
     output: 'output/',
     rkm: false,
@@ -40,6 +40,7 @@ const args = minimist(process.argv.slice(2), {
     'validate-only': false,
     summary: false,
     cache: true,
+    watch: false,
     'unknown-unit-policy': 'warning'
   }
 });
@@ -78,6 +79,7 @@ function printHelp() {
       --log-level <error|warn|info|debug> Уровень логирования
       --log-file <path>         Дублировать логи в файл
       --template <path.docx>    Пользовательский DOCX-шаблон для ТК+МК
+      --watch                   Режим разработки: следить за файлами и перегенерировать 1 тестовую позицию
   -h, --help     Показать справку
 
 Примеры:
@@ -354,53 +356,33 @@ function parseJsonInput(filePath) {
   return [data];
 }
 
-/**
- * Main entry point
- */
-async function main() {
-  configureLogger({
-    level: String(args['log-level'] || 'info').toLowerCase(),
-    logFile: args['log-file'] || null
-  });
+function uniquePaths(paths) {
+  return [...new Set(paths.filter(Boolean).map((p) => path.resolve(p)))];
+}
 
-  if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
-    throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
-  }
+function createWatchTargets(inputPath) {
+  return uniquePaths([
+    inputPath,
+    path.resolve('data'),
+    path.resolve('config'),
+    path.resolve('templates')
+  ]);
+}
 
-  if (args.help || !args.input) {
-    printHelp();
-    if (!args.input && !args.help) {
-      throw new Error('Не указан входной файл (--input)');
-    }
-    return;
-  }
-  
+function formatElapsedMs(ms) {
+  return `${Math.round(ms)}мс`;
+}
+
+async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
   loadConfig({
     configDir: args['config-dir'] ? path.resolve(args['config-dir']) : null,
     configPath: args.config ? path.resolve(args.config) : null
   });
 
-  const inputPath = path.resolve(args.input);
-  const outputDir = path.resolve(args.output);
-  
-  if (!fs.existsSync(inputPath)) {
-    throw new Error(`Файл не найден: ${inputPath}`);
-  }
-  
-  logger.info({ inputPath, outputDir }, 'Запуск tk-generator');
-
-  if (args.template) {
-    const templatePath = path.resolve(args.template);
-    if (!fs.existsSync(templatePath)) {
-      throw new Error(`Шаблон не найден: ${templatePath}`);
-    }
-    logger.info({ templatePath }, 'Используется пользовательский шаблон DOCX');
-  }
-  
   let products;
   let rawInput;
   const ext = path.extname(inputPath).toLowerCase();
-  
+
   if (ext === '.xlsx' || ext === '.xls') {
     logger.info('Формат: Excel');
     rawInput = null;
@@ -412,8 +394,13 @@ async function main() {
   } else {
     throw new Error(`Неподдерживаемый формат файла: ${ext}. Используйте .json или .xlsx`);
   }
-  
-  logger.info({ totalProducts: products.length }, 'Входные данные загружены');
+
+  if (!products.length) {
+    throw new Error('Входной файл не содержит позиций для генерации');
+  }
+
+  const effectiveProducts = watchMode ? [products[0]] : products;
+  logger.info({ totalProducts: products.length, effectiveProducts: effectiveProducts.length }, 'Входные данные загружены');
 
   const unknownUnitPolicy = args['unknown-unit-policy'] === 'error' ? 'error' : 'warning';
   const validationTarget = rawInput
@@ -439,7 +426,7 @@ async function main() {
   let costs = [];
   if (needCostCalculation) {
     logger.info('Расчёт стоимости');
-    costs = products.map((product) => calculateTotalCost(product, {
+    costs = effectiveProducts.map((product) => calculateTotalCost(product, {
       laborRatesPath: args['labor-rates-override'] ? path.resolve(args['labor-rates-override']) : null,
       equipmentCostsPath: args['equipment-costs-override'] ? path.resolve(args['equipment-costs-override']) : null,
       materialPricesPath: args['material-prices-override'] ? path.resolve(args['material-prices-override']) : null,
@@ -469,20 +456,19 @@ async function main() {
     }
 
     if (args['export-1c']) {
-      const exportPath = write1CXml(products, costs, outputDir);
+      const exportPath = write1CXml(effectiveProducts, costs, outputDir);
       logger.info({ exportPath }, 'Калькуляции экспортированы в 1С XML');
     }
 
     if (args['export-1c-csv']) {
-      const exportPath = write1CCsv(products, costs, outputDir);
+      const exportPath = write1CCsv(effectiveProducts, costs, outputDir);
       logger.info({ exportPath }, 'Калькуляции экспортированы в 1С CSV');
     }
   }
 
-  // === Генерация ТК+МК (всегда) ===
   logger.info('Генерация ТК+МК');
   const generationStart = nowMs();
-  const results = await generateBatch(products, outputDir, {
+  const results = await generateBatch(effectiveProducts, outputDir, {
     overridesPath: args.overrides ? path.resolve(args.overrides) : null,
     validation: { unknownUnitPolicy },
     logger,
@@ -501,17 +487,15 @@ async function main() {
     errorByPosition.get(pos).push(`ТК: ${fail.error}`);
   }
 
-
-  if (args.summary) {
+  if (args.summary && !watchMode) {
     logger.info('Сводный отчёт по партии');
-    const summary = await generateSummaryReport(products, results, outputDir);
+    const summary = await generateSummaryReport(effectiveProducts, results, outputDir);
     logger.info({ file: summary.file }, 'Сводный отчёт сформирован');
   }
 
-  // === Генерация РКМ (если --rkm) ===
-  if (args.rkm) {
+  if (args.rkm || watchMode) {
     const doOptimize = args.optimize;
-    logger.info({ optimize: doOptimize }, 'Генерация РКМ');
+    logger.info({ optimize: doOptimize, watchMode }, 'Генерация РКМ');
     let rkmOk = 0;
     let rkmFail = 0;
     let rkmConverged = 0;
@@ -519,7 +503,7 @@ async function main() {
     let rkmNoPrice = 0;
 
     const rkmBatchStart = nowMs();
-    const rkmResults = await generateRKMBatch(products, outputDir, {
+    const rkmResults = await generateRKMBatch(effectiveProducts, outputDir, {
       optimize: doOptimize,
       logger,
       profile: Boolean(args.profile),
@@ -529,8 +513,8 @@ async function main() {
     const rkmElapsedMs = nowMs() - rkmBatchStart;
     const rkmCached = rkmResults.filter((r) => r.success && r.cached).length;
 
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
+    for (let i = 0; i < effectiveProducts.length; i++) {
+      const product = effectiveProducts[i];
       const result = rkmResults[i];
       if (result && result.success) {
         rkmOk++;
@@ -549,7 +533,7 @@ async function main() {
         errorByPosition.get(product.tk_number).push(`РКМ: ${result ? result.error : 'неизвестная ошибка'}`);
       }
     }
-    logger.info({ successRkm: rkmOk, total: products.length, failedRkm: rkmFail, cached: rkmCached, elapsedMs: Math.round(rkmElapsedMs) }, 'Итоги генерации РКМ');
+    logger.info({ successRkm: rkmOk, total: effectiveProducts.length, failedRkm: rkmFail, cached: rkmCached, elapsedMs: Math.round(rkmElapsedMs) }, 'Итоги генерации РКМ');
     if (doOptimize) {
       logger.info({ converged: rkmConverged, notConverged: rkmNotConverged, noControlPrice: rkmNoPrice }, 'Итоги оптимизации');
     }
@@ -578,10 +562,10 @@ async function main() {
 
   const failedPositions = [...errorByPosition.keys()];
   const failedCount = failedPositions.length;
-  const successCount = products.length - failedCount;
+  const successCount = effectiveProducts.length - failedCount;
   logger.info(
-    { total: products.length, success: successCount, failed: failedCount },
-    `${products.length} позиции: ${successCount} успешно, ${failedCount} с ошибками`
+    { total: effectiveProducts.length, success: successCount, failed: failedCount },
+    `${effectiveProducts.length} позиции: ${successCount} успешно, ${failedCount} с ошибками`
   );
   if (failedCount > 0) {
     for (const [pos, errors] of errorByPosition.entries()) {
@@ -591,6 +575,120 @@ async function main() {
   } else {
     process.exitCode = 0;
   }
+}
+
+function runWatchMode({ inputPath, outputDir }) {
+  const targets = createWatchTargets(inputPath);
+  logger.info({
+    targets,
+    testPosition: 1
+  }, 'Watch mode включён: генерируется только первая позиция (DOCX + XLSX)');
+
+  let isRunning = false;
+  let timer = null;
+  let pendingFiles = new Set();
+
+  const triggerGeneration = async () => {
+    if (isRunning) return;
+    isRunning = true;
+    const changedFiles = [...pendingFiles];
+    pendingFiles = new Set();
+    const start = nowMs();
+    logger.info({ changedFiles }, 'Изменения обнаружены, запускаем регенерацию');
+    try {
+      await runGenerationCycle({ inputPath, outputDir, watchMode: true });
+      logger.info({ elapsed: formatElapsedMs(nowMs() - start), changedFiles }, 'Watch-регенерация завершена');
+    } catch (error) {
+      logger.error({
+        elapsed: formatElapsedMs(nowMs() - start),
+        changedFiles,
+        error: error.message
+      }, 'Watch-регенерация завершилась с ошибкой');
+    } finally {
+      isRunning = false;
+      if (pendingFiles.size > 0) {
+        triggerGeneration().catch((error) => {
+          logger.error({ error: error.message }, 'Ошибка отложенной watch-регенерации');
+        });
+      }
+    }
+  };
+
+  const schedule = (changedPath) => {
+    pendingFiles.add(changedPath);
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      triggerGeneration().catch((error) => {
+        logger.error({ error: error.message }, 'Ошибка watch-регенерации');
+      });
+    }, 200);
+  };
+
+  for (const target of targets) {
+    if (!fs.existsSync(target)) {
+      logger.warn({ target }, 'Путь для watch не найден, пропускаем');
+      continue;
+    }
+    const stat = fs.statSync(target);
+    const watchTarget = stat.isDirectory() ? target : path.dirname(target);
+    fs.watch(watchTarget, { persistent: true }, (eventType, filename) => {
+      const changedPath = filename ? path.resolve(watchTarget, String(filename)) : watchTarget;
+      schedule(changedPath);
+      logger.debug({ eventType, changedPath }, 'watch event');
+    });
+  }
+
+  runGenerationCycle({ inputPath, outputDir, watchMode: true }).then(() => {
+    logger.info('Начальная watch-генерация завершена, ожидаем изменения...');
+  }).catch((error) => {
+    logger.error({ error: error.message }, 'Ошибка начальной watch-генерации');
+  });
+}
+
+/**
+ * Main entry point
+ */
+async function main() {
+  configureLogger({
+    level: String(args['log-level'] || 'info').toLowerCase(),
+    logFile: args['log-file'] || null
+  });
+
+  if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
+    throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
+  }
+
+  if (args.help || !args.input) {
+    printHelp();
+    if (!args.input && !args.help) {
+      throw new Error('Не указан входной файл (--input)');
+    }
+    return;
+  }
+  
+  const inputPath = path.resolve(args.input);
+  const outputDir = path.resolve(args.output);
+  
+  if (!fs.existsSync(inputPath)) {
+    throw new Error(`Файл не найден: ${inputPath}`);
+  }
+  
+  logger.info({ inputPath, outputDir }, 'Запуск tk-generator');
+
+  if (args.template) {
+    const templatePath = path.resolve(args.template);
+    if (!fs.existsSync(templatePath)) {
+      throw new Error(`Шаблон не найден: ${templatePath}`);
+    }
+    logger.info({ templatePath }, 'Используется пользовательский шаблон DOCX');
+  }
+  
+  if (args.watch) {
+    runWatchMode({ inputPath, outputDir });
+    return;
+  }
+
+  await runGenerationCycle({ inputPath, outputDir, watchMode: false });
 }
 
 main().catch(err => {
