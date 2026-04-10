@@ -7,6 +7,7 @@ const https = require('https');
 const { createHash } = require('crypto');
 
 const RELEASES_API_URL = 'https://api.github.com/repos/ivanpetrov19960407-afk/tk-generator/releases/latest';
+const AUTO_UPDATE_STATE_FILE = path.join(os.homedir(), '.tk-generator', 'update-state.json');
 
 function normalizeVersion(version) {
   return String(version || '').trim().replace(/^v/i, '');
@@ -32,6 +33,18 @@ function compareVersions(left, right) {
 function resolvePlatformAssetName(platform = process.platform, arch = process.arch) {
   if (platform === 'win32' && arch === 'x64') return 'tk-generator-windows-x64.zip';
   return null;
+}
+
+function parseIntervalToMs(interval) {
+  const raw = String(interval || '24h').trim().toLowerCase();
+  const matched = raw.match(/^(\d+)\s*([smhd])$/);
+  if (!matched) return 24 * 60 * 60 * 1000;
+  const value = Number(matched[1]);
+  const unit = matched[2];
+  if (unit === 's') return value * 1000;
+  if (unit === 'm') return value * 60 * 1000;
+  if (unit === 'h') return value * 60 * 60 * 1000;
+  return value * 24 * 60 * 60 * 1000;
 }
 
 function httpGetJson(url, headers = {}) {
@@ -113,6 +126,35 @@ function sha256File(filePath) {
   return hash.digest('hex');
 }
 
+function readAutoUpdateState(filePath = AUTO_UPDATE_STATE_FILE) {
+  if (!fs.existsSync(filePath)) return {};
+  try {
+    const raw = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(raw);
+    return data && typeof data === 'object' ? data : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
+function writeAutoUpdateState(state, filePath = AUTO_UPDATE_STATE_FILE) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(state, null, 2), 'utf8');
+}
+
+function shouldCheckAutoUpdate({ interval = '24h', now = Date.now(), stateFilePath = AUTO_UPDATE_STATE_FILE } = {}) {
+  const state = readAutoUpdateState(stateFilePath);
+  const lastCheckedAt = Number(state.lastCheckedAt || 0);
+  if (!Number.isFinite(lastCheckedAt) || lastCheckedAt <= 0) return true;
+  return (now - lastCheckedAt) >= parseIntervalToMs(interval);
+}
+
+function markAutoUpdateChecked({ now = Date.now(), stateFilePath = AUTO_UPDATE_STATE_FILE } = {}) {
+  const state = readAutoUpdateState(stateFilePath);
+  state.lastCheckedAt = now;
+  writeAutoUpdateState(state, stateFilePath);
+}
+
 async function fetchLatestRelease() {
   const release = await httpGetJson(RELEASES_API_URL);
   const version = normalizeVersion(release.tag_name || release.name || '');
@@ -185,9 +227,13 @@ async function performStandaloneSelfUpdate({
 
 module.exports = {
   RELEASES_API_URL,
+  AUTO_UPDATE_STATE_FILE,
   normalizeVersion,
   compareVersions,
   resolvePlatformAssetName,
+  parseIntervalToMs,
+  shouldCheckAutoUpdate,
+  markAutoUpdateChecked,
   fetchLatestRelease,
   checkForStandaloneUpdate,
   performStandaloneSelfUpdate

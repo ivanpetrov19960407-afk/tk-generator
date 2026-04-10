@@ -120,13 +120,23 @@ jobs:
         include:
           - os: windows-latest
             cmd: npm run desktop:build -- --publish always
-            artifact_glob: dist-electron/*.exe
+            artifact_glob: |
+              dist-electron/*.exe
+              dist-electron/latest*.yml
+              dist-electron/*.blockmap
           - os: macos-latest
             cmd: npm run desktop:build:mac -- --publish always
-            artifact_glob: dist-electron/*.dmg
+            artifact_glob: |
+              dist-electron/*.dmg
+              dist-electron/latest-mac*.yml
+              dist-electron/*.zip
+              dist-electron/*.blockmap
           - os: ubuntu-latest
             cmd: npm run desktop:build:linux -- --publish always
-            artifact_glob: dist-electron/*.AppImage
+            artifact_glob: |
+              dist-electron/*.AppImage
+              dist-electron/latest-linux*.yml
+              dist-electron/*.blockmap
 
     steps:
       - name: Checkout repository

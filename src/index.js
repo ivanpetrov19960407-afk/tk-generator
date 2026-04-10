@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
+const readline = require('readline');
 const { generateBatch, normalizeFormats } = require('./generator');
 const { generateRKMBatch } = require('./rkm/rkm-generator');
 const { nowMs } = require('./utils/perf');
@@ -24,7 +25,12 @@ const { loadConfig, getConfig } = require('./config');
 const { generateSummaryReport } = require('./summary-report');
 const { configureLogger, logger, LEVELS } = require('./logger');
 const { createRepository } = require('./db/repository');
-const { checkForStandaloneUpdate, performStandaloneSelfUpdate } = require('./self-update');
+const {
+  checkForStandaloneUpdate,
+  performStandaloneSelfUpdate,
+  shouldCheckAutoUpdate,
+  markAutoUpdateChecked
+} = require('./self-update');
 const { loadPlugins } = require('./plugin-loader');
 
 const args = minimist(process.argv.slice(2), {
@@ -747,6 +753,57 @@ async function handleStandaloneUpdateCli() {
   return null;
 }
 
+function isStandaloneRuntime() {
+  const execName = path.basename(process.execPath || '').toLowerCase();
+  return !execName.includes('node') && !execName.includes('bun');
+}
+
+async function askUserYesNo(message) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  try {
+    const answer = await new Promise((resolve) => {
+      rl.question(`${message} [Y/n]: `, resolve);
+    });
+    const normalized = String(answer || '').trim().toLowerCase();
+    return normalized === '' || normalized === 'y' || normalized === 'yes' || normalized === 'д' || normalized === 'да';
+  } finally {
+    rl.close();
+  }
+}
+
+async function maybeRunStandaloneAutoUpdate(config) {
+  if (!isStandaloneRuntime()) return;
+  if (args['check-update'] || args['self-update']) return;
+  if (!config || !config.autoUpdate || !config.autoUpdate.enabled) return;
+
+  const interval = config.autoUpdate.checkInterval || '24h';
+  if (!shouldCheckAutoUpdate({ interval })) return;
+
+  markAutoUpdateChecked();
+  const currentVersion = require('../package.json').version;
+  let update;
+  try {
+    update = await checkForStandaloneUpdate({ currentVersion });
+  } catch (error) {
+    logger.warn({ error: error.message }, 'Не удалось проверить автообновление standalone');
+    return;
+  }
+
+  if (!update.hasUpdate) return;
+
+  const shouldUpdate = await askUserYesNo(`Доступна версия ${update.latestVersion}. Обновить сейчас?`);
+  if (!shouldUpdate) {
+    logger.info({ latestVersion: update.latestVersion }, 'Пользователь отложил обновление standalone');
+    return;
+  }
+
+  const result = await performStandaloneSelfUpdate({ currentVersion });
+  console.log(result.message);
+}
+
 /**
  * Main entry point
  */
@@ -759,6 +816,11 @@ async function main() {
   if (args['log-level'] && !LEVELS.includes(String(args['log-level']).toLowerCase())) {
     throw new Error(`Некорректный --log-level="${args['log-level']}". Допустимо: ${LEVELS.join(', ')}`);
   }
+
+  loadConfig({
+    configDir: args['config-dir'] ? path.resolve(args['config-dir']) : null,
+    configPath: args.config ? path.resolve(args.config) : null
+  });
 
   const pluginReport = loadPlugins({
     pluginsDir: path.resolve(process.cwd(), 'plugins'),
@@ -799,6 +861,8 @@ async function main() {
     process.exitCode = updateExitCode;
     return;
   }
+
+  await maybeRunStandaloneAutoUpdate(getConfig());
 
   if (args.help || !args.input) {
     printHelp();
