@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { buildOperations } = require('./operations');
 const { buildAllSections, buildTitlePage } = require('./sections');
 const { buildMKHeader, buildMKTableData } = require('./mk-table');
@@ -12,6 +13,8 @@ const { assembleDocument, Packer } = require('./docx-builder');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 const { validateProductOrThrow } = require('./validation/validator');
 const { logger } = require('./logger');
+const { Profiler } = require('./utils/perf');
+const { hashInput, createManifest } = require('./utils/cache');
 
 /**
  * Apply defaults to a product spec
@@ -79,29 +82,31 @@ function applyDefaults(product) {
  */
 async function generateDocument(product, outputDir, options = {}) {
   const log = options.logger || logger;
+  const profileEnabled = Boolean(options.profile);
+  const profiler = options.profiler || new Profiler(profileEnabled);
   // Apply defaults
   product = applyDefaults(product);
   
   // Validate
-  validateProductOrThrow(product, options.validation || {});
+  await profiler.measure('tk.validate', async () => validateProductOrThrow(product, options.validation || {}));
   
   log.info({ tkNumber: product.tk_number, product: product.name, texture: product.texture }, 'Генерация ТК');
   
   // 1. Build operations (Section 6)
-  const { operations, warnings: opWarnings } = buildOperations(product, options);
+  const { operations, warnings: opWarnings } = await profiler.measure('tk.buildOperations', async () => buildOperations(product, options));
   log.debug({ tkNumber: product.tk_number, operations: operations.length }, 'Операции загружены');
   
   // 2. Build sections
-  const sectionData = buildAllSections(product);
+  const sectionData = await profiler.measure('tk.buildSections', async () => buildAllSections(product));
   log.debug({ tkNumber: product.tk_number }, 'Разделы 1-5, 7-11 сгенерированы');
   
   // 3. Build MK
-  const mkHeader = buildMKHeader(product);
-  const mkRows = buildMKTableData(product);
+  const mkHeader = await profiler.measure('tk.buildMKHeader', async () => buildMKHeader(product));
+  const mkRows = await profiler.measure('tk.buildMKRows', async () => buildMKTableData(product));
   log.debug({ tkNumber: product.tk_number, mkRows: mkRows.length }, 'Таблица МК сформирована');
   
   // 4. Equipment analysis
-  const { warnings: equipWarnings } = analyzeEquipment(product);
+  const { warnings: equipWarnings } = await profiler.measure('tk.analyzeEquipment', async () => analyzeEquipment(product));
   // Deduplicate warnings
   const allWarnings = [...new Set([...(opWarnings || []), ...(equipWarnings || [])])];
   
@@ -110,7 +115,7 @@ async function generateDocument(product, outputDir, options = {}) {
   }
   
   // 5. Assemble DOCX
-  const doc = assembleDocument({
+  const doc = await profiler.measure('tk.assembleDocument', async () => assembleDocument({
     titlePageText: sectionData.title_page,
     sections: sectionData.sections,
     operations,
@@ -118,10 +123,10 @@ async function generateDocument(product, outputDir, options = {}) {
     mkRows,
     product,
     warnings: allWarnings
-  });
+  }));
   
   // 6. Generate buffer and write file
-  const buffer = await Packer.toBuffer(doc);
+  const buffer = await profiler.measure('tk.packDocx', async () => Packer.toBuffer(doc));
   
   // Ensure output dir exists
   if (!fs.existsSync(outputDir)) {
@@ -130,7 +135,7 @@ async function generateDocument(product, outputDir, options = {}) {
   
   const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
   const filePath = path.join(outputDir, filename);
-  fs.writeFileSync(filePath, buffer);
+  await profiler.measure('tk.writeDocx', async () => fs.writeFileSync(filePath, buffer));
   
   const sizeKB = Math.round(buffer.length / 1024);
   log.info({ tkNumber: product.tk_number, filename, sizeKB }, 'Файл ТК сохранён');
@@ -140,7 +145,8 @@ async function generateDocument(product, outputDir, options = {}) {
     filename,
     sizeKB,
     warnings: allWarnings,
-    product
+    product,
+    profile: profiler.summary()
   };
 }
 
@@ -152,31 +158,58 @@ async function generateDocument(product, outputDir, options = {}) {
  */
 async function generateBatch(products, outputDir, options = {}) {
   const log = options.logger || logger;
+  const concurrency = Math.max(1, Number(options.concurrency || Math.min(8, Math.max(2, os.cpus().length))));
+  const profileEnabled = Boolean(options.profile);
+  const useCache = options.cache !== false;
+  const manifest = useCache ? createManifest(outputDir, '.tk-cache.json') : null;
   log.info({ total: products.length }, 'Генерация ТК документов');
+  log.info({ concurrency, cache: useCache }, 'Параметры пакетной генерации ТК');
   
-  const results = [];
-  
-  for (let i = 0; i < products.length; i++) {
-    const product = products[i];
-    log.debug({ current: i + 1, total: products.length, tkNumber: product.tk_number }, 'Обработка позиции');
-    
-    try {
-      const result = await generateDocument(product, outputDir, options);
-      results.push({ success: true, ...result });
-    } catch (err) {
-      log.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации ТК');
-      results.push({ success: false, error: err.message, product });
+  const results = new Array(products.length);
+  let index = 0;
+
+  async function worker() {
+    while (true) {
+      const i = index++;
+      if (i >= products.length) break;
+      const rawProduct = products[i];
+      const product = applyDefaults(rawProduct);
+      const filename = `TK_${String(product.tk_number).padStart(2, '0')}_${product.short_name}_${product.texture}.docx`;
+      const filePath = path.join(outputDir, filename);
+      const cacheKey = `tk:${product.tk_number}:${product.short_name}:${product.texture}`;
+      const inputHash = hashInput({ product, validation: options.validation || {} });
+      log.debug({ current: i + 1, total: products.length, tkNumber: product.tk_number }, 'Обработка позиции');
+
+      if (manifest && manifest.hasFresh(cacheKey, inputHash, filePath)) {
+        results[i] = { success: true, filePath, filename, sizeKB: Math.round(fs.statSync(filePath).size / 1024), product, cached: true };
+        continue;
+      }
+
+      try {
+        const profiler = new Profiler(profileEnabled);
+        const result = await generateDocument(product, outputDir, { ...options, profiler });
+        results[i] = { success: true, ...result, cached: false };
+        if (manifest) manifest.update(cacheKey, inputHash, result.filePath);
+      } catch (err) {
+        log.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации ТК');
+        results[i] = { success: false, error: err.message, product };
+      }
     }
   }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, products.length || 1) }, () => worker()));
+  if (manifest) manifest.flush();
   
   // Summary
   const successful = results.filter(r => r.success);
   const failed = results.filter(r => !r.success);
+  const cached = successful.filter(r => r.cached).length;
   
   log.info({
     success: successful.length,
     failed: failed.length,
-    outputDir: path.resolve(outputDir)
+    outputDir: path.resolve(outputDir),
+    cached
   }, 'Итоги генерации ТК');
   
   if (successful.length > 0) {
