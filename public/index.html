@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TK Generator Web</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
+    textarea { width: 100%; min-height: 240px; font-family: monospace; }
+    .controls { display: flex; gap: 10px; margin: 12px 0; }
+    .error { color: #b00020; background: #fdecef; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+    .warning { color: #7a5a00; background: #fff7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+    .ok { color: #0f5132; background: #d1e7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>TK Generator — Web-интерфейс</h1>
+
+  <p>Загрузите Excel или вставьте JSON (массив products).</p>
+
+  <input id="excelInput" type="file" accept=".xlsx,.xls" />
+
+  <h3>JSON products</h3>
+  <textarea id="jsonInput" placeholder='[{"name":"...","dimensions":{"length":700,"width":700,"thickness":30},"material":{"type":"мрамор","name":"..."},"texture":"лощение"}]'></textarea>
+
+  <div class="controls">
+    <button id="validateBtn">Валидировать</button>
+    <button id="generateBtn">Генерировать</button>
+  </div>
+
+  <div id="messages"></div>
+
+  <script>
+    const excelInput = document.getElementById('excelInput');
+    const jsonInput = document.getElementById('jsonInput');
+    const messages = document.getElementById('messages');
+
+    function renderMessage(text, type = 'ok') {
+      const div = document.createElement('div');
+      div.className = type;
+      div.textContent = text;
+      messages.appendChild(div);
+    }
+
+    function clearMessages() {
+      messages.innerHTML = '';
+    }
+
+    function readProductsFromTextarea() {
+      const raw = jsonInput.value.trim();
+      if (!raw) return [];
+      return JSON.parse(raw);
+    }
+
+    async function uploadExcelAndFillJson(file) {
+      const fileBuffer = await file.arrayBuffer();
+      const res = await fetch('/api/upload-excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        body: fileBuffer
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ошибка загрузки Excel');
+      jsonInput.value = JSON.stringify(data.products, null, 2);
+      renderMessage(`Excel распознан: ${data.products.length} позиций`, 'ok');
+    }
+
+    excelInput.addEventListener('change', async () => {
+      clearMessages();
+      const file = excelInput.files && excelInput.files[0];
+      if (!file) return;
+      try {
+        await uploadExcelAndFillJson(file);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    document.getElementById('validateBtn').addEventListener('click', async () => {
+      clearMessages();
+      try {
+        const products = readProductsFromTextarea();
+        const res = await fetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+        const report = await res.json();
+
+        if (!res.ok) {
+          renderMessage(report.error || 'Ошибка API валидации', 'error');
+          return;
+        }
+
+        if (report.valid) {
+          renderMessage('Валидация пройдена', 'ok');
+        } else {
+          report.errors.forEach((e) => renderMessage(e, 'error'));
+        }
+
+        report.warnings.forEach((w) => renderMessage(w, 'warning'));
+      } catch (err) {
+        renderMessage(`Ошибка: ${err.message}`, 'error');
+      }
+    });
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      clearMessages();
+      try {
+        const products = readProductsFromTextarea();
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          if (err.report && Array.isArray(err.report.errors)) {
+            err.report.errors.forEach((e) => renderMessage(e, 'error'));
+          } else {
+            renderMessage(err.error || 'Ошибка генерации', 'error');
+          }
+          return;
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tk-generator-result.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+        renderMessage('ZIP сформирован и загружается', 'ok');
+      } catch (err) {
+        renderMessage(`Ошибка: ${err.message}`, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
