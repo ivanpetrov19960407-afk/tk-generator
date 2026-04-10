@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const { calcProductMass, calcBlockMass, calcBatchMass, analyzeEquipment } = require('./equipment');
 const { resolveOverridesPath, loadOverridesFile, applyOverridesToOperations, applyManualProductOverrides } = require('./utils/overrides-loader');
+const { formatSupportedTextures } = require('./textures');
 
 const operationsLibrary = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'data', 'operations_library.json'), 'utf8')
@@ -444,9 +445,9 @@ function getProductTypeName(product) {
 function buildOperations(product, options = {}) {
   const textureKey = product.texture;
   const templateOps = operationsLibrary[textureKey];
-  
+
   if (!templateOps) {
-    throw new Error(`Неизвестный тип фактуры: "${textureKey}". Доступные: лощение, рельефная_матовая, бучардирование_лощение`);
+    throw new Error(`Неизвестный тип фактуры: "${textureKey}". Доступные: ${formatSupportedTextures()}`);
   }
 
   const operations = [];

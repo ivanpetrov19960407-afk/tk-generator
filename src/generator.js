@@ -10,6 +10,7 @@ const { buildAllSections, buildTitlePage } = require('./sections');
 const { buildMKHeader, buildMKTableData } = require('./mk-table');
 const { assembleDocument, Packer } = require('./docx-builder');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
+const { SUPPORTED_TEXTURES, formatSupportedTextures } = require('./textures');
 
 /**
  * Validate product input data
@@ -34,9 +35,8 @@ function validateProduct(product) {
   }
   if (!product.texture) errors.push('Отсутствует тип фактуры (texture)');
   else {
-    const validTextures = ['лощение', 'рельефная_матовая', 'бучардирование_лощение'];
-    if (!validTextures.includes(product.texture)) {
-      errors.push(`Неизвестная фактура: "${product.texture}". Допустимые: ${validTextures.join(', ')}`);
+    if (!SUPPORTED_TEXTURES.includes(product.texture)) {
+      errors.push(`Неизвестная фактура: "${product.texture}". Допустимые: ${formatSupportedTextures()}`);
     }
   }
   

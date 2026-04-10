@@ -1054,7 +1054,7 @@ function buildReferenceSheet(wb) {
 
   ws.getCell('C3').value = 'Фактура';
   ws.getCell('C3').font = BOLD_FONT;
-  ['лощение', 'бучардирование+лощение', 'рельефная матовая', 'полировка'].forEach((v, i) => {
+  ['лощение', 'бучардирование+лощение', 'рельефная матовая'].forEach((v, i) => {
     ws.getCell(4 + i, 3).value = v;
   });
 
