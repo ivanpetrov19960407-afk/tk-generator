@@ -17,7 +17,8 @@
     "desktop:build": "npm --prefix desktop run build:win",
     "desktop:build:mac": "npm --prefix desktop run build:mac",
     "desktop:build:linux": "npm --prefix desktop run build:linux",
-    "test:electron": "npm --prefix desktop run test:launch"
+    "test:electron": "npm --prefix desktop run test:launch",
+    "test:e2e": "node tests/e2e/cli.test.js && node tests/e2e/api.test.js && node tests/e2e/electron.test.js && node tests/e2e/telegram.test.js"
   },
   "keywords": [
     "технологическая карта",

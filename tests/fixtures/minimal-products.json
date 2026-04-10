@@ -1,0 +1,37 @@
+{
+  "products": [
+    {
+      "tk_number": 1,
+      "name": "Плита 600x300x30",
+      "short_name": "plita_600x300x30",
+      "dimensions": { "length": 600, "width": 300, "thickness": 30 },
+      "material": { "type": "мрамор", "name": "Crema Nova", "density": 2700 },
+      "texture": "лощение",
+      "quantity_pieces": 1,
+      "control_unit": "шт",
+      "category": "1"
+    },
+    {
+      "tk_number": 2,
+      "name": "Подступенок 1200x150x20",
+      "short_name": "podstupenok_1200x150x20",
+      "dimensions": { "length": 1200, "width": 150, "thickness": 20 },
+      "material": { "type": "гранит", "name": "Жалгыз", "density": 2700 },
+      "texture": "бучардирование_лощение",
+      "quantity_pieces": 2,
+      "control_unit": "шт",
+      "category": "1"
+    },
+    {
+      "tk_number": 3,
+      "name": "Плинтус 900x80x20",
+      "short_name": "plintus_900x80x20",
+      "dimensions": { "length": 900, "width": 80, "thickness": 20 },
+      "material": { "type": "мрамор", "name": "Bianco Carrara", "density": 2700 },
+      "texture": "рельефная_матовая",
+      "quantity_pieces": 3,
+      "control_unit": "шт",
+      "category": "1"
+    }
+  ]
+}
