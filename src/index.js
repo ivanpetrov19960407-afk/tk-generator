@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
-const { generateBatch } = require('./generator');
+const { generateBatch, normalizeFormats } = require('./generator');
 const { generateRKMBatch } = require('./rkm/rkm-generator');
 const { nowMs } = require('./utils/perf');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
@@ -44,7 +44,8 @@ const args = minimist(process.argv.slice(2), {
     summary: false,
     cache: true,
     watch: false,
-    'unknown-unit-policy': 'warning'
+    'unknown-unit-policy': 'warning',
+    format: 'docx'
   }
 });
 
@@ -64,7 +65,8 @@ function printHelp() {
       --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
       --cost-breakdown   Показать смету по операциям в консоли
       --validate-only    Только проверить входные данные и завершить
-      --summary          Сформировать сводный Excel-отчёт по партии
+      --summary          Сформировать сводный отчёт по партии (XLSX/PDF)
+      --format <docx|pdf|docx,pdf> Формат ТК (по умолчанию docx)
       --export-1c        Экспорт калькуляций в 1С-совместимый XML
       --export-1c-csv    Экспорт калькуляций в упрощённый CSV для 1С
       --profile          Вывести timing по этапам генерации
@@ -498,6 +500,9 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     }
   }
 
+  const formats = normalizeFormats(args.format);
+  logger.info({ format: formats.join(',') }, 'Форматы генерации ТК');
+
   logger.info('Генерация ТК+МК');
   const generationStart = nowMs();
   const results = await generateBatch(effectiveProducts, outputDir, {
@@ -507,7 +512,8 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     profile: Boolean(args.profile),
     cache: args.cache !== false,
     concurrency: args.concurrency ? Number(args.concurrency) : null,
-    templatePath: args.template ? path.resolve(args.template) : null
+    templatePath: args.template ? path.resolve(args.template) : null,
+    format: formats
   });
   const tkElapsedMs = nowMs() - generationStart;
   const failed = results.filter(r => !r.success);
@@ -521,7 +527,8 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
 
   if (args.summary && !watchMode) {
     logger.info('Сводный отчёт по партии');
-    const summary = await generateSummaryReport(effectiveProducts, results, outputDir);
+    const summaryFormats = formats.includes('pdf') ? ['xlsx', 'pdf'] : ['xlsx'];
+    const summary = await generateSummaryReport(effectiveProducts, results, outputDir, { format: summaryFormats });
     logger.info({ file: summary.file }, 'Сводный отчёт сформирован');
   }
 

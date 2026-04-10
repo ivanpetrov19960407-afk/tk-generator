@@ -44,6 +44,18 @@ const { createApp } = require('../../src/server/index');
     assert.ok(names.some((n) => n.endsWith('.docx')), 'generate: zip should contain DOCX');
     assert.ok(names.some((n) => n.endsWith('.xlsx')), 'generate: zip should contain XLSX');
 
+    const resPdf = await fetch(`${base}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...payload, format: 'pdf' })
+    });
+
+    assert.strictEqual(resPdf.status, 200, 'generate(pdf): expected HTTP 200');
+    const zipPdfBuffer = Buffer.from(await resPdf.arrayBuffer());
+    const zipPdf = await JSZip.loadAsync(zipPdfBuffer);
+    const pdfNames = Object.keys(zipPdf.files);
+    assert.ok(pdfNames.some((n) => n.endsWith('.pdf')), 'generate(pdf): zip should contain PDF');
+
     console.log('generate.api test passed');
   } finally {
     server.close();

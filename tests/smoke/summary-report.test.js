@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const ExcelJS = require('exceljs');
+const pdfParse = require('pdf-parse');
 const { generateBatch } = require('../../src/generator');
 const { generateSummaryReport } = require('../../src/summary-report');
 
@@ -18,13 +19,16 @@ const batch = require('../../examples/batch_small.json');
     const products = batch.products.map((p) => ({ ...p }));
     const tkResults = await generateBatch(products, tmpDir);
 
-    const result = await generateSummaryReport(products, tkResults, tmpDir);
+    const result = await generateSummaryReport(products, tkResults, tmpDir, { format: 'xlsx,pdf' });
 
-    assert(result && result.file, 'generateSummaryReport should return file path in result.file');
-    assert(fs.existsSync(result.file), 'SUMMARY xlsx file should exist');
+    assert(result && Array.isArray(result.files), 'generateSummaryReport should return files array');
+    const xlsxFile = result.files.find((f) => f.format === 'xlsx');
+    const pdfFile = result.files.find((f) => f.format === 'pdf');
+    assert(xlsxFile && fs.existsSync(xlsxFile.file), 'SUMMARY xlsx file should exist');
+    assert(pdfFile && fs.existsSync(pdfFile.file), 'SUMMARY pdf file should exist');
 
     const wb = new ExcelJS.Workbook();
-    await wb.xlsx.readFile(result.file);
+    await wb.xlsx.readFile(xlsxFile.file);
 
     const sheetNames = wb.worksheets.map((ws) => ws.name);
     ['Реестр ТК', 'Сводка цен', 'Материалы', 'Трудозатраты'].forEach((requiredSheet) => {
@@ -34,7 +38,10 @@ const batch = require('../../examples/batch_small.json');
     const pricing = wb.getWorksheet('Сводка цен');
     assert(pricing.rowCount > 1, 'Сводка цен should contain data rows');
 
-    console.log(`Summary smoke test passed: ${path.basename(result.file)}`);
+    const parsedPdf = await pdfParse(fs.readFileSync(pdfFile.file));
+    assert(parsedPdf.numpages >= 1, 'SUMMARY pdf should have pages');
+
+    console.log(`Summary smoke test passed: ${path.basename(xlsxFile.file)} + ${path.basename(pdfFile.file)}`);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
