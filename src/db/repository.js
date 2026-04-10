@@ -34,6 +34,7 @@ function createRepository(dbOrOptions) {
       product_name,
       material,
       texture,
+      total_cost,
       status,
       error_message,
       output_files
@@ -43,6 +44,7 @@ function createRepository(dbOrOptions) {
       @product_name,
       @material,
       @texture,
+      @total_cost,
       @status,
       @error_message,
       @output_files
@@ -88,6 +90,7 @@ function createRepository(dbOrOptions) {
       product_name: payload.product_name || null,
       material: payload.material || null,
       texture: payload.texture || null,
+      total_cost: Number(payload.total_cost || 0),
       status: payload.status || 'error',
       error_message: payload.error_message || null,
       output_files: payload.output_files ? JSON.stringify(payload.output_files) : null
@@ -137,12 +140,13 @@ function createRepository(dbOrOptions) {
     if (!generation) return null;
 
     const items = db.prepare(`
-      SELECT generation_id, position, product_name, material, texture, status, error_message, output_files
+      SELECT generation_id, position, product_name, material, texture, total_cost, status, error_message, output_files
       FROM generation_items
       WHERE generation_id = ?
       ORDER BY position ASC, id ASC
     `).all(Number(id)).map((item) => ({
       ...item,
+      total_cost: Number(item.total_cost || 0),
       output_files: item.output_files ? JSON.parse(item.output_files) : []
     }));
 
@@ -184,6 +188,107 @@ function createRepository(dbOrOptions) {
     };
   }
 
+  function buildAnalyticsFilter(filter = {}) {
+    const conditions = ['gi.status = ?'];
+    const params = ['success'];
+
+    if (filter.from) {
+      conditions.push('g.timestamp >= ?');
+      params.push(filter.from);
+    }
+    if (filter.to) {
+      conditions.push('g.timestamp <= ?');
+      params.push(filter.to);
+    }
+    if (filter.material) {
+      conditions.push('LOWER(COALESCE(gi.material, "")) = LOWER(?)');
+      params.push(filter.material);
+    }
+    if (filter.texture) {
+      conditions.push('LOWER(COALESCE(gi.texture, "")) = LOWER(?)');
+      params.push(filter.texture);
+    }
+
+    return {
+      whereClause: `WHERE ${conditions.join(' AND ')}`,
+      params
+    };
+  }
+
+  function getAnalyticsSummary(filter = {}) {
+    const { whereClause, params } = buildAnalyticsFilter(filter);
+    return db.prepare(`
+      SELECT
+        COUNT(DISTINCT gi.generation_id) AS total_generations,
+        COUNT(*) AS total_products,
+        COALESCE(AVG(gi.total_cost), 0) AS average_cost,
+        COALESCE(SUM(gi.total_cost), 0) AS total_cost
+      FROM generation_items gi
+      INNER JOIN generations g ON g.id = gi.generation_id
+      ${whereClause}
+    `).get(...params);
+  }
+
+  function getAnalyticsCostTrends(filter = {}) {
+    const groupBy = String(filter.groupBy || 'day').toLowerCase() === 'week' ? 'week' : 'day';
+    const bucketExpr = groupBy === 'week'
+      ? "strftime('%Y-W%W', g.timestamp)"
+      : "strftime('%Y-%m-%d', g.timestamp)";
+    const { whereClause, params } = buildAnalyticsFilter(filter);
+    return db.prepare(`
+      SELECT
+        ${bucketExpr} AS bucket,
+        COUNT(*) AS products,
+        COALESCE(AVG(gi.total_cost), 0) AS average_cost,
+        COALESCE(SUM(gi.total_cost), 0) AS total_cost
+      FROM generation_items gi
+      INNER JOIN generations g ON g.id = gi.generation_id
+      ${whereClause}
+      GROUP BY bucket
+      ORDER BY bucket ASC
+    `).all(...params).map((row) => ({
+      ...row,
+      average_cost: Number(row.average_cost || 0),
+      total_cost: Number(row.total_cost || 0)
+    }));
+  }
+
+  function getAnalyticsMaterials(filter = {}) {
+    const { whereClause, params } = buildAnalyticsFilter(filter);
+    const limit = Math.min(25, Math.max(1, Number(filter.limit || 10)));
+    return db.prepare(`
+      SELECT
+        COALESCE(NULLIF(gi.material, ''), 'Не указан') AS material,
+        COUNT(*) AS products,
+        COALESCE(SUM(gi.total_cost), 0) AS total_cost,
+        COALESCE(AVG(gi.total_cost), 0) AS average_cost
+      FROM generation_items gi
+      INNER JOIN generations g ON g.id = gi.generation_id
+      ${whereClause}
+      GROUP BY material
+      ORDER BY total_cost DESC, products DESC
+      LIMIT ?
+    `).all(...params, limit).map((row) => ({
+      ...row,
+      total_cost: Number(row.total_cost || 0),
+      average_cost: Number(row.average_cost || 0)
+    }));
+  }
+
+  function getAnalyticsTextures(filter = {}) {
+    const { whereClause, params } = buildAnalyticsFilter(filter);
+    return db.prepare(`
+      SELECT
+        COALESCE(NULLIF(gi.texture, ''), 'Не указана') AS texture,
+        COUNT(*) AS products
+      FROM generation_items gi
+      INNER JOIN generations g ON g.id = gi.generation_id
+      ${whereClause}
+      GROUP BY texture
+      ORDER BY products DESC, texture ASC
+    `).all(...params);
+  }
+
   function countUsers() {
     return Number(db.prepare('SELECT COUNT(*) AS count FROM users').get().count || 0);
   }
@@ -221,6 +326,10 @@ function createRepository(dbOrOptions) {
     getGenerations,
     getGenerationById,
     getStats,
+    getAnalyticsSummary,
+    getAnalyticsCostTrends,
+    getAnalyticsMaterials,
+    getAnalyticsTextures,
     countUsers,
     getUserByUsername,
     getUserById,

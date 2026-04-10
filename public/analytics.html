@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Аналитика себестоимости</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .filters { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 8px; background: #fff; border-radius: 8px; padding: 12px; }
+    .card-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .card, .chart-card { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .charts { margin-top: 12px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+    .charts-bottom { margin-top: 10px; }
+    .metric { font-size: 24px; font-weight: 700; margin-top: 4px; }
+    label { font-size: 12px; color: #555; }
+    input, select, button { width: 100%; box-sizing: border-box; padding: 8px; }
+    button { cursor: pointer; }
+    .actions { display: flex; gap: 8px; align-items: end; }
+    @media (max-width: 980px) {
+      .filters { grid-template-columns: repeat(2, 1fr); }
+      .card-grid, .charts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Дашборд себестоимости</h1>
+    <a href="/index.html">← К генератору</a>
+  </div>
+
+  <div id="dashboardRoot">
+    <div class="filters">
+      <div><label>Дата с</label><input type="date" id="fromDate"></div>
+      <div><label>Дата по</label><input type="date" id="toDate"></div>
+      <div><label>Материал</label><input type="text" id="materialFilter" placeholder="Напр. Гранит"></div>
+      <div><label>Фактура</label><input type="text" id="textureFilter" placeholder="Напр. лощение"></div>
+      <div class="actions">
+        <button id="applyBtn">Применить</button>
+        <button id="pdfBtn">Экспорт PDF</button>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card"><div>Генераций</div><div id="totalGenerations" class="metric">0</div></div>
+      <div class="card"><div>Изделий</div><div id="totalProducts" class="metric">0</div></div>
+      <div class="card"><div>Средняя себестоимость</div><div id="avgCost" class="metric">0 ₽</div></div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-card">
+        <h3>Тренд себестоимости</h3>
+        <select id="groupBy" style="max-width:180px; margin-bottom:8px;">
+          <option value="day">По дням</option>
+          <option value="week">По неделям</option>
+        </select>
+        <canvas id="trendChart" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Материалы (топ)</h3>
+        <canvas id="materialsChart" height="180"></canvas>
+      </div>
+    </div>
+
+    <div class="charts-bottom">
+      <div class="chart-card">
+        <h3>Распределение по фактурам</h3>
+        <canvas id="texturesChart" height="110"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('tkg_access_token') || '';
+    const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+    const fmtMoney = (value) => `${new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(Number(value || 0))} ₽`;
+
+    let trendChart;
+    let materialsChart;
+    let texturesChart;
+
+    function buildQuery() {
+      const query = new URLSearchParams();
+      const from = document.getElementById('fromDate').value;
+      const to = document.getElementById('toDate').value;
+      const material = document.getElementById('materialFilter').value.trim();
+      const texture = document.getElementById('textureFilter').value.trim();
+      const groupBy = document.getElementById('groupBy').value;
+      if (from) query.set('from', `${from}T00:00:00.000Z`);
+      if (to) query.set('to', `${to}T23:59:59.999Z`);
+      if (material) query.set('material', material);
+      if (texture) query.set('texture', texture);
+      if (groupBy) query.set('groupBy', groupBy);
+      return query;
+    }
+
+    async function apiGet(path, query) {
+      const res = await fetch(`${path}?${query.toString()}`, { headers: authHeaders });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Ошибка API');
+      return body;
+    }
+
+    function drawOrUpdateChart(chart, ctx, type, data, options) {
+      if (chart) {
+        chart.data = data;
+        chart.update();
+        return chart;
+      }
+      return new Chart(ctx, { type, data, options });
+    }
+
+    async function refreshDashboard() {
+      const query = buildQuery();
+      const [summary, trends, materials, textures] = await Promise.all([
+        apiGet('/api/analytics/summary', query),
+        apiGet('/api/analytics/cost-trends', query),
+        apiGet('/api/analytics/materials', query),
+        apiGet('/api/analytics/textures', query)
+      ]);
+
+      document.getElementById('totalGenerations').textContent = summary.total_generations || 0;
+      document.getElementById('totalProducts').textContent = summary.total_products || 0;
+      document.getElementById('avgCost').textContent = fmtMoney(summary.average_cost || 0);
+
+      trendChart = drawOrUpdateChart(trendChart, document.getElementById('trendChart'), 'line', {
+        labels: (trends.items || []).map((x) => x.bucket),
+        datasets: [{
+          label: 'Средняя себестоимость',
+          data: (trends.items || []).map((x) => x.average_cost),
+          borderColor: '#1f77b4',
+          backgroundColor: 'rgba(31,119,180,.15)',
+          tension: 0.25,
+          fill: true
+        }]
+      }, { responsive: true, maintainAspectRatio: false });
+
+      materialsChart = drawOrUpdateChart(materialsChart, document.getElementById('materialsChart'), 'pie', {
+        labels: (materials.items || []).map((x) => x.material),
+        datasets: [{
+          label: 'Материалы',
+          data: (materials.items || []).map((x) => x.total_cost)
+        }]
+      }, { responsive: true, maintainAspectRatio: false });
+
+      texturesChart = drawOrUpdateChart(texturesChart, document.getElementById('texturesChart'), 'bar', {
+        labels: (textures.items || []).map((x) => x.texture),
+        datasets: [{
+          label: 'Количество изделий',
+          data: (textures.items || []).map((x) => x.products),
+          backgroundColor: '#6a5acd'
+        }]
+      }, { responsive: true, maintainAspectRatio: false });
+    }
+
+    async function exportPdf() {
+      const node = document.getElementById('dashboardRoot');
+      const canvas = await html2canvas(node, { scale: 2 });
+      const img = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const width = 297;
+      const height = (canvas.height * width) / canvas.width;
+      pdf.addImage(img, 'PNG', 0, 0, width, Math.min(height, 210));
+      pdf.save(`analytics-dashboard-${new Date().toISOString().slice(0, 10)}.pdf`);
+    }
+
+    document.getElementById('applyBtn').addEventListener('click', () => refreshDashboard().catch((e) => alert(e.message)));
+    document.getElementById('groupBy').addEventListener('change', () => refreshDashboard().catch((e) => alert(e.message)));
+    document.getElementById('pdfBtn').addEventListener('click', () => exportPdf().catch((e) => alert(e.message)));
+
+    refreshDashboard().catch((e) => alert(e.message));
+  </script>
+</body>
+</html>
