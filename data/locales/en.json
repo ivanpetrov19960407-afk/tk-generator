@@ -1,0 +1,51 @@
+{
+  "section": {
+    "header": {
+      "section6_operations": "Section 6. Detailed operations description",
+      "equipment_warnings": "Equipment warnings"
+    }
+  },
+  "title_page": {
+    "approve": "APPROVED",
+    "tech_card": "TECHNOLOGICAL CARD",
+    "route_card": "ROUTE CARD",
+    "production_director": "Production Director",
+    "developed_by": "Prepared by",
+    "reviewed_by": "Reviewed by",
+    "date_prefix": "Date",
+    "product_manufacturing": "manufacturing of natural stone products",
+    "architectural_product": "Category 1 architectural product with tone and grain matching",
+    "batch_volume": "Batch volume"
+  },
+  "mk": {
+    "table": {
+      "headers": {
+        "num": "No.",
+        "operation_name": "Operation name",
+        "equipment": "Equipment",
+        "executor": "Executor",
+        "control": "Control"
+      }
+    }
+  },
+  "pagination": {
+    "page_short": "Pg. ",
+    "of": " of "
+  },
+  "sections_template": {
+    "1": "TODO(EN): section 1",
+    "2": "TODO(EN): section 2",
+    "3": "TODO(EN): section 3",
+    "4": "TODO(EN): section 4",
+    "5": "TODO(EN): section 5",
+    "7": "TODO(EN): section 7",
+    "8": "TODO(EN): section 8",
+    "9": "TODO(EN): section 9",
+    "10": "TODO(EN): section 10",
+    "11": "TODO(EN): section 11",
+    "12": "TODO(EN): section 12",
+    "13": "TODO(EN): section 13",
+    "mk": "TODO(EN): section mk",
+    "title_page": "TODO(EN): section title_page"
+  }
+}

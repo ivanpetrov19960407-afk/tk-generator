@@ -3,10 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 const { resolveRuntimeDir } = require('../runtime-paths');
+const i18n = require('../i18n');
 
 const DEFAULT_CONFIG_DIR = resolveRuntimeDir('config');
 
 const DEFAULT_CONFIG = {
+  locale: 'ru',
   company: {
     name: 'ООО «Название компании»',
     address: 'Юридический адрес',
@@ -132,6 +134,9 @@ function applyEnvOverrides(config, env = process.env) {
 
 function validateConfig(config) {
   if (!isObject(config)) throw new Error('Конфиг должен быть объектом.');
+  if (config.locale != null && typeof config.locale !== 'string') {
+    throw new Error('config.locale должен быть строкой.');
+  }
   if (!isObject(config.company)) throw new Error('config.company должен быть объектом.');
   if (!isObject(config.rkm)) throw new Error('config.rkm должен быть объектом.');
   if (!isObject(config.rkm.logisticsDefaults)) throw new Error('config.rkm.logisticsDefaults должен быть объектом.');
@@ -176,6 +181,7 @@ function loadConfig(options = {}) {
 
   merged = applyEnvOverrides(merged, options.env || process.env);
   validateConfig(merged);
+  i18n.setLocale(merged.locale || 'ru');
   currentConfig = merged;
 
   return currentConfig;

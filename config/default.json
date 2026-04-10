@@ -20,13 +20,30 @@
       "unloading": 35000,
       "insurance_pct": 0.005
     },
-    "skipTransportTkNumbers": [36, 28, 29, 27, 30, 9, 10],
+    "skipTransportTkNumbers": [
+      36,
+      28,
+      29,
+      27,
+      30,
+      9,
+      10
+    ],
     "specialMaterialRules": {
       "габбро-диабаз": {
-        "detectKeywords": ["габбро"],
+        "detectKeywords": [
+          "габбро"
+        ],
         "k_reject": 1.08,
         "block_price": 40000,
-        "skipOperations": [10, 13, 14, 15, 19, 22],
+        "skipOperations": [
+          10,
+          13,
+          14,
+          15,
+          19,
+          22
+        ],
         "material_prices": {
           "diamond_discs": 2000,
           "diamond_milling_heads": 1500,
@@ -43,5 +60,6 @@
   },
   "cost": {
     "paths": {}
-  }
+  },
+  "locale": "ru"
 }

@@ -3,15 +3,8 @@
  * Builds the MK section from the template in sections_template.json
  */
 
-const fs = require('fs');
-const path = require('path');
-const { resolveRuntimeDir } = require('./runtime-paths');
 const { parametrize } = require('./operations');
 const { calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
-
-const sectionsTemplate = JSON.parse(
-  fs.readFileSync(path.join(resolveRuntimeDir('data'), 'sections_template.json'), 'utf8')
-);
 
 /**
  * MK route data for each of the 29 operations

@@ -14,6 +14,7 @@
  */
 
 const docx = require('docx');
+const i18n = require('./i18n');
 const {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
   Header, Footer, AlignmentType, PageNumber, PageBreak,
@@ -268,7 +269,7 @@ function buildTitlePageParagraphs(titleText) {
     }
     
     // Bold lines
-    if (trimmed === 'ТЕХНОЛОГИЧЕСКАЯ КАРТА' || trimmed === 'МАРШРУТНАЯ КАРТА') {
+    if (trimmed === i18n.t('title_page.tech_card') || trimmed === i18n.t('title_page.route_card')) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { after: 60 },
@@ -277,7 +278,7 @@ function buildTitlePageParagraphs(titleText) {
       continue;
     }
     
-    if (trimmed === 'УТВЕРЖДАЮ') {
+    if (trimmed === i18n.t('title_page.approve')) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.RIGHT,
         spacing: { after: 120 },
@@ -307,7 +308,7 @@ function buildTitlePageParagraphs(titleText) {
     }
     
     // "производства изделия из натурального камня"
-    if (trimmed.includes('производства изделия')) {
+    if (trimmed.includes(i18n.t('title_page.product_manufacturing'))) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { after: 60 },
@@ -318,7 +319,7 @@ function buildTitlePageParagraphs(titleText) {
     
     // Center alignment for descriptive lines
     if (trimmed.startsWith('Лощение') || trimmed.startsWith('Рельефная') || trimmed.startsWith('Бучардирование') ||
-        trimmed.startsWith('Архитектурное') || trimmed.startsWith('Объём партии')) {
+        trimmed.startsWith(i18n.t('title_page.architectural_product')) || trimmed.startsWith(i18n.t('title_page.batch_volume'))) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { after: 60 },
@@ -328,8 +329,8 @@ function buildTitlePageParagraphs(titleText) {
     }
     
     // Signature lines
-    if (trimmed.startsWith('Директор производства') || trimmed.startsWith('Разработано') || 
-        trimmed.startsWith('Проверено') || trimmed.startsWith('«')) {
+    if (trimmed.startsWith(i18n.t('title_page.production_director')) || trimmed.startsWith(i18n.t('title_page.developed_by')) || 
+        trimmed.startsWith(i18n.t('title_page.reviewed_by')) || trimmed.startsWith('«')) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.LEFT,
         spacing: { after: 60 },
@@ -339,7 +340,7 @@ function buildTitlePageParagraphs(titleText) {
     }
     
     // Date line
-    if (trimmed.startsWith('Дата')) {
+    if (trimmed.startsWith(i18n.t('title_page.date_prefix'))) {
       paragraphs.push(new Paragraph({
         alignment: AlignmentType.LEFT,
         spacing: { before: 120, after: 60 },
@@ -373,11 +374,11 @@ function buildMKTable(rows) {
   const headerRow = new TableRow({
     tableHeader: true,
     children: [
-      makeCell('№', colWidths[0], allBorders, true),
-      makeCell('Наименование операции', colWidths[1], allBorders, true),
-      makeCell('Оборудование', colWidths[2], allBorders, true),
-      makeCell('Исполнитель', colWidths[3], allBorders, true),
-      makeCell('Контроль', colWidths[4], allBorders, true)
+      makeCell(i18n.t('mk.table.headers.num'), colWidths[0], allBorders, true),
+      makeCell(i18n.t('mk.table.headers.operation_name'), colWidths[1], allBorders, true),
+      makeCell(i18n.t('mk.table.headers.equipment'), colWidths[2], allBorders, true),
+      makeCell(i18n.t('mk.table.headers.executor'), colWidths[3], allBorders, true),
+      makeCell(i18n.t('mk.table.headers.control'), colWidths[4], allBorders, true)
     ]
   });
 
@@ -450,7 +451,7 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   allChildren.push(new Paragraph({ children: [new PageBreak()] }));
   
   // --- Section 6: Detailed Operations ---
-  allChildren.push(makeSectionHeading('Раздел 6. Детальное описание операций'));
+  allChildren.push(makeSectionHeading(i18n.t('section.header.section6_operations')));
   allChildren.push(new Paragraph({ spacing: { after: 120 }, children: [] }));
   
   for (const op of operations) {
@@ -512,7 +513,7 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
   // --- Equipment Warnings ---
   if (warnings && warnings.length > 0) {
     allChildren.push(new Paragraph({ spacing: { before: 240 }, children: [] }));
-    allChildren.push(makeSectionHeading('Предупреждения по оборудованию'));
+    allChildren.push(makeSectionHeading(i18n.t('section.header.equipment_warnings')));
     for (const w of warnings) {
       allChildren.push(makeBodyParagraph(w));
     }
@@ -555,9 +556,9 @@ function assembleDocument({ titlePageText, sections, operations, mkHeaderText, m
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Стр. ', font: FONT, size: SMALL_SIZE }),
+                new TextRun({ text: i18n.t('pagination.page_short'), font: FONT, size: SMALL_SIZE }),
                 new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: SMALL_SIZE }),
-                new TextRun({ text: ' из ', font: FONT, size: SMALL_SIZE }),
+                new TextRun({ text: i18n.t('pagination.of'), font: FONT, size: SMALL_SIZE }),
                 new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: SMALL_SIZE })
               ]
             })
