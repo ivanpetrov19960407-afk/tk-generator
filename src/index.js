@@ -15,8 +15,9 @@ const minimist = require('minimist');
 const { generateBatch } = require('./generator');
 const { generateRKM } = require('./rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
-const { normalizeUnit, validateUnitConsistency } = require('./utils/unit-normalizer');
+const { normalizeUnit } = require('./utils/unit-normalizer');
 const { SUPPORTED_TEXTURES } = require('./textures');
+const { validateBatchInput } = require('./validation/validator');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -25,12 +26,14 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only'],
   default: {
     output: 'output/',
     rkm: false,
     optimize: false,
-    'cost-breakdown': false
+    'cost-breakdown': false,
+    'validate-only': false,
+    'unknown-unit-policy': 'warning'
   }
 });
 
@@ -49,6 +52,8 @@ function printHelp() {
       --rkm      Генерировать РКМ (расчётно-калькуляционную ведомость)
       --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
       --cost-breakdown   Показать смету по операциям в консоли
+      --validate-only    Только проверить входные данные и завершить
+      --unknown-unit-policy <warning|error> Политика для нераспознанных единиц
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
       --overrides <file.json>   Переопределить операции через rules JSON
@@ -213,9 +218,6 @@ function parseExcelInput(filePath) {
     const control_price = price != null ? Number(price) : null;
     const quantity = qty != null ? Number(qty) : null;
 
-    // Sanity-проверка согласованности единицы
-    validateUnitConsistency(control_unit, measurement_type, `Поз.${rowNum || (i + 1)}`);
-
     return {
       tk_number: rowNum || (i + 1),
       name: nameText ? String(nameText) : null,
@@ -365,13 +367,16 @@ async function main() {
   console.log(`Выход: ${outputDir}`);
   
   let products;
+  let rawInput;
   const ext = path.extname(inputPath).toLowerCase();
   
   if (ext === '.xlsx' || ext === '.xls') {
     console.log('Формат: Excel');
+    rawInput = null;
     products = parseExcelInput(inputPath);
   } else if (ext === '.json') {
     console.log('Формат: JSON');
+    rawInput = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
     products = parseJsonInput(inputPath);
   } else {
     console.error(`ОШИБКА: неподдерживаемый формат файла: ${ext}. Используйте .json или .xlsx`);
@@ -379,6 +384,25 @@ async function main() {
   }
   
   console.log(`Найдено изделий: ${products.length}`);
+
+  const unknownUnitPolicy = args['unknown-unit-policy'] === 'error' ? 'error' : 'warning';
+  const validationTarget = rawInput
+    ? (Array.isArray(rawInput) || (rawInput && rawInput.products) ? rawInput : [rawInput])
+    : products;
+  const validationReport = validateBatchInput(validationTarget, { unknownUnitPolicy });
+  console.log('\n=== Валидация входных данных ===');
+  console.log(`Ошибки: ${validationReport.errors.length}, предупреждения: ${validationReport.warnings.length}`);
+  validationReport.errors.forEach((e) => console.error(`  [ERROR] ${e}`));
+  validationReport.warnings.forEach((w) => console.warn(`  [WARN] ${w}`));
+
+  if (!validationReport.valid) {
+    console.error('\nОШИБКА: входные данные не прошли валидацию.');
+    process.exit(1);
+  }
+  if (args['validate-only']) {
+    console.log('\n✓ Проверка завершена: ошибок нет. Генерация документов пропущена (--validate-only).');
+    return;
+  }
 
   const needCostCalculation = Boolean(args['cost-breakdown'] || args['export-cost']);
   let costs = [];
@@ -409,7 +433,8 @@ async function main() {
   // === Генерация ТК+МК (всегда) ===
   console.log('\n=== Генерация ТК+МК ===');
   const results = await generateBatch(products, outputDir, {
-    overridesPath: args.overrides ? path.resolve(args.overrides) : null
+    overridesPath: args.overrides ? path.resolve(args.overrides) : null,
+    validation: { unknownUnitPolicy }
   });
   const failed = results.filter(r => !r.success);
   if (failed.length > 0) {

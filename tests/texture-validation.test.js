@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const { validateProduct } = require('../src/generator');
+const { validateProduct } = require('../src/validation/validator');
 
 let passed = 0;
 let failed = 0;
@@ -31,19 +31,19 @@ function baseProduct(texture) {
 console.log('\n=== ТЕСТЫ ВАЛИДАЦИИ ФАКТУР ===');
 
 {
-  const errors = validateProduct(baseProduct('лощение'));
-  assert(errors.length === 0, 'texture="лощение" проходит валидацию (регрессия)');
+  const result = validateProduct(baseProduct('лощение'));
+  assert(result.errors.length === 0, 'texture="лощение" проходит валидацию (регрессия)');
 }
 
 {
-  const errors = validateProduct(baseProduct('полировка'));
-  assert(errors.some(e => e.includes('Неизвестная фактура: "полировка"')), 'texture="полировка" отклоняется валидатором');
-  assert(errors.some(e => e.includes('лощение, рельефная_матовая, бучардирование_лощение')), 'ошибка для "полировка" содержит список допустимых фактур');
+  const result = validateProduct(baseProduct('полировка'));
+  assert(result.errors.some(e => e.includes('Неизвестная фактура: "полировка"')), 'texture="полировка" отклоняется валидатором');
+  assert(result.errors.some(e => e.includes('лощение, рельефная_матовая, бучардирование_лощение')), 'ошибка для "полировка" содержит список допустимых фактур');
 }
 
 {
-  const errors = validateProduct(baseProduct('unknown_texture'));
-  assert(errors.some(e => e.includes('Неизвестная фактура: "unknown_texture"')), 'texture="unknown_texture" даёт раннюю ошибку валидации');
+  const result = validateProduct(baseProduct('unknown_texture'));
+  assert(result.errors.some(e => e.includes('Неизвестная фактура: "unknown_texture"')), 'texture="unknown_texture" даёт раннюю ошибку валидации');
 }
 
 console.log('\n' + '='.repeat(50));

@@ -10,38 +10,7 @@ const { buildAllSections, buildTitlePage } = require('./sections');
 const { buildMKHeader, buildMKTableData } = require('./mk-table');
 const { assembleDocument, Packer } = require('./docx-builder');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
-const { SUPPORTED_TEXTURES, formatSupportedTextures } = require('./textures');
-
-/**
- * Validate product input data
- * @param {Object} product
- * @returns {Array} Array of error messages (empty if valid)
- */
-function validateProduct(product) {
-  const errors = [];
-  
-  if (!product.name) errors.push('Отсутствует название изделия (name)');
-  if (!product.dimensions) errors.push('Отсутствуют размеры (dimensions)');
-  else {
-    if (!product.dimensions.length) errors.push('Отсутствует длина (dimensions.length)');
-    if (!product.dimensions.width) errors.push('Отсутствует ширина (dimensions.width)');
-    if (!product.dimensions.thickness) errors.push('Отсутствует толщина (dimensions.thickness)');
-  }
-  if (!product.material) errors.push('Отсутствует материал (material)');
-  else {
-    if (!product.material.type) errors.push('Отсутствует тип материала (material.type)');
-    if (!product.material.name) errors.push('Отсутствует название материала (material.name)');
-    if (!product.material.density) errors.push('Отсутствует плотность материала (material.density)');
-  }
-  if (!product.texture) errors.push('Отсутствует тип фактуры (texture)');
-  else {
-    if (!SUPPORTED_TEXTURES.includes(product.texture)) {
-      errors.push(`Неизвестная фактура: "${product.texture}". Допустимые: ${formatSupportedTextures()}`);
-    }
-  }
-  
-  return errors;
-}
+const { validateProductOrThrow } = require('./validation/validator');
 
 /**
  * Apply defaults to a product spec
@@ -112,10 +81,7 @@ async function generateDocument(product, outputDir, options = {}) {
   product = applyDefaults(product);
   
   // Validate
-  const errors = validateProduct(product);
-  if (errors.length > 0) {
-    throw new Error(`Ошибки в данных продукта: \n  - ${errors.join('\n  - ')}`);
-  }
+  validateProductOrThrow(product, options.validation || {});
   
   console.log(`  Генерация ТК для: ${product.name} (${product.texture})`);
   
@@ -225,6 +191,5 @@ async function generateBatch(products, outputDir, options = {}) {
 module.exports = {
   generateDocument,
   generateBatch,
-  validateProduct,
   applyDefaults
 };
