@@ -13,7 +13,6 @@ const COSTS_DIR = path.join(__dirname, '..', 'data', 'costs');
 const NORMS_PATH = path.join(__dirname, '..', 'data', 'rkm_norms.json');
 
 const ROUND_PRECISION = 100;
-const calculationCache = new Map();
 
 function roundMoney(value) {
   return Math.round((Number(value) || 0) * ROUND_PRECISION) / ROUND_PRECISION;
@@ -119,18 +118,6 @@ function calculateCostByOperation(product, operationNumber, options = {}) {
   };
 }
 
-function buildOperationsCacheKey(product, operationCosts) {
-  return JSON.stringify({
-    tk_number: product.tk_number,
-    name: product.name,
-    quantity_pieces: product.quantity_pieces,
-    dimensions: product.dimensions,
-    texture: product.texture,
-    overrides: product.rkm && product.rkm.norms_override ? product.rkm.norms_override : null,
-    opTotals: operationCosts.map((item) => item.total_operation_cost)
-  });
-}
-
 /**
  * Расчёт наценки.
  * @param {number} baseCost - Базовая себестоимость.
@@ -170,8 +157,6 @@ function calculateTotalCost(product, options = {}) {
   const { overhead, norms } = loadCostData(options);
 
   const operationsCost = norms.map((operation) => calculateCostByOperation(product, operation.no, options));
-  const cacheKey = buildOperationsCacheKey(product, operationsCost);
-  const cached = calculationCache.get(cacheKey);
 
   const totalDirectCost = roundMoney(operationsCost.reduce((sum, item) => sum + item.total_operation_cost, 0));
   const overheadPercent = Number(overhead.percent || 0);
@@ -197,7 +182,7 @@ function calculateTotalCost(product, options = {}) {
     product_id: product.tk_number || null,
     product_name: [product.name, product.dimensions ? `${product.dimensions.length}×${product.dimensions.width}×${product.dimensions.thickness}` : null].filter(Boolean).join(' '),
     created_at: new Date().toISOString(),
-    operations_cost: cached ? cached.operations_cost : operationsCost,
+    operations_cost: operationsCost,
     total_direct_cost: totalDirectCost,
     overhead_percent: overheadPercent,
     overhead_cost: overheadCost,
@@ -208,10 +193,6 @@ function calculateTotalCost(product, options = {}) {
     control_price: controlPrice,
     margin
   };
-
-  calculationCache.set(cacheKey, {
-    operations_cost: operationsCost
-  });
 
   return result;
 }

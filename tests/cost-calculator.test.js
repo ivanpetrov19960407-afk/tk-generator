@@ -2,6 +2,9 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const {
   calculateCostByOperation,
   calculateTotalCost,
@@ -65,6 +68,45 @@ const product = batch.products[0];
   };
 
   assert.throws(() => calculateCostByOperation(invalid, 1), /Некорректные трудозатраты/);
+})();
+
+(function testCostFilesOverrides() {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-cost-overrides-'));
+  const laborRatesPath = path.join(tmpDir, 'labor_rates.json');
+  const equipmentCostsPath = path.join(tmpDir, 'equipment_costs.json');
+  const materialPricesPath = path.join(tmpDir, 'material_prices.json');
+  const overheadPath = path.join(tmpDir, 'overhead.json');
+
+  fs.writeFileSync(laborRatesPath, JSON.stringify({ default: 1 }), 'utf8');
+  fs.writeFileSync(equipmentCostsPath, JSON.stringify({ default: 1 }), 'utf8');
+  fs.writeFileSync(materialPricesPath, JSON.stringify({ default_per_operation: 0, by_operation: {} }), 'utf8');
+  fs.writeFileSync(overheadPath, JSON.stringify({ percent: 0, default_markup_percent: 0, default_control_coefficient: 1 }), 'utf8');
+
+  const base = calculateTotalCost(product);
+  const overridden = calculateTotalCost(product, {
+    laborRatesPath,
+    equipmentCostsPath,
+    materialPricesPath,
+    overheadPath
+  });
+
+  assert.notStrictEqual(base.total_cost, overridden.total_cost, 'override files should affect total cost');
+
+  fs.writeFileSync(overheadPath, JSON.stringify({ percent: 40, default_markup_percent: 0, default_control_coefficient: 1 }), 'utf8');
+  const highOverhead = calculateTotalCost(product, {
+    laborRatesPath,
+    equipmentCostsPath,
+    materialPricesPath,
+    overheadPath
+  });
+  assert(highOverhead.total_cost > overridden.total_cost, 'higher overhead percent should increase total cost');
+})();
+
+(function testMissingOverrideFileError() {
+  assert.throws(
+    () => calculateTotalCost(product, { overheadPath: '/tmp/does-not-exist-overhead.json' }),
+    /Не найден файл данных/
+  );
 })();
 
 console.log('cost-calculator tests passed');
