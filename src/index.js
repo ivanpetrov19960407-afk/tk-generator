@@ -74,6 +74,7 @@ function printHelp() {
       --config-dir <dir>        Папка с default.json и local.json
       --log-level <error|warn|info|debug> Уровень логирования
       --log-file <path>         Дублировать логи в файл
+      --template <path.docx>    Пользовательский DOCX-шаблон для ТК+МК
   -h, --help     Показать справку
 
 Примеры:
@@ -381,6 +382,14 @@ async function main() {
   }
   
   logger.info({ inputPath, outputDir }, 'Запуск tk-generator');
+
+  if (args.template) {
+    const templatePath = path.resolve(args.template);
+    if (!fs.existsSync(templatePath)) {
+      throw new Error(`Шаблон не найден: ${templatePath}`);
+    }
+    logger.info({ templatePath }, 'Используется пользовательский шаблон DOCX');
+  }
   
   let products;
   let rawInput;
@@ -463,7 +472,8 @@ async function main() {
     logger,
     profile: Boolean(args.profile),
     cache: args.cache !== false,
-    concurrency: args.concurrency ? Number(args.concurrency) : null
+    concurrency: args.concurrency ? Number(args.concurrency) : null,
+    templatePath: args.template ? path.resolve(args.template) : null
   });
   const tkElapsedMs = nowMs() - generationStart;
   const failed = results.filter(r => !r.success);

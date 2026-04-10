@@ -10,6 +10,7 @@ const { buildOperations } = require('./operations');
 const { buildAllSections, buildTitlePage } = require('./sections');
 const { buildMKHeader, buildMKTableData } = require('./mk-table');
 const { assembleDocument, Packer } = require('./docx-builder');
+const { renderTemplateDocx } = require('./template-engine');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 const { validateProductOrThrow } = require('./validation/validator');
 const { logger } = require('./logger');
@@ -114,19 +115,29 @@ async function generateDocument(product, outputDir, options = {}) {
     log.warn({ tkNumber: product.tk_number, warnings: allWarnings }, 'Предупреждения при генерации ТК');
   }
   
-  // 5. Assemble DOCX
-  const doc = await profiler.measure('tk.assembleDocument', async () => assembleDocument({
-    titlePageText: sectionData.title_page,
-    sections: sectionData.sections,
-    operations,
-    mkHeaderText: mkHeader,
-    mkRows,
-    product,
-    warnings: allWarnings
-  }));
-  
-  // 6. Generate buffer and write file
-  const buffer = await profiler.measure('tk.packDocx', async () => Packer.toBuffer(doc));
+  // 5. Assemble DOCX (legacy) or render from custom template
+  const buffer = options.templatePath
+    ? await profiler.measure('tk.renderTemplate', async () => renderTemplateDocx(options.templatePath, {
+        product,
+        sections: sectionData.sections,
+        operations,
+        mkRows,
+        warnings: allWarnings,
+        mk_header: mkHeader,
+        title_page: sectionData.title_page
+      }))
+    : await profiler.measure('tk.packDocx', async () => {
+        const doc = assembleDocument({
+          titlePageText: sectionData.title_page,
+          sections: sectionData.sections,
+          operations,
+          mkHeaderText: mkHeader,
+          mkRows,
+          product,
+          warnings: allWarnings
+        });
+        return Packer.toBuffer(doc);
+      });
   
   // Ensure output dir exists
   if (!fs.existsSync(outputDir)) {
