@@ -428,3 +428,13 @@ npm run build:binary
 dist/tk-generator.exe --input examples/batch_small.json --output dist/output --rkm
 ```
 
+
+
+## Desktop (Electron)
+
+- Dev run: `npm run desktop:dev`
+- Build Windows (NSIS): `npm run desktop:build`
+- Build macOS (.dmg): `npm run desktop:build:mac`
+- Build Linux (.AppImage): `npm run desktop:build:linux`
+
+Electron uses secure defaults (`nodeIntegration: false`, `contextIsolation: true`) and starts embedded API server on a random local port.

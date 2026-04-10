@@ -12,7 +12,12 @@
     "smoke": "node tests/smoke/generate-docx.test.js && node tests/smoke/generate-rkm.test.js && node tests/smoke/summary-report.test.js",
     "build:binary": "node scripts/build-binary.js",
     "serve": "node src/server/index.js",
-    "bot": "node src/bot/index.js"
+    "bot": "node src/bot/index.js",
+    "desktop:dev": "electron desktop/main.js",
+    "desktop:build": "electron-builder --win nsis",
+    "desktop:build:mac": "electron-builder --mac dmg",
+    "desktop:build:linux": "electron-builder --linux AppImage",
+    "test:electron": "node tests/electron/launch.test.js"
   },
   "keywords": [
     "технологическая карта",
@@ -34,5 +39,44 @@
   },
   "bin": {
     "tk-generator": "src/index.js"
+  },
+  "devDependencies": {
+    "electron": "^35.1.4",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.tk.generator.desktop",
+    "productName": "TK Generator",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "desktop/**/*",
+      "src/**/*",
+      "public/**/*",
+      "data/**/*",
+      "templates/**/*",
+      "config/**/*",
+      "vendor/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "desktop/main.js"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
   }
 }

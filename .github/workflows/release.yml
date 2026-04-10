@@ -55,3 +55,50 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: tk-generator-windows-x64.zip
+
+  build-electron:
+    name: Build Electron (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            cmd: npm run desktop:build
+            artifact_glob: dist-electron/*.exe
+          - os: macos-latest
+            cmd: npm run desktop:build:mac
+            artifact_glob: dist-electron/*.dmg
+          - os: ubuntu-latest
+            cmd: npm run desktop:build:linux
+            artifact_glob: dist-electron/*.AppImage
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Electron launch test
+        run: npm run test:electron
+
+      - name: Build Electron package
+        run: ${{ matrix.cmd }}
+
+      - name: Upload Electron artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-${{ matrix.os }}
+          path: ${{ matrix.artifact_glob }}
+
+      - name: Attach Electron package to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact_glob }}

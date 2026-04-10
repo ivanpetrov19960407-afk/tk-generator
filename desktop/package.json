@@ -1,0 +1,7 @@
+{
+  "name": "tk-generator-desktop",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Electron shell for TK Generator",
+  "main": "main.js"
+}
