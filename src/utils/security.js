@@ -12,14 +12,13 @@ function sanitizeName(input, fallback = 'item') {
 
 function ensureSafePath(baseDir, unsafeName) {
   const resolvedBase = path.resolve(baseDir);
-  const safeName = sanitizeName(unsafeName);
-  const finalPath = path.resolve(path.join(resolvedBase, safeName));
+  const finalPath = path.resolve(path.join(resolvedBase, String(unsafeName == null ? '' : unsafeName)));
   if (!finalPath.startsWith(`${resolvedBase}${path.sep}`) && finalPath !== resolvedBase) {
     const err = new Error('Path traversal detected');
     err.code = 'PATH_TRAVERSAL';
     throw err;
   }
-  return { safeName, finalPath, resolvedBase };
+  return { finalPath, resolvedBase };
 }
 
 function resolvePathInAllowedDir(allowedDir, targetPath) {
