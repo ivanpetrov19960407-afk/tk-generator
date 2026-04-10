@@ -4,9 +4,9 @@
  * index.js — CLI entry point for TK Generator
  * 
  * Usage:
- *   node src/index.js --input examples/product_minimal.json --output output/
- *   node src/index.js --input examples/batch_small.json --output output/
- *   node src/index.js --input examples/sample_input.xlsx --output output/
+ *   tk-generator --input examples/product_minimal.json --output output/
+ *   tk-generator --input examples/batch_small.json --output output/
+ *   tk-generator --input examples/sample_input.xlsx --output output/
  */
 
 const fs = require('fs');
@@ -45,7 +45,7 @@ function printHelp() {
 ╚════════════════════════════════════════════════╝
 
 Использование:
-  node src/index.js --input <файл> [--output <папка>] [--rkm] [--optimize]
+  tk-generator --input <файл> [--output <папка>] [--rkm] [--optimize]
 
 Параметры:
   -i, --input    Входной файл (JSON или XLSX)     [обязательный]
@@ -67,22 +67,22 @@ function printHelp() {
 
 Примеры:
   # Один продукт (JSON)
-  node src/index.js --input examples/product_minimal.json --output output/
+  tk-generator --input examples/product_minimal.json --output output/
 
   # Пакетная генерация (JSON)
-  node src/index.js --input examples/batch_small.json --output output/
+  tk-generator --input examples/batch_small.json --output output/
 
   # Из Excel файла
-  node src/index.js --input examples/sample_input.xlsx --output output/
+  tk-generator --input examples/sample_input.xlsx --output output/
 
   # РКМ с обратной калькуляцией по контрольным ценам
-  node src/index.js --input examples/batch_full.json --rkm --optimize --output output/
+  tk-generator --input examples/batch_full.json --rkm --optimize --output output/
 
   # Вывести смету по операциям
-  node src/index.js --input examples/batch_small.json --cost-breakdown
+  tk-generator --input examples/batch_small.json --cost-breakdown
 
   # Экспорт смет в JSON
-  node src/index.js --input examples/batch_small.json --export-cost output/costs.json
+  tk-generator --input examples/batch_small.json --export-cost output/costs.json
 
 Поддерживаемые фактуры:
 ${SUPPORTED_TEXTURES.map(t => `  - ${t}`).join('\n')}

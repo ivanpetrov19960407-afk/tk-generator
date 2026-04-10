@@ -25,26 +25,48 @@ cd tk-generator
 npm install
 ```
 
-Требуется Node.js 16+.
+Для глобального CLI:
+
+```bash
+npm i -g tk-generator
+tk-generator --help
+```
+
+Для одноразового запуска без установки:
+
+```bash
+npx tk-generator --help
+```
+
+Требуется Node.js 18+ (рекомендуется LTS).
 
 ## Быстрый старт
 
 ```bash
 # Генерация одного изделия
-node src/index.js --input examples/batch_small.json --output output/
+tk-generator --input examples/batch_small.json --output output/
 
 # Генерация из Excel файла
-node src/index.js --input examples/sample_input.xlsx --output output/
+tk-generator --input examples/sample_input.xlsx --output output/
 
 # Справка
-node src/index.js --help
+tk-generator --help
 
 # Использовать кастомную папку конфигурации
-node src/index.js --input examples/batch_small.json --config-dir ./config
+tk-generator --input examples/batch_small.json --config-dir ./config
 
 # Наложить дополнительный конфиг-файл поверх default/local
-node src/index.js --input examples/batch_small.json --config ./my-config.json
+tk-generator --input examples/batch_small.json --config ./my-config.json
 ```
+
+
+## Матрица совместимости
+
+| Компонент | Поддерживаемые версии | Статус |
+|---|---|---|
+| Node.js | 18.x, 20.x, 22.x | ✅ поддерживается |
+| npm | 9+ | ✅ поддерживается |
+| ОС | Ubuntu 22.04+, macOS 13+, WSL2 | ✅ проверяется регулярно |
 
 ## Конфигурация (default/local/env)
 
