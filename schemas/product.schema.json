@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "product.schema.json",
+  "type": "object",
+  "required": ["name", "dimensions", "material", "texture"],
+  "properties": {
+    "tk_number": { "type": ["integer", "number"], "minimum": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "short_name": { "type": ["string", "null"] },
+    "dimensions": {
+      "type": "object",
+      "required": ["length", "width", "thickness"],
+      "properties": {
+        "length": { "type": "number", "exclusiveMinimum": 0 },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "thickness": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "material": {
+      "type": "object",
+      "required": ["type", "name"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "density": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "texture": { "type": "string", "minLength": 1 },
+    "quantity": { "type": ["string", "number", "null"] },
+    "quantity_pieces": { "type": ["integer", "number", "null"], "exclusiveMinimum": 0 },
+    "control_unit": { "type": ["string", "null"] },
+    "measurement_type": {
+      "type": ["string", "null"],
+      "enum": ["area", "length", "count", "unknown", null]
+    }
+  },
+  "additionalProperties": true
+}
