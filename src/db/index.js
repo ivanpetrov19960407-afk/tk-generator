@@ -51,6 +51,11 @@ function initDb(options = {}) {
   }
 
   const db = new Database(dbPath);
+
+  if (process.env.NODE_ENV === 'production') {
+    db.pragma('journal_mode = WAL');
+  }
+
   db.pragma('foreign_keys = ON');
   applyMigrations(db, migrationsDir);
   return db;

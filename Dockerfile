@@ -5,6 +5,9 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY vendor ./vendor
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
 RUN npm ci --omit=dev
 
 FROM node:24-bookworm-slim AS runtime
