@@ -7,18 +7,28 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
     textarea { width: 100%; min-height: 240px; font-family: monospace; }
-    .controls { display: flex; gap: 10px; margin: 12px 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
     .error { color: #b00020; background: #fdecef; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
     .warning { color: #7a5a00; background: #fff7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
     .ok { color: #0f5132; background: #d1e7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+    .drop-zone { border: 2px dashed #999; border-radius: 8px; padding: 14px; margin-top: 12px; text-align: center; }
+    .drop-zone.active { border-color: #1976d2; background: #eef6ff; }
   </style>
 </head>
 <body>
   <h1>TK Generator — Web-интерфейс</h1>
 
-  <p>Загрузите Excel или вставьте JSON (массив products).</p>
+  <p>Загрузите Excel/JSON или вставьте JSON (массив products).</p>
 
-  <input id="excelInput" type="file" accept=".xlsx,.xls" />
+  <input id="excelInput" type="file" accept=".xlsx,.xls,.json" />
+
+  <div class="controls" id="desktopControls" style="display:none">
+    <button id="openFileBtn">Открыть файл</button>
+    <button id="selectOutputBtn">Папка вывода</button>
+    <button id="openOutputFolderBtn">Открыть папку вывода</button>
+  </div>
+
+  <div id="dropZone" class="drop-zone">Перетащите сюда .xlsx/.xls/.json файл</div>
 
   <h3>JSON products</h3>
   <textarea id="jsonInput" placeholder='[{"name":"...","dimensions":{"length":700,"width":700,"thickness":30},"material":{"type":"мрамор","name":"..."},"texture":"лощение"}]'></textarea>
@@ -34,6 +44,14 @@
     const excelInput = document.getElementById('excelInput');
     const jsonInput = document.getElementById('jsonInput');
     const messages = document.getElementById('messages');
+    const dropZone = document.getElementById('dropZone');
+
+    const desktopApi = window.desktopAPI || null;
+    let outputDir = null;
+
+    if (desktopApi) {
+      document.getElementById('desktopControls').style.display = 'flex';
+    }
 
     function renderMessage(text, type = 'ok') {
       const div = document.createElement('div');
@@ -52,6 +70,17 @@
       return JSON.parse(raw);
     }
 
+    async function processFile(file) {
+      const name = String(file.name || '').toLowerCase();
+      if (name.endsWith('.json')) {
+        jsonInput.value = await file.text();
+        renderMessage('JSON загружен', 'ok');
+        return;
+      }
+
+      await uploadExcelAndFillJson(file);
+    }
+
     async function uploadExcelAndFillJson(file) {
       const fileBuffer = await file.arrayBuffer();
       const res = await fetch('/api/upload-excel', {
@@ -65,12 +94,17 @@
       renderMessage(`Excel распознан: ${data.products.length} позиций`, 'ok');
     }
 
+    async function loadPathFromDesktop(filePayload) {
+      const file = new File([new Uint8Array(filePayload.data)], filePayload.fileName);
+      await processFile(file);
+    }
+
     excelInput.addEventListener('change', async () => {
       clearMessages();
       const file = excelInput.files && excelInput.files[0];
       if (!file) return;
       try {
-        await uploadExcelAndFillJson(file);
+        await processFile(file);
       } catch (err) {
         renderMessage(err.message, 'error');
       }
@@ -104,9 +138,35 @@
       }
     });
 
+    async function saveGeneratedBlob(blob) {
+      if (!desktopApi) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tk-generator-result.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      if (!outputDir) {
+        outputDir = await desktopApi.selectOutputDir();
+        if (!outputDir) throw new Error('Папка вывода не выбрана');
+      }
+
+      const arrayBuffer = await blob.arrayBuffer();
+      const savedPath = await desktopApi.saveGeneratedFile({
+        data: Array.from(new Uint8Array(arrayBuffer)),
+        suggestedName: 'tk-generator-result.zip'
+      });
+
+      renderMessage(`ZIP сохранён: ${savedPath}`, 'ok');
+    }
+
     document.getElementById('generateBtn').addEventListener('click', async () => {
       clearMessages();
       try {
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Генерация', progress: 10 });
         const products = readProductsFromTextarea();
         const res = await fetch('/api/generate', {
           method: 'POST',
@@ -121,21 +181,82 @@
           } else {
             renderMessage(err.error || 'Ошибка генерации', 'error');
           }
+          desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка генерации', progress: null });
           return;
         }
 
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Упаковка результата', progress: 80 });
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'tk-generator-result.zip';
-        a.click();
-        URL.revokeObjectURL(url);
-        renderMessage('ZIP сформирован и загружается', 'ok');
+        await saveGeneratedBlob(blob);
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Готово', progress: 100, completed: true });
       } catch (err) {
         renderMessage(`Ошибка: ${err.message}`, 'error');
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка', progress: null });
       }
     });
+
+    dropZone.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      dropZone.classList.add('active');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('active');
+    });
+
+    dropZone.addEventListener('drop', async (event) => {
+      event.preventDefault();
+      dropZone.classList.remove('active');
+      clearMessages();
+
+      const file = event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!file) return;
+
+      try {
+        await processFile(file);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    if (desktopApi) {
+      desktopApi.onMenuAction(async (action) => {
+        if (action === 'open-file') {
+          const filePayload = await desktopApi.openFile();
+          if (!filePayload) return;
+          try {
+            await loadPathFromDesktop(filePayload);
+          } catch (err) {
+            renderMessage(err.message, 'error');
+          }
+        }
+
+        if (action === 'generate') {
+          document.getElementById('generateBtn').click();
+        }
+
+        if (action === 'settings') {
+          outputDir = await desktopApi.selectOutputDir();
+          if (outputDir) renderMessage(`Папка вывода: ${outputDir}`, 'ok');
+        }
+      });
+
+      document.getElementById('openFileBtn').addEventListener('click', async () => {
+        const filePayload = await desktopApi.openFile();
+        if (!filePayload) return;
+        await loadPathFromDesktop(filePayload);
+      });
+
+      document.getElementById('selectOutputBtn').addEventListener('click', async () => {
+        outputDir = await desktopApi.selectOutputDir();
+        if (outputDir) renderMessage(`Папка вывода: ${outputDir}`, 'ok');
+      });
+
+      document.getElementById('openOutputFolderBtn').addEventListener('click', async () => {
+        const opened = await desktopApi.openOutputFolder();
+        if (!opened) renderMessage('Сначала выберите папку вывода', 'warning');
+      });
+    }
   </script>
 </body>
 </html>

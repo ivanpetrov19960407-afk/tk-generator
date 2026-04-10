@@ -12,7 +12,12 @@
     "smoke": "node tests/smoke/generate-docx.test.js && node tests/smoke/generate-rkm.test.js && node tests/smoke/summary-report.test.js",
     "build:binary": "node scripts/build-binary.js",
     "serve": "node src/server/index.js",
-    "bot": "node src/bot/index.js"
+    "bot": "node src/bot/index.js",
+    "desktop:dev": "npm --prefix desktop run dev",
+    "desktop:build": "npm --prefix desktop run build:win",
+    "desktop:build:mac": "npm --prefix desktop run build:mac",
+    "desktop:build:linux": "npm --prefix desktop run build:linux",
+    "test:electron": "npm --prefix desktop run test:launch"
   },
   "keywords": [
     "технологическая карта",
