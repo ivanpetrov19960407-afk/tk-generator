@@ -11,6 +11,7 @@ const { buildMKHeader, buildMKTableData } = require('./mk-table');
 const { assembleDocument, Packer } = require('./docx-builder');
 const { analyzeEquipment, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 const { validateProductOrThrow } = require('./validation/validator');
+const { logger } = require('./logger');
 
 /**
  * Apply defaults to a product spec
@@ -77,26 +78,27 @@ function applyDefaults(product) {
  * @returns {Object} { filePath, warnings, pageEstimate }
  */
 async function generateDocument(product, outputDir, options = {}) {
+  const log = options.logger || logger;
   // Apply defaults
   product = applyDefaults(product);
   
   // Validate
   validateProductOrThrow(product, options.validation || {});
   
-  console.log(`  Генерация ТК для: ${product.name} (${product.texture})`);
+  log.info({ tkNumber: product.tk_number, product: product.name, texture: product.texture }, 'Генерация ТК');
   
   // 1. Build operations (Section 6)
   const { operations, warnings: opWarnings } = buildOperations(product, options);
-  console.log(`  → ${operations.length} операций загружено`);
+  log.debug({ tkNumber: product.tk_number, operations: operations.length }, 'Операции загружены');
   
   // 2. Build sections
   const sectionData = buildAllSections(product);
-  console.log(`  → Разделы 1-5, 7-11 сгенерированы`);
+  log.debug({ tkNumber: product.tk_number }, 'Разделы 1-5, 7-11 сгенерированы');
   
   // 3. Build MK
   const mkHeader = buildMKHeader(product);
   const mkRows = buildMKTableData(product);
-  console.log(`  → МК таблица: ${mkRows.length} строк`);
+  log.debug({ tkNumber: product.tk_number, mkRows: mkRows.length }, 'Таблица МК сформирована');
   
   // 4. Equipment analysis
   const { warnings: equipWarnings } = analyzeEquipment(product);
@@ -104,8 +106,7 @@ async function generateDocument(product, outputDir, options = {}) {
   const allWarnings = [...new Set([...(opWarnings || []), ...(equipWarnings || [])])];
   
   if (allWarnings.length > 0) {
-    console.log(`  ⚠ Предупреждения: ${allWarnings.length}`);
-    allWarnings.forEach(w => console.log(`    - ${w}`));
+    log.warn({ tkNumber: product.tk_number, warnings: allWarnings }, 'Предупреждения при генерации ТК');
   }
   
   // 5. Assemble DOCX
@@ -132,7 +133,7 @@ async function generateDocument(product, outputDir, options = {}) {
   fs.writeFileSync(filePath, buffer);
   
   const sizeKB = Math.round(buffer.length / 1024);
-  console.log(`  → Файл: ${filename} (${sizeKB} КБ)`);
+  log.info({ tkNumber: product.tk_number, filename, sizeKB }, 'Файл ТК сохранён');
   
   return {
     filePath,
@@ -150,39 +151,36 @@ async function generateDocument(product, outputDir, options = {}) {
  * @returns {Array} Array of results
  */
 async function generateBatch(products, outputDir, options = {}) {
-  console.log(`\nГенерация ${products.length} ТК документов...\n`);
+  const log = options.logger || logger;
+  log.info({ total: products.length }, 'Генерация ТК документов');
   
   const results = [];
   
   for (let i = 0; i < products.length; i++) {
     const product = products[i];
-    console.log(`[${i + 1}/${products.length}] -------`);
+    log.debug({ current: i + 1, total: products.length, tkNumber: product.tk_number }, 'Обработка позиции');
     
     try {
       const result = await generateDocument(product, outputDir, options);
       results.push({ success: true, ...result });
     } catch (err) {
-      console.error(`  ОШИБКА: ${err.message}`);
+      log.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации ТК');
       results.push({ success: false, error: err.message, product });
     }
-    
-    console.log('');
   }
   
   // Summary
   const successful = results.filter(r => r.success);
   const failed = results.filter(r => !r.success);
   
-  console.log('========== ИТОГО ==========');
-  console.log(`Успешно: ${successful.length}`);
-  if (failed.length > 0) console.log(`Ошибки: ${failed.length}`);
-  console.log(`Файлы сохранены в: ${path.resolve(outputDir)}`);
+  log.info({
+    success: successful.length,
+    failed: failed.length,
+    outputDir: path.resolve(outputDir)
+  }, 'Итоги генерации ТК');
   
   if (successful.length > 0) {
-    console.log('\nСгенерированные файлы:');
-    successful.forEach(r => {
-      console.log(`  ${r.filename} (${r.sizeKB} КБ)`);
-    });
+    log.debug({ files: successful.map(r => ({ filename: r.filename, sizeKB: r.sizeKB })) }, 'Сгенерированные файлы');
   }
   
   return results;

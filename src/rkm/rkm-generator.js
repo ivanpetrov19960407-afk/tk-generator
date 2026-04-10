@@ -11,6 +11,7 @@ const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode, buildSizeBase
 const { checkPriceDeviation } = require('../utils/unit-normalizer');
 const rates = require('../../data/rkm_rates.json');
 const { getConfig } = require('../config');
+const { logger } = require('../logger');
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
@@ -53,10 +54,11 @@ function calcTransport(product, overheadData) {
  * @param {Object} options - { optimize: false } — включить обратную калькуляцию
  */
 async function generateRKM(product, outputDir, options = {}) {
+  const log = options.logger || logger;
   const doOptimize = options.optimize && product.control_price;
-  console.log(`\n[RKM] Генерация РКМ для: ${product.name || 'изделие'}`);
+  log.info({ tkNumber: product.tk_number, product: product.name || 'изделие' }, 'Генерация РКМ');
   if (doOptimize) {
-    console.log(`  [ОПТИМИЗАЦИЯ] Контрольная цена: ${product.control_price} руб`);
+    log.info({ tkNumber: product.tk_number, controlPrice: product.control_price }, 'Оптимизация: контрольная цена');
   }
 
   // === Площадной режим (без подмены размеров) ===
@@ -82,21 +84,21 @@ async function generateRKM(product, outputDir, options = {}) {
     if (optResult.area_mode) {
       const am = optResult.area_mode;
       const dims = am.originalDims;
-      console.log(`  [ПЛОЩАДНОЙ РЕЖИМ] ${am.controlUnit === 'm2' ? 'кв.м.' : 'пог.м.'}: ${am.totalArea.toFixed(1)} ${am.controlUnit === 'm2' ? 'м²' : 'м.п.'}, ${am.quantityPieces} шт (${dims.length}×${dims.width}×${dims.thickness}мм)`);
+      log.info({ tkNumber: product.tk_number, controlUnit: am.controlUnit, totalArea: am.totalArea, quantityPieces: am.quantityPieces, dims }, 'Площадной режим');
     }
 
     if (optResult.converged) {
       workProduct = optResult.optimized_product;
-      console.log(`  [ОПТИМИЗАЦИЯ] Сходимость достигнута на этапе ${optResult.stage}`);
+      log.info({ tkNumber: product.tk_number, stage: optResult.stage }, 'Оптимизация: сходимость достигнута');
     } else {
       workProduct = optResult.optimized_product;
       if (optResult.market_price_recommendation) {
-        console.warn(`  [РЫНОЧНАЯ ЦЕНА] Рекомендуемая цена: ${optResult.market_price_recommendation.toFixed(2)} руб`);
+        log.warn({ tkNumber: product.tk_number, marketPriceRecommendation: optResult.market_price_recommendation }, 'Оптимизация: рекомендована рыночная цена');
       } else {
-        console.warn(`  [ОПТИМИЗАЦИЯ] Не удалось войти в коридор \u00b115%`);
+        log.warn({ tkNumber: product.tk_number }, 'Оптимизация: не удалось войти в коридор ±15%');
       }
     }
-    optResult.log.forEach(l => console.log(`    ${l}`));
+    optResult.log.forEach(l => log.debug({ tkNumber: product.tk_number, optimizerLog: l }, 'Лог оптимизации'));
   }
 
   // === Площадной режим без --optimize ===
@@ -122,24 +124,24 @@ async function generateRKM(product, outputDir, options = {}) {
     }
 
     const dims = product.dimensions;
-    console.log(`  [ПЛОЩАДНОЙ РЕЖИМ] ${areaMode.controlUnit === 'm2' ? 'кв.м.' : 'пог.м.'}: ${areaMode.totalArea.toFixed(1)} ${areaMode.controlUnit === 'm2' ? 'м²' : 'м.п.'}, ${qty} шт (${dims.length}×${dims.width}×${dims.thickness}мм)`);
+    log.info({ tkNumber: product.tk_number, controlUnit: areaMode.controlUnit, totalArea: areaMode.totalArea, quantityPieces: qty, dims }, 'Площадной режим');
   }
 
   // === Основной расчёт ===
   // 1. Geometry
   const geometry = calcGeometry(workProduct);
-  console.log(`  Геометрия: V_net=${geometry.V_net.toFixed(6)} м³, масса=${geometry.mass_piece.toFixed(2)} кг`);
-  console.log(`  Потребность сырья: ${geometry.raw_need_batch.toFixed(6)} м³, стоимость: ${geometry.raw_cost_batch.toFixed(2)} руб`);
+  log.debug({ tkNumber: product.tk_number, V_net: geometry.V_net, mass_piece: geometry.mass_piece }, 'Геометрия рассчитана');
+  log.debug({ tkNumber: product.tk_number, raw_need_batch: geometry.raw_need_batch, raw_cost_batch: geometry.raw_cost_batch }, 'Потребность сырья рассчитана');
 
   // 2. Operations
   const operations = mapOperations(workProduct, geometry);
-  console.log(`  Операций: ${operations.rows.length}, прямые затраты: ${operations.totals.itogo_pryamye.toFixed(2)} руб`);
+  log.debug({ tkNumber: product.tk_number, operations: operations.rows.length, directCost: operations.totals.itogo_pryamye }, 'Операции рассчитаны');
 
   // 3. Materials
   const curAreaMode = areaMode || (optimizerInfo && optimizerInfo.area_mode) || null;
   const unitLabel = curAreaMode ? (curAreaMode.controlUnit === 'm2' ? 'м²' : 'м.п.') : 'шт';
   const materials = calcMaterials(workProduct, geometry, unitLabel);
-  console.log(`  Материалы: ${materials.total.toFixed(2)} руб`);
+  log.debug({ tkNumber: product.tk_number, materialsTotal: materials.total }, 'Материалы рассчитаны');
 
   // 4. Overheads (two-pass: first without transport, then with)
   // Применяем переопределения накладных если они есть
@@ -154,7 +156,7 @@ async function generateRKM(product, outputDir, options = {}) {
 
   // 5. Transport
   const transport = calcTransport(workProduct, tempOverheads);
-  console.log(`  Логистика: ${transport.total.toFixed(2)} руб`);
+  log.debug({ tkNumber: product.tk_number, logisticsTotal: transport.total }, 'Логистика рассчитана');
 
   // 6. Final overheads
   const overheads = calcOverheads(materials, operations, transport, geometry);
@@ -162,15 +164,13 @@ async function generateRKM(product, outputDir, options = {}) {
   // Восстанавливаем оригинальные настройки накладных
   Object.assign(rates.overheads, origOH);
 
-  console.log(`  ИТОГО без НДС: ${overheads.itogo_bez_NDS.toFixed(2)} руб`);
-  console.log(`  НДС: ${overheads.NDS.toFixed(2)} руб`);
-  console.log(`  ИТОГО с НДС: ${overheads.itogo_s_NDS.toFixed(2)} руб`);
+  log.info({ tkNumber: product.tk_number, totalWithoutNds: overheads.itogo_bez_NDS, nds: overheads.NDS, totalWithNds: overheads.itogo_s_NDS }, 'Итоги РКМ');
 
   if (doOptimize) {
     const ctrlUnit = getControlUnit(workProduct);
     const calcPrice = getCalcPrice(overheads, ctrlUnit);
     const ratio = calcPrice / product.control_price;
-    console.log(`  [СВЕРКА] Расчёт: ${calcPrice.toFixed(2)}, Контроль: ${product.control_price.toFixed(2)}, Отклонение: ${((ratio - 1) * 100).toFixed(1)}%`);
+    log.info({ tkNumber: product.tk_number, calcPrice, controlPrice: product.control_price, deviationPercent: (ratio - 1) * 100 }, 'Сверка цены');
     // Sanity-проверка: расчётная цена не должна отклоняться от контрольной более чем в 10 раз
     checkPriceDeviation(calcPrice, product.control_price, product.control_unit || 'ед', `Поз.${product.tk_number}`);
   }
@@ -191,7 +191,7 @@ async function generateRKM(product, outputDir, options = {}) {
   const filePath = path.join(outputDir, fileName);
 
   await wb.xlsx.writeFile(filePath);
-  console.log(`  [RKM] Файл сохранен: ${filePath}`);
+  log.info({ tkNumber: product.tk_number, filePath }, 'Файл РКМ сохранён');
 
   return {
     success: true,
