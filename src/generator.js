@@ -16,6 +16,7 @@ const { validateProductOrThrow } = require('./validation/validator');
 const { logger } = require('./logger');
 const { Profiler } = require('./utils/perf');
 const { hashInput, createManifest } = require('./utils/cache');
+const { getDefaultDensityByMaterialType } = require('./plugin-registry');
 
 /**
  * Apply defaults to a product spec
@@ -25,16 +26,7 @@ function applyDefaults(product) {
   
   // Default density based on material type
   if (p.material && !p.material.density) {
-    const defaultDensities = {
-      'мрамор': 2700,
-      'гранит': 2700,
-      'известняк': 2400,
-      'травертин': 2500,
-      'песчаник': 2300,
-      'сланец': 2700,
-      'оникс': 2700
-    };
-    p.material.density = (p.material.type ? defaultDensities[p.material.type.toLowerCase()] : null) || 2700;
+    p.material.density = getDefaultDensityByMaterialType(p.material.type) || 2700;
   }
   
   // Default quantity_pieces from quantity if not specified
