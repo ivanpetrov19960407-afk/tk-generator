@@ -14,19 +14,22 @@ const path = require('path');
 const minimist = require('minimist');
 const { generateBatch } = require('./generator');
 const { generateRKM } = require('./rkm/rkm-generator');
+const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
 const { normalizeUnit, validateUnitConsistency } = require('./utils/unit-normalizer');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
     i: 'input',
     o: 'output',
-    h: 'help'
+    h: 'help',
+    e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown'],
   default: {
     output: 'output/',
     rkm: false,
-    optimize: false
+    optimize: false,
+    'cost-breakdown': false
   }
 });
 
@@ -44,6 +47,9 @@ function printHelp() {
   -o, --output   Папка для сгенерированных файлов  [по умолчанию: output/]
       --rkm      Генерировать РКМ (расчётно-калькуляционную ведомость)
       --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
+      --cost-breakdown   Показать смету по операциям в консоли
+  -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
+      --labor-rates-override <file.json> Переопределить тарифы труда
   -h, --help     Показать справку
 
 Примеры:
@@ -58,6 +64,12 @@ function printHelp() {
 
   # РКМ с обратной калькуляцией по контрольным ценам
   node src/index.js --input examples/full_album_batch.json --rkm --optimize --output output/
+
+  # Вывести смету по операциям
+  node src/index.js --input examples/batch_input.json --cost-breakdown
+
+  # Экспорт смет в JSON
+  node src/index.js --input examples/batch_input.json --export-cost output/costs.json
 
 Поддерживаемые фактуры:
   - лощение
@@ -356,6 +368,32 @@ async function main() {
   }
   
   console.log(`Найдено изделий: ${products.length}`);
+
+  const needCostCalculation = Boolean(args['cost-breakdown'] || args['export-cost']);
+  let costs = [];
+  if (needCostCalculation) {
+    console.log('\n=== Расчёт стоимости ===');
+    costs = products.map((product) => calculateTotalCost(product, {
+      laborRatesPath: args['labor-rates-override'] ? path.resolve(args['labor-rates-override']) : null
+    }));
+
+    if (args['cost-breakdown']) {
+      for (const item of costs) {
+        console.log(`\n[COST] ${item.product_name}`);
+        console.log(`[COST] Прямые затраты: ${formatMoneyRu(item.total_direct_cost)} ₽`);
+        console.log(`[COST] Накладные (${item.overhead_percent}%): ${formatMoneyRu(item.overhead_cost)} ₽`);
+        console.log(`[COST] Полная себестоимость: ${formatMoneyRu(item.total_cost)} ₽`);
+        console.log(`[COST] Цена продажи: ${formatMoneyRu(item.selling_price)} ₽ | Контрольная: ${formatMoneyRu(item.control_price)} ₽ | ${item.margin}`);
+      }
+    }
+
+    if (args['export-cost']) {
+      const exportPath = path.resolve(args['export-cost']);
+      fs.mkdirSync(path.dirname(exportPath), { recursive: true });
+      fs.writeFileSync(exportPath, JSON.stringify({ generated_at: new Date().toISOString(), products: costs }, null, 2), 'utf8');
+      console.log(`[COST] Смета экспортирована: ${exportPath}`);
+    }
+  }
 
   // === Генерация ТК+МК (всегда) ===
   console.log('\n=== Генерация ТК+МК ===');

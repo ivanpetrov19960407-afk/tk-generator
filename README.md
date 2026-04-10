@@ -40,6 +40,43 @@ node src/index.js --input examples/sample_input.xlsx --output output/
 node src/index.js --help
 ```
 
+## Расчёт стоимости
+
+В проект добавлен модуль `src/cost-calculator.js` для расчёта сметы по операциям:
+
+- `calculateCostByOperation(product, operationNumber)` — стоимость конкретной операции
+- `calculateTotalCost(product)` — полная себестоимость изделия
+- `calculateMarkup(baseCost, markupPercent)` — наценка и цена продажи
+- `calculateControlPrice(baseCost, controlCoefficient)` — расчёт контрольной цены
+
+### Источники ставок
+
+- `data/costs/labor_rates.json` — тарифы работников (руб/ч)
+- `data/costs/equipment_costs.json` — стоимость машино-часа (руб/ч)
+- `data/costs/material_prices.json` — расходники и удельные материалы по операциям
+- `data/costs/overhead.json` — накладные расходы и значения по умолчанию
+
+### CLI-флаги
+
+```bash
+# Показать смету в консоли
+node src/index.js --input examples/batch_input.json --cost-breakdown
+
+# Экспортировать смету в JSON
+node src/index.js --input examples/batch_input.json --export-cost output/costs.json
+
+# Переопределить тарифы труда внешним JSON
+node src/index.js --input examples/batch_input.json --cost-breakdown --labor-rates-override ./my_labor_rates.json
+```
+
+### Формат JSON экспорта
+
+- `generated_at` — дата и время расчёта
+- `products[]` — массив смет по изделиям
+- В каждой смете есть `operations_cost[]`, `total_direct_cost`, `overhead_cost`, `total_cost`, `selling_price`, `control_price`, `margin`
+
+Смотрите пример запуска: `examples/cost_calculation_example.js`.
+
 ## Формат входных данных
 
 ### JSON
