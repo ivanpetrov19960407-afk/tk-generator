@@ -6,11 +6,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveRuntimeDir } = require('./runtime-paths');
 const { getConfig } = require('./config');
 
 const COST_PREFIX = '[COST]';
-const COSTS_DIR = path.join(__dirname, '..', 'data', 'costs');
-const NORMS_PATH = path.join(__dirname, '..', 'data', 'rkm_norms.json');
+const DATA_DIR = resolveRuntimeDir('data');
+const COSTS_DIR = path.join(DATA_DIR, 'costs');
+const NORMS_PATH = path.join(DATA_DIR, 'rkm_norms.json');
 
 const ROUND_PRECISION = 100;
 

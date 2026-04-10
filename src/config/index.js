@@ -2,8 +2,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveRuntimeDir } = require('../runtime-paths');
 
-const DEFAULT_CONFIG_DIR = path.join(__dirname, '..', '..', 'config');
+const DEFAULT_CONFIG_DIR = resolveRuntimeDir('config');
 
 const DEFAULT_CONFIG = {
   company: {
