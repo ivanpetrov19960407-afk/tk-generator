@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { calcGeometry } = require('./geometry-calc');
 const { mapOperations } = require('./operations-mapper');
 const { calcMaterials } = require('./materials-calc');
@@ -12,6 +13,8 @@ const { checkPriceDeviation } = require('../utils/unit-normalizer');
 const rates = require('../../data/rkm_rates.json');
 const { getConfig } = require('../config');
 const { logger } = require('../logger');
+const { Profiler, nowMs } = require('../utils/perf');
+const { hashInput, createManifest } = require('../utils/cache');
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
@@ -55,6 +58,8 @@ function calcTransport(product, overheadData) {
  */
 async function generateRKM(product, outputDir, options = {}) {
   const log = options.logger || logger;
+  const profileEnabled = Boolean(options.profile);
+  const profiler = options.profiler || new Profiler(profileEnabled);
   const doOptimize = options.optimize && product.control_price;
   log.info({ tkNumber: product.tk_number, product: product.name || 'изделие' }, 'Генерация РКМ');
   if (doOptimize) {
@@ -129,18 +134,18 @@ async function generateRKM(product, outputDir, options = {}) {
 
   // === Основной расчёт ===
   // 1. Geometry
-  const geometry = calcGeometry(workProduct);
+  const geometry = await profiler.measure('rkm.geometry', async () => calcGeometry(workProduct));
   log.debug({ tkNumber: product.tk_number, V_net: geometry.V_net, mass_piece: geometry.mass_piece }, 'Геометрия рассчитана');
   log.debug({ tkNumber: product.tk_number, raw_need_batch: geometry.raw_need_batch, raw_cost_batch: geometry.raw_cost_batch }, 'Потребность сырья рассчитана');
 
   // 2. Operations
-  const operations = mapOperations(workProduct, geometry);
+  const operations = await profiler.measure('rkm.operations', async () => mapOperations(workProduct, geometry));
   log.debug({ tkNumber: product.tk_number, operations: operations.rows.length, directCost: operations.totals.itogo_pryamye }, 'Операции рассчитаны');
 
   // 3. Materials
   const curAreaMode = areaMode || (optimizerInfo && optimizerInfo.area_mode) || null;
   const unitLabel = curAreaMode ? (curAreaMode.controlUnit === 'm2' ? 'м²' : 'м.п.') : 'шт';
-  const materials = calcMaterials(workProduct, geometry, unitLabel);
+  const materials = await profiler.measure('rkm.materials', async () => calcMaterials(workProduct, geometry, unitLabel));
   log.debug({ tkNumber: product.tk_number, materialsTotal: materials.total }, 'Материалы рассчитаны');
 
   // 4. Overheads (two-pass: first without transport, then with)
@@ -152,14 +157,14 @@ async function generateRKM(product, outputDir, options = {}) {
   }
 
   const tempTransport = { total: 0 };
-  const tempOverheads = calcOverheads(materials, operations, tempTransport, geometry);
+  const tempOverheads = await profiler.measure('rkm.overheads.temp', async () => calcOverheads(materials, operations, tempTransport, geometry));
 
   // 5. Transport
-  const transport = calcTransport(workProduct, tempOverheads);
+  const transport = await profiler.measure('rkm.transport', async () => calcTransport(workProduct, tempOverheads));
   log.debug({ tkNumber: product.tk_number, logisticsTotal: transport.total }, 'Логистика рассчитана');
 
   // 6. Final overheads
-  const overheads = calcOverheads(materials, operations, transport, geometry);
+  const overheads = await profiler.measure('rkm.overheads.final', async () => calcOverheads(materials, operations, transport, geometry));
 
   // Восстанавливаем оригинальные настройки накладных
   Object.assign(rates.overheads, origOH);
@@ -177,9 +182,9 @@ async function generateRKM(product, outputDir, options = {}) {
 
   // 7. Build Excel
   // Размеры теперь всегда реальные — originalProduct не нужен
-  const wb = await buildXlsx(workProduct, geometry, operations, materials, transport, overheads, optimizerInfo, {
+  const wb = await profiler.measure('rkm.buildXlsx', async () => buildXlsx(workProduct, geometry, operations, materials, transport, overheads, optimizerInfo, {
     areaMode: areaMode || (optimizerInfo && optimizerInfo.area_mode) || null
-  });
+  }));
 
   // 8. Save
   if (!fs.existsSync(outputDir)) {
@@ -190,7 +195,7 @@ async function generateRKM(product, outputDir, options = {}) {
   const fileName = `RKM_${shortId}.xlsx`;
   const filePath = path.join(outputDir, fileName);
 
-  await wb.xlsx.writeFile(filePath);
+  await profiler.measure('rkm.writeXlsx', async () => wb.xlsx.writeFile(filePath));
   log.info({ tkNumber: product.tk_number, filePath }, 'Файл РКМ сохранён');
 
   return {
@@ -207,8 +212,51 @@ async function generateRKM(product, outputDir, options = {}) {
       per_piece_s_NDS: overheads.per_piece_s_NDS,
       per_m2_s_NDS: overheads.per_m2_s_NDS,
       control_price: product.control_price || null
-    }
+    },
+    profile: profiler.summary()
   };
+}
+
+async function generateRKMBatch(products, outputDir, options = {}) {
+  const log = options.logger || logger;
+  const concurrency = Math.max(1, Number(options.concurrency || Math.min(8, Math.max(2, os.cpus().length))));
+  const useCache = options.cache !== false;
+  const manifest = useCache ? createManifest(outputDir, '.rkm-cache.json') : null;
+  const results = new Array(products.length);
+  let index = 0;
+
+  async function worker() {
+    while (true) {
+      const i = index++;
+      if (i >= products.length) break;
+      const product = products[i];
+      const shortId = product.short_name || `pos_${String(product.tk_number || 0).padStart(2, '0')}`;
+      const fileName = `RKM_${shortId}.xlsx`;
+      const filePath = path.join(outputDir, fileName);
+      const inputHash = hashInput({ product, optimize: Boolean(options.optimize) });
+      const cacheKey = `rkm:${product.tk_number}:${shortId}`;
+
+      if (manifest && manifest.hasFresh(cacheKey, inputHash, filePath)) {
+        results[i] = { success: true, file: filePath, cached: true };
+        continue;
+      }
+
+      const startedAt = nowMs();
+      try {
+        const profiler = new Profiler(Boolean(options.profile));
+        const result = await generateRKM(product, outputDir, { ...options, profiler });
+        results[i] = { ...result, cached: false, durationMs: nowMs() - startedAt };
+        if (manifest) manifest.update(cacheKey, inputHash, result.file);
+      } catch (err) {
+        log.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации РКМ');
+        results[i] = { success: false, error: err.message, product };
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, products.length || 1) }, () => worker()));
+  if (manifest) manifest.flush();
+  return results;
 }
 
 /**
@@ -253,4 +301,4 @@ function calcProductionCost(product) {
   };
 }
 
-module.exports = { generateRKM, calcTransport, calcProductionCost };
+module.exports = { generateRKM, generateRKMBatch, calcTransport, calcProductionCost };

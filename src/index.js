@@ -13,7 +13,8 @@ const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
 const { generateBatch } = require('./generator');
-const { generateRKM } = require('./rkm/rkm-generator');
+const { generateRKMBatch } = require('./rkm/rkm-generator');
+const { nowMs } = require('./utils/perf');
 const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
 const { normalizeUnit } = require('./utils/unit-normalizer');
 const { SUPPORTED_TEXTURES } = require('./textures');
@@ -29,7 +30,7 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary', 'profile', 'cache'],
   default: {
     output: 'output/',
     rkm: false,
@@ -37,6 +38,7 @@ const args = minimist(process.argv.slice(2), {
     'cost-breakdown': false,
     'validate-only': false,
     summary: false,
+    cache: true,
     'unknown-unit-policy': 'warning'
   }
 });
@@ -58,6 +60,9 @@ function printHelp() {
       --cost-breakdown   Показать смету по операциям в консоли
       --validate-only    Только проверить входные данные и завершить
       --summary          Сформировать сводный Excel-отчёт по партии
+      --profile          Вывести timing по этапам генерации
+      --no-cache         Отключить кэширование неизменённых позиций
+      --concurrency <n>  Число параллельных задач в пакетной генерации
       --unknown-unit-policy <warning|error> Политика для нераспознанных единиц
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
@@ -451,12 +456,18 @@ async function main() {
 
   // === Генерация ТК+МК (всегда) ===
   logger.info('Генерация ТК+МК');
+  const generationStart = nowMs();
   const results = await generateBatch(products, outputDir, {
     overridesPath: args.overrides ? path.resolve(args.overrides) : null,
     validation: { unknownUnitPolicy },
-    logger
+    logger,
+    profile: Boolean(args.profile),
+    cache: args.cache !== false,
+    concurrency: args.concurrency ? Number(args.concurrency) : null
   });
+  const tkElapsedMs = nowMs() - generationStart;
   const failed = results.filter(r => !r.success);
+  const tkCached = results.filter(r => r.success && r.cached).length;
   const errorByPosition = new Map();
   for (const fail of failed) {
     const pos = fail.product && fail.product.tk_number ? fail.product.tk_number : 'n/a';
@@ -481,9 +492,21 @@ async function main() {
     let rkmNotConverged = 0;
     let rkmNoPrice = 0;
 
-    for (const product of products) {
-      try {
-        const result = await generateRKM(product, outputDir, { optimize: doOptimize, logger });
+    const rkmBatchStart = nowMs();
+    const rkmResults = await generateRKMBatch(products, outputDir, {
+      optimize: doOptimize,
+      logger,
+      profile: Boolean(args.profile),
+      cache: args.cache !== false,
+      concurrency: args.concurrency ? Number(args.concurrency) : null
+    });
+    const rkmElapsedMs = nowMs() - rkmBatchStart;
+    const rkmCached = rkmResults.filter((r) => r.success && r.cached).length;
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      const result = rkmResults[i];
+      if (result && result.success) {
         rkmOk++;
         if (doOptimize) {
           if (!product.control_price) {
@@ -494,17 +517,37 @@ async function main() {
             rkmNotConverged++;
           }
         }
-      } catch (err) {
+      } else {
         rkmFail++;
-        logger.error({ tkNumber: product.tk_number, error: err.message }, 'Ошибка генерации РКМ');
         if (!errorByPosition.has(product.tk_number)) errorByPosition.set(product.tk_number, []);
-        errorByPosition.get(product.tk_number).push(`РКМ: ${err.message}`);
+        errorByPosition.get(product.tk_number).push(`РКМ: ${result ? result.error : 'неизвестная ошибка'}`);
       }
     }
-    logger.info({ successRkm: rkmOk, total: products.length, failedRkm: rkmFail }, 'Итоги генерации РКМ');
+    logger.info({ successRkm: rkmOk, total: products.length, failedRkm: rkmFail, cached: rkmCached, elapsedMs: Math.round(rkmElapsedMs) }, 'Итоги генерации РКМ');
     if (doOptimize) {
       logger.info({ converged: rkmConverged, notConverged: rkmNotConverged, noControlPrice: rkmNoPrice }, 'Итоги оптимизации');
     }
+    if (args.profile) {
+      const perStage = {};
+      for (const row of rkmResults) {
+        if (!row || !row.profile || !row.profile.stages) continue;
+        for (const [stage, ms] of Object.entries(row.profile.stages)) {
+          perStage[stage] = (perStage[stage] || 0) + ms;
+        }
+      }
+      logger.info({ profile: { elapsedMs: Math.round(rkmElapsedMs), stages: perStage } }, 'PROFILE RKM');
+    }
+  }
+
+  if (args.profile) {
+    const tkStages = {};
+    for (const row of results) {
+      if (!row || !row.profile || !row.profile.stages) continue;
+      for (const [stage, ms] of Object.entries(row.profile.stages)) {
+        tkStages[stage] = (tkStages[stage] || 0) + ms;
+      }
+    }
+    logger.info({ profile: { elapsedMs: Math.round(tkElapsedMs), cached: tkCached, stages: tkStages } }, 'PROFILE TK');
   }
 
   const failedPositions = [...errorByPosition.keys()];
