@@ -1,0 +1,18 @@
+{
+  "products": [
+    {
+      "name": "Плита напольная",
+      "dimensions": {
+        "length": 700,
+        "width": 700,
+        "thickness": 30
+      },
+      "material": {
+        "type": "мрамор",
+        "name": "Delikato light",
+        "density": 2700
+      },
+      "texture": "лощение"
+    }
+  ]
+}

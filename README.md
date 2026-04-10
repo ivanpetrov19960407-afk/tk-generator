@@ -31,7 +31,7 @@ npm install
 
 ```bash
 # Генерация одного изделия
-node src/index.js --input examples/batch_input.json --output output/
+node src/index.js --input examples/batch_small.json --output output/
 
 # Генерация из Excel файла
 node src/index.js --input examples/sample_input.xlsx --output output/
@@ -60,16 +60,16 @@ node src/index.js --help
 
 ```bash
 # Показать смету в консоли
-node src/index.js --input examples/batch_input.json --cost-breakdown
+node src/index.js --input examples/batch_small.json --cost-breakdown
 
 # Экспортировать смету в JSON
-node src/index.js --input examples/batch_input.json --export-cost output/costs.json
+node src/index.js --input examples/batch_small.json --export-cost output/costs.json
 
 # Переопределить тарифы труда внешним JSON
-node src/index.js --input examples/batch_input.json --cost-breakdown --labor-rates-override ./my_labor_rates.json
+node src/index.js --input examples/batch_small.json --cost-breakdown --labor-rates-override ./my_labor_rates.json
 
 # Применить overrides операций
-node src/index.js --input examples/batch_input.json --overrides ./examples/operation_overrides.json
+node src/index.js --input examples/batch_small.json --overrides ./examples/operation_overrides.json
 ```
 
 ### Формат JSON экспорта
@@ -81,6 +81,40 @@ node src/index.js --input examples/batch_input.json --overrides ./examples/opera
 Смотрите пример запуска: `examples/cost_calculation_example.js`.
 
 ## Формат входных данных
+
+Актуальные примеры входа:
+
+- `examples/product_minimal.json` — минимально необходимый валидный JSON.
+- `examples/batch_small.json` — маленький пакет (3 позиции).
+- `examples/batch_full.json` — полный большой пакет для боевого прогона и РКМ.
+
+### Обязательные поля продукта
+
+Каждый объект в `products[]` обязан содержать:
+
+- `name`
+- `dimensions.length`
+- `dimensions.width`
+- `dimensions.thickness`
+- `material.type`
+- `material.name`
+- `material.density`
+- `texture` (`лощение`, `рельефная_матовая`, `бучардирование_лощение`)
+
+### Опциональные поля продукта
+
+Можно дополнительно указывать, например:
+
+- `tk_number`, `short_name`
+- `quantity`, `quantity_pieces`
+- `edges`, `geometry_type`, `category`, `gost_primary`, `packaging`, `date`
+- `object`, `rkm`, `control_price`, `operation_overrides`, `overrides_path`
+
+### Legacy-формат
+
+Старый формат с корневым полем `USER_INPUT` больше не поддерживается для запуска CLI.
+При попытке запуска будет выведено сообщение, что формат устарел, с указанием перейти к актуальным примерам выше.
+Подробности вынесены в `docs/legacy-input-format.md`.
 
 ### JSON
 
@@ -209,8 +243,9 @@ tk-generator/
 ├── templates/
 │   └── operation_overrides/     — Пользовательские переопределения текстов
 ├── examples/
-│   ├── sample_product.json      — Пример: одно изделие
-│   ├── batch_input.json         — Пример: 3 изделия (все фактуры)
+│   ├── product_minimal.json     — Пример: минимальный валидный ввод
+│   ├── batch_small.json         — Пример: 3 изделия (все фактуры)
+│   ├── batch_full.json          — Пример: полный пакет для РКМ
 │   └── sample_input.xlsx        — Пример: Excel-ввод
 └── output/                      — Сгенерированные документы
 ```
