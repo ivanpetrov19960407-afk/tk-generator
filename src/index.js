@@ -19,6 +19,7 @@ const { normalizeUnit } = require('./utils/unit-normalizer');
 const { SUPPORTED_TEXTURES } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
 const { loadConfig, getConfig } = require('./config');
+const { generateSummaryReport } = require('./summary-report');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -27,13 +28,14 @@ const args = minimist(process.argv.slice(2), {
     h: 'help',
     e: 'export-cost'
   },
-  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only'],
+  boolean: ['rkm', 'optimize', 'cost-breakdown', 'validate-only', 'summary'],
   default: {
     output: 'output/',
     rkm: false,
     optimize: false,
     'cost-breakdown': false,
     'validate-only': false,
+    summary: false,
     'unknown-unit-policy': 'warning'
   }
 });
@@ -54,6 +56,7 @@ function printHelp() {
       --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
       --cost-breakdown   Показать смету по операциям в консоли
       --validate-only    Только проверить входные данные и завершить
+      --summary          Сформировать сводный Excel-отчёт по партии
       --unknown-unit-policy <warning|error> Политика для нераспознанных единиц
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
@@ -447,6 +450,13 @@ async function main() {
   }
   const successTK = results.filter(r => r.success).length;
   console.log(`\n✓ ТК+МК: ${successTK} из ${products.length} файлов`);
+
+
+  if (args.summary) {
+    console.log('\n=== Сводный отчёт по партии ===');
+    const summary = await generateSummaryReport(products, results, outputDir);
+    console.log(`✓ Сводный отчёт: ${summary.file}`);
+  }
 
   // === Генерация РКМ (если --rkm) ===
   if (args.rkm) {
