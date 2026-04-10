@@ -18,6 +18,7 @@ const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
 const { normalizeUnit } = require('./utils/unit-normalizer');
 const { SUPPORTED_TEXTURES } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
+const { loadConfig, getConfig } = require('./config');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -57,6 +58,8 @@ function printHelp() {
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
       --overrides <file.json>   Переопределить операции через rules JSON
+      --config <file.json|yaml> Дополнительный конфиг поверх default/local
+      --config-dir <dir>        Папка с default.json и local.json
   -h, --help     Показать справку
 
 Примеры:
@@ -266,8 +269,8 @@ function parseExcelInput(filePath) {
     };
   });
 
-  // Логистика посчитана отдельно для позиций #36, #28, #29, #27, #30
-  const SKIP_TRANSPORT = new Set([36, 28, 29, 27, 30, 9, 10]);
+  const config = getConfig();
+  const SKIP_TRANSPORT = new Set(config.rkm.skipTransportTkNumbers || []);
   for (const p of products) {
     if (SKIP_TRANSPORT.has(p.tk_number)) {
       if (!p.rkm) p.rkm = {};
@@ -276,34 +279,25 @@ function parseExcelInput(filePath) {
     }
   }
 
-  // Габбро-диабаз (брусчатка): сократить операции, убрать ручные
-  // Брусчатка — простое массовое изделие: ниже коэфф. брака, без ручных операций
-  const GABBRO_SKIP_OPS = [10, 13, 14, 15, 19, 22]; // ЧПУ, профиль, ручные доводки
-  const GABBRO_REDUCE_OPS = [2, 3, 8, 11, 21, 26, 27]; // сократить нормы
+  // Спец-правила по материалам из конфигурации
+  const specialMaterialRules = config.rkm.specialMaterialRules || {};
   for (const p of products) {
-    if (p.material && p.material.type === 'габбро-диабаз') {
+    const matchedRule = Object.entries(specialMaterialRules).find(([materialType, rule]) => {
+      const keywords = Array.isArray(rule.detectKeywords) ? rule.detectKeywords : [materialType];
+      const haystack = `${p.material && p.material.type ? p.material.type : ''} ${p.name || ''}`.toLowerCase();
+      return keywords.some((kw) => haystack.includes(String(kw).toLowerCase()));
+    });
+
+    if (matchedRule) {
+      const [, rule] = matchedRule;
       if (!p.rkm) p.rkm = {};
       if (!p.rkm.norms_override) p.rkm.norms_override = {};
-      // Обнулить ручные операции (остальные оптимизатор подберёт сам)
-      for (const opNo of GABBRO_SKIP_OPS) {
+      for (const opNo of rule.skipOperations || []) {
         p.rkm.norms_override[opNo] = { chel_ch: 0, mash_ch: 0 };
       }
-      // Ниже коэфф. брака для простой геометрии брусчатки
-      p.rkm.k_reject = 1.08;
-      // Цена блока для брусчатки (не архитектурный подбор, массовая распиловка)
-      p.rkm.block_price = 40000; // карьерный блок для массовой брусчатки (карельский габбро, опт)
-      // Расходники: цена на 1шт минимальная — брусчатка пакуется на поддоны, не поштучно
-      p.rkm.material_prices = {
-        diamond_discs: 2000,
-        diamond_milling_heads: 1500,
-        bush_hammer_heads_price: 2000,
-        abrasives: 1,       // конвейер, мин. расход (не 0 — иначе fallback)
-        coolant_chemistry: 1,
-        protective_materials: 1, // не 0!
-        packaging: 5,
-        marking: 1,
-        ppe: 1
-      };
+      if (rule.k_reject != null) p.rkm.k_reject = rule.k_reject;
+      if (rule.block_price != null) p.rkm.block_price = rule.block_price;
+      if (rule.material_prices) p.rkm.material_prices = { ...rule.material_prices };
     }
   }
 
@@ -352,6 +346,11 @@ async function main() {
     return;
   }
   
+  loadConfig({
+    configDir: args['config-dir'] ? path.resolve(args['config-dir']) : null,
+    configPath: args.config ? path.resolve(args.config) : null
+  });
+
   const inputPath = path.resolve(args.input);
   const outputDir = path.resolve(args.output);
   

@@ -1,0 +1,47 @@
+{
+  "company": {
+    "name": "ООО «Название компании»",
+    "address": "Юридический адрес",
+    "INN": "0000000000",
+    "KPP": "000000000",
+    "rs": "00000000000000000000",
+    "bank": "Название банка",
+    "ks": "00000000000000000000",
+    "BIK": "000000000",
+    "tel": "+7 000 000 00 00",
+    "email": "info@example.com"
+  },
+  "rkm": {
+    "logisticsDefaults": {
+      "distance_km": 940,
+      "tariff_rub_km": 120,
+      "trips": 1,
+      "loading": 25000,
+      "unloading": 35000,
+      "insurance_pct": 0.005
+    },
+    "skipTransportTkNumbers": [36, 28, 29, 27, 30, 9, 10],
+    "specialMaterialRules": {
+      "габбро-диабаз": {
+        "detectKeywords": ["габбро"],
+        "k_reject": 1.08,
+        "block_price": 40000,
+        "skipOperations": [10, 13, 14, 15, 19, 22],
+        "material_prices": {
+          "diamond_discs": 2000,
+          "diamond_milling_heads": 1500,
+          "bush_hammer_heads_price": 2000,
+          "abrasives": 1,
+          "coolant_chemistry": 1,
+          "protective_materials": 1,
+          "packaging": 5,
+          "marking": 1,
+          "ppe": 1
+        }
+      }
+    }
+  },
+  "cost": {
+    "paths": {}
+  }
+}

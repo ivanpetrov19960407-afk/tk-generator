@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "generate": "node src/index.js",
-    "test": "node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/validation.test.js",
+    "test": "node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/validation.test.js && node tests/config.test.js",
     "test:generate": "node src/index.js --input examples/batch_input.json --output output/"
   },
   "keywords": [

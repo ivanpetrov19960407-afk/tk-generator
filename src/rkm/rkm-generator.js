@@ -10,6 +10,7 @@ const { buildXlsx } = require('./xlsx-builder');
 const { optimizeRKM, getControlUnit, getCalcPrice, detectAreaMode, buildSizeBasedOverrides, buildSizeBasedMaterialPrices, getSizeBasedKReject } = require('./optimizer');
 const { checkPriceDeviation } = require('../utils/unit-normalizer');
 const rates = require('../../data/rkm_rates.json');
+const { getConfig } = require('../config');
 
 function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
@@ -18,6 +19,7 @@ function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
  */
 function calcTransport(product, overheadData) {
   const tr = (product.rkm && product.rkm.transport) || {};
+  const logisticsDefaults = getConfig().rkm.logisticsDefaults || {};
 
   // Если логистика явно отключена для позиции (transport.skip = true)
   if (tr.skip) {
@@ -27,12 +29,12 @@ function calcTransport(product, overheadData) {
     };
   }
 
-  const distance = tr.distance_km || 940;
-  const tariff = tr.tariff_rub_km || 120;
-  const trips = tr.trips || 1;
-  const loading = tr.loading || 25000;
-  const unloading = tr.unloading || 35000;
-  const insurance_pct = tr.insurance_pct || 0.005;
+  const distance = tr.distance_km ?? logisticsDefaults.distance_km ?? 940;
+  const tariff = tr.tariff_rub_km ?? logisticsDefaults.tariff_rub_km ?? 120;
+  const trips = tr.trips ?? logisticsDefaults.trips ?? 1;
+  const loading = tr.loading ?? logisticsDefaults.loading ?? 25000;
+  const unloading = tr.unloading ?? logisticsDefaults.unloading ?? 35000;
+  const insurance_pct = tr.insurance_pct ?? logisticsDefaults.insurance_pct ?? 0.005;
 
   const perevozka = distance * tariff * trips;
   const insurance_val = overheadData.itogo_production * insurance_pct;

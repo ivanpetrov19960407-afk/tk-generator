@@ -5,3 +5,5 @@ output/*.pdf
 .DS_Store
 data/Vizualizitsiia.pdf
 output/
+
+config/local.json

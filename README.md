@@ -38,7 +38,32 @@ node src/index.js --input examples/sample_input.xlsx --output output/
 
 # Справка
 node src/index.js --help
+
+# Использовать кастомную папку конфигурации
+node src/index.js --input examples/batch_small.json --config-dir ./config
+
+# Наложить дополнительный конфиг-файл поверх default/local
+node src/index.js --input examples/batch_small.json --config ./my-config.json
 ```
+
+## Конфигурация (default/local/env)
+
+- Базовый публичный конфиг: `config/default.json`
+- Локальный приватный конфиг: `config/local.json` (игнорируется Git)
+- Пример локального файла: `config/local.example.json`
+
+Слои загрузки (снизу вверх):
+1. встроенные дефолты приложения;
+2. `config/default.json`;
+3. `config/local.json`;
+4. `--config <path>`;
+5. ENV-переопределения (`TKG_CONFIG_JSON`, `TKG_LOGISTICS_*`, `TKG_SKIP_TRANSPORT_TK_NUMBERS`, `TKG_COMPANY_*`).
+
+Через конфиг управляются:
+- реквизиты компании для титульного листа РКМ;
+- дефолтные параметры логистики;
+- список позиций с `transport.skip`;
+- спец-правила по материалам (например, для `габбро-диабаз`).
 
 ## Расчёт стоимости
 
