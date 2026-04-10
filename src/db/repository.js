@@ -50,6 +50,22 @@ function createRepository(dbOrOptions) {
   `);
 
   const insertAuditStmt = db.prepare('INSERT INTO audit_log (action, user, details, ip) VALUES (@action, @user, @details, @ip)');
+  const insertUserStmt = db.prepare(`
+    INSERT INTO users (
+      username,
+      password_hash,
+      role,
+      is_active,
+      created_at
+    ) VALUES (
+      @username,
+      @password_hash,
+      @role,
+      @is_active,
+      @created_at
+    )
+  `);
+  const updateUserLastLoginStmt = db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?');
 
   function saveGeneration(payload) {
     const row = {
@@ -168,6 +184,35 @@ function createRepository(dbOrOptions) {
     };
   }
 
+  function countUsers() {
+    return Number(db.prepare('SELECT COUNT(*) AS count FROM users').get().count || 0);
+  }
+
+  function getUserByUsername(username) {
+    if (!username) return null;
+    return db.prepare('SELECT id, username, password_hash, role, is_active, created_at, last_login_at FROM users WHERE username = ?').get(String(username).trim());
+  }
+
+  function getUserById(id) {
+    return db.prepare('SELECT id, username, password_hash, role, is_active, created_at, last_login_at FROM users WHERE id = ?').get(Number(id));
+  }
+
+  function touchUserLogin(userId) {
+    updateUserLastLoginStmt.run(new Date().toISOString(), Number(userId));
+  }
+
+  function createUser(payload) {
+    const row = {
+      username: String(payload.username || '').trim(),
+      password_hash: payload.passwordHash,
+      role: payload.role || 'viewer',
+      is_active: payload.is_active == null ? 1 : Number(payload.is_active ? 1 : 0),
+      created_at: payload.created_at || new Date().toISOString()
+    };
+    const res = insertUserStmt.run(row);
+    return getUserById(Number(res.lastInsertRowid));
+  }
+
   return {
     db,
     saveGeneration,
@@ -175,7 +220,12 @@ function createRepository(dbOrOptions) {
     saveAuditLog,
     getGenerations,
     getGenerationById,
-    getStats
+    getStats,
+    countUsers,
+    getUserByUsername,
+    getUserById,
+    createUser,
+    touchUserLogin
   };
 }
 

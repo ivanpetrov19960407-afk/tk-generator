@@ -14,6 +14,7 @@ const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = requir
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
+const { createAuth } = require('./auth');
 
 function parseProductsPayload(body) {
   if (Array.isArray(body)) return body;
@@ -106,6 +107,7 @@ function sendJson(res, status, data) {
 function getPublicConfig(config) {
   return {
     company: { name: config.company && config.company.name },
+    auth: { enabled: Boolean(config.auth && config.auth.enabled) },
     rkm: {
       logisticsDefaults: config.rkm && config.rkm.logisticsDefaults,
       skipTransportTkNumbers: config.rkm && config.rkm.skipTransportTkNumbers
@@ -185,28 +187,31 @@ function createOpenApiSpec() {
       },
       '/api/auth/login': {
         post: {
-          summary: 'Аутентификация (заглушка).',
+          summary: 'Аутентификация пользователя.',
           tags: ['Auth'],
           responses: {
-            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+            200: { description: 'Успешный вход.' },
+            401: { description: 'Неверный логин или пароль.' }
           }
         }
       },
-      '/api/auth/logout': {
+      '/api/auth/register': {
         post: {
-          summary: 'Выход (заглушка).',
+          summary: 'Создание пользователя (только admin).',
           tags: ['Auth'],
           responses: {
-            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+            201: { description: 'Пользователь создан.' },
+            403: { description: 'Недостаточно прав.' }
           }
         }
       },
       '/api/auth/me': {
         get: {
-          summary: 'Профиль пользователя (заглушка).',
+          summary: 'Профиль текущего пользователя.',
           tags: ['Auth'],
           responses: {
-            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+            200: { description: 'Данные пользователя.' },
+            401: { description: 'Не аутентифицирован.' }
           }
         }
       }
@@ -303,9 +308,12 @@ function createSwaggerHtml() {
 </html>`;
 }
 
-async function createHandler(req, res) {
+async function createHandler(req, res, deps = {}) {
   const url = new URL(req.url, 'http://localhost');
-  const repository = createRepository();
+  const repository = deps.repository || createRepository();
+  const auth = deps.auth;
+
+  if (deps.bootstrapPromise) await deps.bootstrapPromise;
 
   if (req.method === 'GET' && url.pathname === '/api/docs/spec.json') {
     return sendJson(res, 200, createOpenApiSpec());
@@ -322,6 +330,7 @@ async function createHandler(req, res) {
   }
 
   if (req.method === 'POST' && url.pathname === '/api/validate') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
     const products = parseProductsPayload(body);
     if (!products) return sendJson(res, 400, { valid: false, errors: ['Ожидается массив products или объект { products: [] }'], warnings: [] });
@@ -329,6 +338,7 @@ async function createHandler(req, res) {
   }
 
   if (req.method === 'POST' && url.pathname === '/api/upload-excel') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     try {
       const buffer = await readBody(req);
       const products = parseExcelProductsFromBuffer(buffer, null);
@@ -339,6 +349,7 @@ async function createHandler(req, res) {
   }
 
   if (req.method === 'POST' && url.pathname === '/api/generate') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     try {
       const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
       const products = parseProductsPayload(body);
@@ -381,7 +392,7 @@ async function createHandler(req, res) {
         });
         repository.saveAuditLog({
           action: 'api.generate',
-          user: req.headers['x-user'] || 'api',
+          user: (req.auth && req.auth.user && req.auth.user.username) || req.headers['x-user'] || 'api',
           details: { generationId, method: req.method, path: req.url },
           ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
         });
@@ -409,12 +420,13 @@ async function createHandler(req, res) {
   }
 
   if (req.method === 'GET' && url.pathname === '/api/history') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
     const page = Number(url.searchParams.get('page') || 1);
     const pageSize = Number(url.searchParams.get('pageSize') || 20);
     const data = repository.getGenerations({ page, pageSize });
     repository.saveAuditLog({
       action: 'api.history.list',
-      user: req.headers['x-user'] || 'api',
+      user: (req.auth && req.auth.user && req.auth.user.username) || req.headers['x-user'] || 'api',
       details: { page, pageSize },
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
@@ -422,24 +434,43 @@ async function createHandler(req, res) {
   }
 
   if (req.method === 'GET' && /^\/api\/history\/\d+$/.test(url.pathname)) {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
     const id = Number(url.pathname.split('/').pop());
     const data = repository.getGenerationById(id);
     if (!data) return sendJson(res, 404, { error: 'Not Found' });
     repository.saveAuditLog({
       action: 'api.history.detail',
-      user: req.headers['x-user'] || 'api',
+      user: (req.auth && req.auth.user && req.auth.user.username) || req.headers['x-user'] || 'api',
       details: { id },
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
     return sendJson(res, 200, data);
   }
 
-  if (req.method === 'POST' && (url.pathname === '/api/auth/login' || url.pathname === '/api/auth/logout')) {
-    return sendJson(res, 501, { error: 'Auth is not implemented yet' });
+  if (req.method === 'POST' && url.pathname === '/api/auth/login') {
+    if (!auth || !auth.enabled) return sendJson(res, 404, { error: 'Auth disabled' });
+    const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+    const result = await auth.login(body.username, body.password);
+    if (!result) return sendJson(res, 401, { error: 'Invalid credentials' });
+    return sendJson(res, 200, result);
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/auth/register') {
+    if (!auth || !auth.enabled) return sendJson(res, 404, { error: 'Auth disabled' });
+    if (!(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    const body = JSON.parse((await readBody(req)).toString('utf8') || '{}');
+    try {
+      const user = await auth.register(req.auth.user, body);
+      return sendJson(res, 201, { user });
+    } catch (error) {
+      return sendJson(res, error.statusCode || 400, { error: error.message });
+    }
   }
 
   if (req.method === 'GET' && url.pathname === '/api/auth/me') {
-    return sendJson(res, 501, { error: 'Auth is not implemented yet' });
+    if (!auth || !auth.enabled) return sendJson(res, 404, { error: 'Auth disabled' });
+    if (!(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    return sendJson(res, 200, { user: req.auth.user });
   }
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
@@ -453,11 +484,14 @@ async function createHandler(req, res) {
 }
 
 function createApp() {
-  loadConfig();
+  const config = loadConfig();
+  const repository = createRepository();
+  const auth = createAuth(config, repository);
+  const bootstrapPromise = auth.ensureBootstrapAdmin();
   return {
     listen(port, cb) {
       const server = http.createServer((req, res) => {
-        createHandler(req, res).catch((error) => sendJson(res, 500, { error: error.message }));
+        createHandler(req, res, { repository, auth, bootstrapPromise }).catch((error) => sendJson(res, 500, { error: error.message }));
       });
       return server.listen(port, cb);
     }
