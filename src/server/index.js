@@ -113,9 +113,209 @@ function getPublicConfig(config) {
   };
 }
 
+function createOpenApiSpec() {
+  return {
+    openapi: '3.0.0',
+    info: {
+      title: 'TK Generator API',
+      version: '1.0.0',
+      description: 'API для генерации технологических карт, валидации и истории запусков.'
+    },
+    servers: [{ url: '/' }],
+    paths: {
+      '/api/generate': {
+        post: {
+          summary: 'Генерация DOCX/XLSX и возврат ZIP архива.',
+          tags: ['API'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/BatchInput' } }
+            }
+          },
+          responses: {
+            200: {
+              description: 'ZIP архив с файлами.',
+              content: { 'application/zip': { schema: { type: 'string', format: 'binary' } } }
+            },
+            400: { description: 'Ошибка валидации.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            500: { description: 'Внутренняя ошибка.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/validate': {
+        post: {
+          summary: 'Валидация входных данных без генерации файлов.',
+          tags: ['API'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/BatchInput' } }
+            }
+          },
+          responses: {
+            200: { description: 'Результат валидации.' },
+            400: { description: 'Некорректный запрос.' }
+          }
+        }
+      },
+      '/api/history': {
+        get: {
+          summary: 'Список запусков генерации.',
+          tags: ['API'],
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', default: 1 } },
+            { name: 'pageSize', in: 'query', schema: { type: 'integer', default: 20 } }
+          ],
+          responses: {
+            200: { description: 'История запусков.' }
+          }
+        }
+      },
+      '/api/history/{id}': {
+        get: {
+          summary: 'Детали запуска по идентификатору.',
+          tags: ['API'],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+          responses: {
+            200: { description: 'Детали генерации.', content: { 'application/json': { schema: { $ref: '#/components/schemas/HistoryEntry' } } } },
+            404: { description: 'Запись не найдена.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/auth/login': {
+        post: {
+          summary: 'Аутентификация (заглушка).',
+          tags: ['Auth'],
+          responses: {
+            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/auth/logout': {
+        post: {
+          summary: 'Выход (заглушка).',
+          tags: ['Auth'],
+          responses: {
+            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/auth/me': {
+        get: {
+          summary: 'Профиль пользователя (заглушка).',
+          tags: ['Auth'],
+          responses: {
+            501: { description: 'Пока не реализовано.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      }
+    },
+    components: {
+      schemas: {
+        Product: {
+          type: 'object',
+          required: ['name', 'dimensions', 'material', 'texture'],
+          properties: {
+            tk_number: { type: 'integer' },
+            name: { type: 'string' },
+            short_name: { type: 'string' },
+            dimensions: {
+              type: 'object',
+              required: ['length', 'width', 'thickness'],
+              properties: {
+                length: { type: 'number' },
+                width: { type: 'number' },
+                thickness: { type: 'number' }
+              }
+            },
+            material: {
+              type: 'object',
+              required: ['type', 'name'],
+              properties: {
+                type: { type: 'string' },
+                name: { type: 'string' },
+                density: { type: 'number' }
+              }
+            },
+            texture: { type: 'string' },
+            quantity_pieces: { type: 'number', nullable: true },
+            quantity: { type: 'string', nullable: true },
+            control_unit: { type: 'string' },
+            category: { type: 'string' }
+          }
+        },
+        BatchInput: {
+          type: 'object',
+          required: ['products'],
+          properties: {
+            products: { type: 'array', items: { $ref: '#/components/schemas/Product' } }
+          }
+        },
+        GenerationResult: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            filePath: { type: 'string', nullable: true },
+            error: { type: 'string', nullable: true }
+          }
+        },
+        HistoryEntry: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            timestamp: { type: 'string', format: 'date-time' },
+            products_count: { type: 'integer' },
+            success_count: { type: 'integer' },
+            error_count: { type: 'integer' },
+            duration_ms: { type: 'integer' }
+          }
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        }
+      }
+    }
+  };
+}
+
+function createSwaggerHtml() {
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>TK Generator API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.ui = SwaggerUIBundle({
+      url: '/api/docs/spec.json',
+      dom_id: '#swagger-ui'
+    });
+  </script>
+</body>
+</html>`;
+}
+
 async function createHandler(req, res) {
   const url = new URL(req.url, 'http://localhost');
   const repository = createRepository();
+
+  if (req.method === 'GET' && url.pathname === '/api/docs/spec.json') {
+    return sendJson(res, 200, createOpenApiSpec());
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/docs') {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(createSwaggerHtml());
+    return;
+  }
 
   if (req.method === 'GET' && url.pathname === '/api/config') {
     return sendJson(res, 200, getPublicConfig(getConfig()));
@@ -234,6 +434,14 @@ async function createHandler(req, res) {
     return sendJson(res, 200, data);
   }
 
+  if (req.method === 'POST' && (url.pathname === '/api/auth/login' || url.pathname === '/api/auth/logout')) {
+    return sendJson(res, 501, { error: 'Auth is not implemented yet' });
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/auth/me') {
+    return sendJson(res, 501, { error: 'Auth is not implemented yet' });
+  }
+
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
     const file = path.resolve(process.cwd(), 'public', 'index.html');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -266,4 +474,4 @@ function startServer() {
 
 if (require.main === module) startServer();
 
-module.exports = { createApp, startServer, parseExcelProductsFromBuffer };
+module.exports = { createApp, startServer, parseExcelProductsFromBuffer, createOpenApiSpec };
