@@ -3,8 +3,8 @@
  * Takes template text from sections_template.json and parametrizes it.
  */
 
-const { parametrize, TEMPLATE_PRODUCTS } = require('./operations');
-const { buildEquipmentListText, calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
+const { parametrize } = require('./operations');
+const { buildEquipmentListText, calcProductMass, calcBlockMass } = require('./equipment');
 const i18n = require('./i18n');
 
 /**
@@ -172,8 +172,9 @@ function replaceProductDescription(text, product) {
 function buildTitlePage(product) {
   const dims = product.dimensions;
   const dimsStr = `${dims.length}×${dims.width}×${dims.thickness} мм`;
-  const pieceMass = calcProductMass(product);
-  const batchMass = calcBatchMass(product);
+  // masses available for future use
+  // const pieceMass = calcProductMass(product);
+  // const batchMass = calcBatchMass(product);
   
   const textureNames = {
     'лощение': 'Лощение',
@@ -446,10 +447,10 @@ function customizeSection1(text, product) {
 function customizeSection2(text, product) {
   const dims = product.dimensions;
   const pieceMass = calcProductMass(product);
-  const pieceArea = (dims.length / 1000) * (dims.width / 1000);
+  const _pieceArea = (dims.length / 1000) * (dims.width / 1000);
   const matProps = getMaterialProps(product);
-  const matName = product.material.name;
-  const matTypeName = getMaterialTypeName(product.material.type);
+  const _matName = product.material.name;
+  const _matTypeName = getMaterialTypeName(product.material.type);
 
   // Replace mass calculation pattern
   // "0,7×0,7×0,03×2700 ≈ 39,7 кг/плита" → actual calc
@@ -685,7 +686,7 @@ function customizeSection12(text, product) {
   const blockMassT = (blockMass / 1000).toFixed(1).replace('.', ',');
   const matProps = getMaterialProps(product);
   const density = product.material.density;
-  const matTypeName = getMaterialTypeName(product.material.type);
+  const _matTypeName12 = getMaterialTypeName(product.material.type);
   const matName = product.material.name;
 
   // Bug 5 fix: Replace hardcoded density 1600 with actual product density.

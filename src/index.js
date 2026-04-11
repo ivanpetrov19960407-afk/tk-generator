@@ -16,7 +16,7 @@ const readline = require('readline');
 const { generateBatch, normalizeFormats } = require('./generator');
 const { generateRKMBatch } = require('./rkm/rkm-generator');
 const { nowMs } = require('./utils/perf');
-const { calculateTotalCost, formatMoneyRu } = require('./cost-calculator');
+const { calculateTotalCost } = require('./cost-calculator');
 const { write1CXml, write1CCsv } = require('./export-1c');
 const { normalizeUnit } = require('./utils/unit-normalizer');
 const { getSupportedTextures } = require('./textures');
@@ -32,6 +32,7 @@ const {
   markAutoUpdateChecked
 } = require('./self-update');
 const { loadPlugins } = require('./plugin-loader');
+const { parseDxfFile } = require('./utils/dxf-import');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -65,7 +66,7 @@ function printHelp() {
   tk-generator --input <файл> [--output <папка>] [--rkm] [--optimize]
 
 Параметры:
-  -i, --input    Входной файл (JSON или XLSX)     [обязательный]
+  -i, --input    Входной файл (JSON, XLSX или DXF) [обязательный]
   -o, --output   Папка для сгенерированных файлов  [по умолчанию: output/]
       --rkm      Генерировать РКМ (расчётно-калькуляционную ведомость)
       --optimize Обратная калькуляция ПКМ по контрольным ценам (требует --rkm)
@@ -78,6 +79,7 @@ function printHelp() {
       --profile          Вывести timing по этапам генерации
       --no-cache         Отключить кэширование неизменённых позиций
       --concurrency <n>  Число параллельных задач в пакетной генерации
+      --thickness <mm>   Толщина для DXF (приоритетно для импорта .dxf)
       --unknown-unit-policy <warning|error> Политика для нераспознанных единиц
   -e, --export-cost <file.json> Экспорт сметы по всем изделиям в JSON
       --labor-rates-override <file.json> Переопределить тарифы труда
@@ -374,6 +376,38 @@ function parseJsonInput(filePath) {
   return [data];
 }
 
+function mapDxfImportToProducts(parsed, inputPath) {
+  const dimensions = parsed.dimensions || {};
+  if (!(dimensions.length > 0 && dimensions.width > 0)) {
+    throw new Error('DXF: не удалось определить length/width. Проверьте геометрию LINE/LWPOLYLINE/POLYLINE.');
+  }
+  if (!(dimensions.thickness > 0)) {
+    throw new Error('DXF: толщина не определена. Укажите --thickness <мм> или добавьте подсказку в файл/слой.');
+  }
+
+  return [{
+    tk_number: 1,
+    name: path.basename(inputPath, path.extname(inputPath)),
+    short_name: path.basename(inputPath, path.extname(inputPath)),
+    dimensions: {
+      length: dimensions.length,
+      width: dimensions.width,
+      thickness: dimensions.thickness
+    },
+    material: {
+      type: parsed.material_hint || 'мрамор',
+      name: parsed.material_hint || 'unknown',
+      density: 2700
+    },
+    texture: 'лощение',
+    control_unit: 'шт',
+    quantity_pieces: 1,
+    category: '1',
+    gost_primary: 'ГОСТ 9480-2024',
+    packaging: 'стандартная'
+  }];
+}
+
 function uniquePaths(paths) {
   return [...new Set(paths.filter(Boolean).map((p) => path.resolve(p)))];
 }
@@ -431,8 +465,14 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     logger.info('Формат: JSON');
     rawInput = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
     products = parseJsonInput(inputPath);
+  } else if (ext === '.dxf') {
+    logger.info('Формат: DXF');
+    rawInput = null;
+    const parsedDxf = parseDxfFile(inputPath, { cliThickness: args.thickness });
+    parsedDxf.meta.warnings.forEach((warning) => logger.warn({ dxfWarning: warning }, 'DXF import warning'));
+    products = mapDxfImportToProducts(parsedDxf, inputPath);
   } else {
-    throw new Error(`Неподдерживаемый формат файла: ${ext}. Используйте .json или .xlsx`);
+    throw new Error(`Неподдерживаемый формат файла: ${ext}. Используйте .json, .xlsx или .dxf`);
   }
 
   if (!products.length) {

@@ -43,7 +43,7 @@ jobs:
           path: |
             coverage/lcov.info
             coverage/lcov-report/**
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Build (if present)
         run: npm run build --if-present

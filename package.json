@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tk-generator --help",
     "generate": "tk-generator",
-    "test": "node tests/excel-import.test.js && node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/export-1c.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/plugin-loader.test.js && node tests/validation.test.js && node tests/config.test.js && node tests/template-engine.test.js && node tests/smoke/generate-docx.test.js && node tests/smoke/generate-pdf.test.js && node tests/smoke/generate-rkm.test.js && node tests/data-integrity.test.js && node tests/smoke/summary-report.test.js && node tests/api/validate.test.js && node tests/api/generate.test.js && node tests/api/history.test.js && node tests/db/repository.test.js && node tests/api/auth.test.js && node tests/api/swagger.test.js && node tests/self-update.test.js",
+    "test": "node tests/excel-import.test.js && node tests/unit-normalizer.test.js && node tests/cost-calculator.test.js && node tests/export-1c.test.js && node tests/overrides-loader.test.js && node tests/texture-validation.test.js && node tests/plugin-loader.test.js && node tests/validation.test.js && node tests/config.test.js && node tests/template-engine.test.js && node tests/smoke/generate-docx.test.js && node tests/smoke/generate-pdf.test.js && node tests/smoke/generate-rkm.test.js && node tests/data-integrity.test.js && node tests/smoke/summary-report.test.js && node tests/api/validate.test.js && node tests/api/generate.test.js && node tests/api/history.test.js && node tests/db/repository.test.js && node tests/api/auth.test.js && node tests/api/swagger.test.js && node tests/self-update.test.js && node tests/dxf-import.test.js && node tests/api/import-dxf.test.js",
     "test:generate": "node src/index.js --input examples/batch_input.json --output output/",
     "excel:template": "node scripts/generate_excel_template.js",
     "smoke": "node tests/smoke/generate-docx.test.js && node tests/smoke/generate-rkm.test.js && node tests/smoke/summary-report.test.js",
@@ -23,7 +23,7 @@
     "lint:fix": "eslint src tests --fix || npx --yes eslint@9.39.4 src tests --fix",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\"",
     "fonts:setup": "node scripts/setup-fonts.js",
-    "test:coverage": "npx --yes c8 npm test"
+    "test:coverage": "npx --yes c8 --reporter=text --reporter=lcov --reporter=html npm test"
   },
   "keywords": [
     "технологическая карта",
@@ -44,7 +44,8 @@
     "jszip": "^3.10.1",
     "telegraf": "^4.16.0",
     "pdf-parse": "^1.1.1",
-    "pdfkit": "^0.15.0"
+    "pdfkit": "^0.15.0",
+    "dxf": "^5.3.0"
   },
   "bin": {
     "tk-generator": "src/index.js"

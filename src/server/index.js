@@ -12,6 +12,7 @@ const { generateRKM } = require('../rkm/rkm-generator');
 const { validateBatchInput } = require('../validation/validator');
 const { calculateTotalCost } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
+const { parseDxfFile } = require('../utils/dxf-import');
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
@@ -119,6 +120,32 @@ function sendJson(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
+function parseMultipartSingleFile(buffer, boundary) {
+  const delimiter = Buffer.from(`--${boundary}`);
+  const parts = [];
+  let start = buffer.indexOf(delimiter);
+  while (start !== -1) {
+    const next = buffer.indexOf(delimiter, start + delimiter.length);
+    if (next === -1) break;
+    const chunk = buffer.slice(start + delimiter.length, next);
+    parts.push(chunk);
+    start = next;
+  }
+
+  for (const part of parts) {
+    const headerEnd = part.indexOf(Buffer.from('\r\n\r\n'));
+    if (headerEnd === -1) continue;
+    const headerText = part.slice(0, headerEnd).toString('utf8');
+    if (!/filename=/i.test(headerText)) continue;
+    const fileNameMatch = headerText.match(/filename=\"([^\"]+)\"/i);
+    const fileName = fileNameMatch ? fileNameMatch[1] : 'upload.dxf';
+    const body = part.slice(headerEnd + 4);
+    const cleaned = body.slice(0, body.length - 2); // trim trailing CRLF
+    return { fileName, buffer: cleaned };
+  }
+  return null;
+}
+
 function parseAnalyticsFilters(url) {
   const from = url.searchParams.get('from') || null;
   const to = url.searchParams.get('to') || null;
@@ -197,6 +224,16 @@ function createOpenApiSpec() {
           responses: {
             200: { description: 'Результат валидации.' },
             400: { description: 'Некорректный запрос.' }
+          }
+        }
+      },
+      '/api/import-dxf': {
+        post: {
+          summary: 'Загрузка DXF (multipart/form-data) и извлечение размеров без генерации файлов.',
+          tags: ['API'],
+          responses: {
+            200: { description: 'Извлечённые параметры DXF.' },
+            400: { description: 'Ошибка валидации входного файла.' }
           }
         }
       },
@@ -441,6 +478,42 @@ async function createHandler(req, res, deps = {}) {
     }
   }
 
+  if (req.method === 'POST' && url.pathname === '/api/import-dxf') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
+    try {
+      if (!enforceContentLengthLimit(MAX_EXCEL_UPLOAD_BYTES, 'security.payload_too_large')) return;
+      const contentType = String(req.headers['content-type'] || '');
+      const boundaryMatch = contentType.match(/boundary=([^;]+)/i);
+      if (!contentType.includes('multipart/form-data') || !boundaryMatch) {
+        return sendJson(res, 400, { ok: false, error: 'Ожидается multipart/form-data с файлом DXF.' });
+      }
+
+      const formBuffer = await readBody(req, MAX_EXCEL_UPLOAD_BYTES);
+      const filePart = parseMultipartSingleFile(formBuffer, boundaryMatch[1]);
+      if (!filePart || !filePart.buffer || !filePart.buffer.length) {
+        return sendJson(res, 400, { ok: false, error: 'Файл не найден в multipart-запросе.' });
+      }
+      if (path.extname(filePart.fileName).toLowerCase() !== '.dxf') {
+        return sendJson(res, 400, { ok: false, error: 'Неверное расширение файла, ожидается .dxf.' });
+      }
+
+      const tmpFile = path.join(os.tmpdir(), `tk-generator-upload-${Date.now()}-${path.basename(filePart.fileName)}`);
+      fs.writeFileSync(tmpFile, filePart.buffer);
+      try {
+        const parsed = parseDxfFile(tmpFile, {
+          thickness: url.searchParams.get('thickness')
+        });
+        return sendJson(res, 200, { ok: true, data: parsed });
+      } catch (error) {
+        return sendJson(res, 400, { ok: false, error: `DXF parsing failed: ${error.message}` });
+      } finally {
+        fs.rmSync(tmpFile, { force: true });
+      }
+    } catch (error) {
+      return sendJson(res, 400, { ok: false, error: error.message });
+    }
+  }
+
   if (req.method === 'POST' && url.pathname === '/api/generate') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
     try {
@@ -486,7 +559,7 @@ async function createHandler(req, res, deps = {}) {
           let totalCost = 0;
           try {
             totalCost = Number(calculateTotalCost(product).total_cost || 0);
-          } catch (error) {
+          } catch (_error) {
             totalCost = 0;
           }
           repository.saveGenerationItem({

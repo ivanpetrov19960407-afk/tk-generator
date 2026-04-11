@@ -93,7 +93,7 @@ function analyzeEquipment(product) {
  * @returns {string} Formatted equipment list
  */
 function buildEquipmentListText(product) {
-  const { applicable, warnings } = analyzeEquipment(product);
+  const { applicable } = analyzeEquipment(product);
   const dims = product.dimensions;
   
   const lines = [];

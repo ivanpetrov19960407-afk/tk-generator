@@ -60,7 +60,7 @@ async function buildXlsx(product, geometry, operations, materials, transport, ov
   buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel, isLong);
   buildGeometrySheet(wb, geometry);
   buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel);
-  const opRowStart = buildOperationsSheet(wb, operations, unitLabel, isLong);
+  buildOperationsSheet(wb, operations, unitLabel, isLong);
   buildOverheadSheet(wb, overheads, operations);
   buildTransportSheet(wb, product, overheads, isLong);
   buildTotalSheet(wb, overheads, geometry, operations, unitLabel);
@@ -217,7 +217,7 @@ function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel, i
   const disp_W = dispDims.width;
   const disp_T = dispDims.thickness;
   // Отображаемое количество: для площадных — оригинальное quantity_pieces, для штучных — из geometry
-  const dispQty = displayProduct.quantity_pieces || geometry.qty;
+  // const dispQty = displayProduct.quantity_pieces || geometry.qty;
 
   // Название берётся из поля name продукта (полное название из Excel-списка)
   const fullName = displayProduct.name || product.name || 'Изделие из натурального камня';
@@ -387,7 +387,7 @@ function buildInputDataSheet(wb, product, geometry, displayProduct, unitLabel, i
 
 // ===== Sheet 4: Геометрия =====
 // Reference: ALL values are formulas referencing Вводные_данные
-function buildGeometrySheet(wb, g) {
+function buildGeometrySheet(wb, _g) {
   const ws = wb.addWorksheet('Геометрия');
   setColWidths(ws, [45, 18, 55, 5, 40, 18, 15, 15, 15, 15]);
 
@@ -544,7 +544,7 @@ function buildGeometrySheet(wb, g) {
 
 // ===== Sheet 5: Материалы =====
 // Reference: D5=Геометрия!$F$8, D8=ROUNDUP(Геометрия!$B$9*2,0), D9+=Вводные_данные!$B$6
-function buildMaterialsSheet(wb, materials, geometry, areaMode, unitLabel) {
+function buildMaterialsSheet(wb, materials, _geometry, _areaMode, _unitLabel) {
   const ws = wb.addWorksheet('Материалы');
   setColWidths(ws, [5, 60, 8, 14, 14, 16, 22, 22, 30, 35]);
 
@@ -1075,11 +1075,11 @@ const ORANGE_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE
 const SVERKA_HEADER_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
 const SVERKA_HEADER_FONT = { bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
 
-function buildSverkaSheet(wb, product, overheads, geometry, info) {
+function _buildSverkaSheet(wb, product, overheads, geometry, info) {
   const ws = wb.addWorksheet('Сверка');
   setColWidths(ws, [40, 22, 22, 22, 16, 45]);
 
-  const vd = '\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435';
+  const _vd = '\u0412\u0432\u043E\u0434\u043D\u044B\u0435_\u0434\u0430\u043D\u043D\u044B\u0435';
   const itogo = '\u0418\u0422\u041E\u0413\u041E';
 
   // Row 1: title
