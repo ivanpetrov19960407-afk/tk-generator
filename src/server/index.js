@@ -12,6 +12,7 @@ const { generateRKM } = require('../rkm/rkm-generator');
 const { validateBatchInput } = require('../validation/validator');
 const { calculateTotalCost } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
+const { parseDxfDimensions } = require('../utils/dxf-import');
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
@@ -427,6 +428,20 @@ async function createHandler(req, res, deps = {}) {
     const products = parseProductsPayload(body);
     if (!products) return sendJson(res, 400, { valid: false, errors: ['Ожидается массив products или объект { products: [] }'], warnings: [] });
     return sendJson(res, 200, validateBatchInput(products, { unknownUnitPolicy: 'warning' }));
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/import-dxf') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'operator'))) return;
+    try {
+      if (!enforceContentLengthLimit(MAX_EXCEL_UPLOAD_BYTES, 'security.payload_too_large')) return;
+      const buffer = await readBody(req, MAX_EXCEL_UPLOAD_BYTES);
+      const dxfContent = buffer.toString('utf8');
+      const result = parseDxfDimensions(dxfContent);
+      if (result.error) return sendJson(res, 400, { error: result.error });
+      return sendJson(res, 200, { dimensions: result.value, method: result.method });
+    } catch (error) {
+      return sendJson(res, 400, { error: error.message });
+    }
   }
 
   if (req.method === 'POST' && url.pathname === '/api/upload-excel') {
