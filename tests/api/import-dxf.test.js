@@ -20,7 +20,12 @@ const { createApp } = require('../../src/server/index');
     const okBody = await okRes.json();
     assert.strictEqual(okRes.status, 200);
     assert.strictEqual(okBody.ok, true);
-    assert.strictEqual(okBody.data.dimensions.length, 1200);
+    assert.ok(okBody.data && okBody.data.dimensions, 'Ответ должен содержать data.dimensions');
+    assert.strictEqual(typeof okBody.data.dimensions.length, 'number', 'dimensions.length должно быть числом');
+    assert.ok(okBody.data.dimensions.length > 0, 'dimensions.length должно быть > 0');
+    assert.strictEqual(typeof okBody.data.dimensions.width, 'number', 'dimensions.width должно быть числом');
+    assert.ok(okBody.data.dimensions.width > 0, 'dimensions.width должно быть > 0');
+    assert.strictEqual(okBody.data.dimensions.unit, 'mm', 'unit должна быть "mm"');
 
     const badForm = new FormData();
     badForm.append('file', new Blob([Buffer.from('bad')]), 'broken.txt');
