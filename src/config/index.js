@@ -63,6 +63,9 @@ const DEFAULT_CONFIG = {
     refreshTokenTtlSec: 604800,
     jwtSecret: ''
   },
+  bot: {
+    allowedUsers: []
+  },
   plugins_enabled: false,
   allowed_plugins: ['default-materials'],
   autoUpdate: {
@@ -168,6 +171,15 @@ function applyEnvOverrides(config, env = process.env) {
       .filter((v) => Number.isFinite(v));
   }
 
+
+  if (env.TKG_BOT_ALLOWED_USERS || env.BOT_ALLOWED_USERS) {
+    const raw = env.TKG_BOT_ALLOWED_USERS || env.BOT_ALLOWED_USERS;
+    out.bot = out.bot || {};
+    out.bot.allowedUsers = String(raw)
+      .split(',')
+      .map((v) => Number(v.trim()))
+      .filter((v) => Number.isInteger(v));
+  }
   if (env.TKG_AUTH_ENABLED != null) {
     out.auth = out.auth || {};
     out.auth.enabled = ['1', 'true', 'yes', 'on'].includes(String(env.TKG_AUTH_ENABLED).toLowerCase());
@@ -221,6 +233,13 @@ function validateConfig(config) {
   }
   if (config.auth && config.auth.refreshTokenTtlSec != null && !Number.isFinite(Number(config.auth.refreshTokenTtlSec))) {
     throw new Error('config.auth.refreshTokenTtlSec должен быть числом.');
+  }
+
+  if (config.bot != null && !isObject(config.bot)) {
+    throw new Error('config.bot должен быть объектом.');
+  }
+  if (config.bot && config.bot.allowedUsers != null && !Array.isArray(config.bot.allowedUsers)) {
+    throw new Error('config.bot.allowedUsers должен быть массивом чисел.');
   }
   if (config.plugins_enabled != null && typeof config.plugins_enabled !== 'boolean') {
     throw new Error('config.plugins_enabled должен быть boolean.');

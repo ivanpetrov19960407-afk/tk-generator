@@ -5,24 +5,59 @@ const os = require('os');
 const path = require('path');
 const https = require('https');
 const XLSX = require('xlsx');
-const { Telegraf } = require('telegraf');
 
 const { generateDocument, applyDefaults } = require('../generator');
 const { generateRKM } = require('../rkm/rkm-generator');
 const { calculateTotalCost, formatMoneyRu } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
 const { sanitizeName, ensureSafePath } = require('../utils/security');
+const { loadConfig } = require('../config');
+const { wrapTelegramApi, launchBot } = require('./telegram-api');
 
 const sessions = new Map();
 
 const BOT_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-const ALLOWED_USERS = String(process.env.BOT_ALLOWED_USERS || '')
-  .split(',')
-  .map((id) => Number(id.trim()))
-  .filter((id) => Number.isInteger(id));
 
-function isAllowedUser(ctx) {
-  if (!ALLOWED_USERS.length) return true;
+function parseAllowedUsers(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((id) => Number(id))
+      .filter((id) => Number.isInteger(id));
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((id) => Number(id.trim()))
+      .filter((id) => Number.isInteger(id));
+  }
+
+  return [];
+}
+
+function resolveAllowedUsers(options = {}) {
+  if (Array.isArray(options.allowedUsers)) {
+    return parseAllowedUsers(options.allowedUsers);
+  }
+
+  if (options.config && options.config.bot && Array.isArray(options.config.bot.allowedUsers)) {
+    return parseAllowedUsers(options.config.bot.allowedUsers);
+  }
+
+  try {
+    const config = loadConfig();
+    if (config && config.bot && Array.isArray(config.bot.allowedUsers)) {
+      return parseAllowedUsers(config.bot.allowedUsers);
+    }
+  } catch (_error) {
+    // Ignore config loading errors in bot bootstrap fallback.
+  }
+
+  return parseAllowedUsers(process.env.BOT_ALLOWED_USERS || '');
+}
+
+function isAllowedUser(ctx, allowedUsers) {
+  if (!allowedUsers.length) return true;
   const userId = Number(
     (ctx && ctx.from && ctx.from.id)
     || (ctx && ctx.message && ctx.message.from && ctx.message.from.id)
@@ -30,7 +65,7 @@ function isAllowedUser(ctx) {
   );
   // For non-Telegram test doubles where user metadata is absent, do not block handlers.
   if (!Number.isFinite(userId)) return true;
-  return ALLOWED_USERS.includes(userId);
+  return allowedUsers.includes(userId);
 }
 
 function getSession(chatId) {
@@ -195,13 +230,16 @@ async function runGeneration(ctx, session, products) {
   }
 }
 
-function registerHandlers(bot) {
+function registerHandlers(bot, options = {}) {
+  const allowedUsers = parseAllowedUsers(options.allowedUsers);
+
   if (typeof bot.use === 'function') {
     bot.use(async (ctx, next) => {
-      if (!isAllowedUser(ctx)) return;
+      if (!isAllowedUser(ctx, allowedUsers)) return;
       return next();
     });
   }
+
   bot.start(async (ctx) => {
     await ctx.reply([
       'Привет! Я бот для генерации ТК+МК и РКМ.',
@@ -214,7 +252,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('status', async (ctx) => {
-    if (!isAllowedUser(ctx)) return;
+    if (!isAllowedUser(ctx, allowedUsers)) return;
     const s = getSession(ctx.chat.id);
     const details = [
       `Статус: ${s.lastStatus}`,
@@ -226,7 +264,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('price', async (ctx) => {
-    if (!isAllowedUser(ctx)) return;
+    if (!isAllowedUser(ctx, allowedUsers)) return;
     const s = getSession(ctx.chat.id);
     const arg = ctx.message.text.split(' ').slice(1).join(' ').trim();
 
@@ -254,7 +292,7 @@ function registerHandlers(bot) {
   });
 
   bot.command('generate', async (ctx) => {
-    if (!isAllowedUser(ctx)) return;
+    if (!isAllowedUser(ctx, allowedUsers)) return;
     const s = getSession(ctx.chat.id);
     s.flow = 'generate';
     s.step = 'name';
@@ -263,113 +301,144 @@ function registerHandlers(bot) {
   });
 
   bot.on('document', async (ctx) => {
-  if (!isAllowedUser(ctx)) return;
-  const s = getSession(ctx.chat.id);
-  if (s.flow !== 'generate') {
-    await ctx.reply('Чтобы обработать Excel, сначала запустите /generate.');
-    return;
-  }
+    if (!isAllowedUser(ctx, allowedUsers)) return;
+    const s = getSession(ctx.chat.id);
+    if (s.flow !== 'generate') {
+      await ctx.reply('Чтобы обработать Excel, сначала запустите /generate.');
+      return;
+    }
 
-  const doc = ctx.message.document;
-  if (doc.file_size && Number(doc.file_size) > BOT_MAX_UPLOAD_BYTES) {
-    await ctx.reply('Файл слишком большой: максимум 10MB.');
-    return;
-  }
-  const ext = path.extname(doc.file_name || '').toLowerCase();
-  if (ext !== '.xlsx' && ext !== '.xls') {
-    await ctx.reply('Поддерживаются только Excel-файлы .xlsx/.xls');
-    return;
-  }
+    const doc = ctx.message.document;
+    if (doc.file_size && Number(doc.file_size) > BOT_MAX_UPLOAD_BYTES) {
+      await ctx.reply('Файл слишком большой: максимум 10MB.');
+      return;
+    }
+    const ext = path.extname(doc.file_name || '').toLowerCase();
+    if (ext !== '.xlsx' && ext !== '.xls') {
+      await ctx.reply('Поддерживаются только Excel-файлы .xlsx/.xls');
+      return;
+    }
 
-  const safeFileName = sanitizeName((doc.file_name || '').replace(/\.[^.]+$/, ''), 'upload') + path.extname(doc.file_name || '.xlsx').toLowerCase();
-  const tmpFile = ensureSafePath(os.tmpdir(), `tg-upload-${Date.now()}-${safeFileName}`).finalPath;
-  try {
-    await ctx.reply('Получил файл, обрабатываю...');
-    await downloadTelegramFile(ctx, doc.file_id, tmpFile);
-    const products = parseExcelProducts(tmpFile);
-    await runGeneration(ctx, s, products);
-    s.flow = null;
-    s.step = null;
-    s.form = {};
-  } catch (error) {
-    s.lastStatus = 'failed';
-    s.lastError = error.message;
-    await ctx.reply(`Ошибка обработки Excel: ${error.message}`);
-  } finally {
-    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-  }
+    const safeFileName = sanitizeName((doc.file_name || '').replace(/\.[^.]+$/, ''), 'upload') + path.extname(doc.file_name || '.xlsx').toLowerCase();
+    const tmpFile = ensureSafePath(os.tmpdir(), `tg-upload-${Date.now()}-${safeFileName}`).finalPath;
+    try {
+      await ctx.reply('Получил файл, обрабатываю...');
+      await downloadTelegramFile(ctx, doc.file_id, tmpFile);
+      const products = parseExcelProducts(tmpFile);
+      await runGeneration(ctx, s, products);
+      s.flow = null;
+      s.step = null;
+      s.form = {};
+    } catch (error) {
+      s.lastStatus = 'failed';
+      s.lastError = error.message;
+      await ctx.reply(`Ошибка обработки Excel: ${error.message}`);
+    } finally {
+      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+    }
   });
 
   bot.on('text', async (ctx) => {
-  if (!isAllowedUser(ctx)) return;
-  const s = getSession(ctx.chat.id);
-  if (s.flow !== 'generate') return;
+    if (!isAllowedUser(ctx, allowedUsers)) return;
+    const s = getSession(ctx.chat.id);
+    if (s.flow !== 'generate') return;
 
-  const text = ctx.message.text.trim();
-  if (text.startsWith('/')) return;
+    const text = ctx.message.text.trim();
+    if (text.startsWith('/')) return;
 
-  try {
-    if (s.step === 'name') {
-      s.form.name = text;
-      s.step = 'dimensions';
-      await ctx.reply('Введите размеры в формате ДxШxТ, например 1200x300x30');
-      return;
-    }
+    try {
+      if (s.step === 'name') {
+        s.form.name = text;
+        s.step = 'dimensions';
+        await ctx.reply('Введите размеры в формате ДxШxТ, например 1200x300x30');
+        return;
+      }
 
-    if (s.step === 'dimensions') {
-      s.form.dimensions = text;
-      s.step = 'material';
-      await ctx.reply('Введите материал (например: мрамор, гранит)');
-      return;
-    }
+      if (s.step === 'dimensions') {
+        s.form.dimensions = text;
+        s.step = 'material';
+        await ctx.reply('Введите материал (например: мрамор, гранит)');
+        return;
+      }
 
-    if (s.step === 'material') {
-      s.form.material = text;
-      s.step = 'texture';
-      await ctx.reply('Введите фактуру (например: полировка, термообработка)');
-      return;
-    }
+      if (s.step === 'material') {
+        s.form.material = text;
+        s.step = 'texture';
+        await ctx.reply('Введите фактуру (например: полировка, термообработка)');
+        return;
+      }
 
-    if (s.step === 'texture') {
-      s.form.texture = text;
-      const product = mkProductFromForm(s.form);
-      await ctx.reply('Запускаю генерацию DOCX/XLSX...');
-      await runGeneration(ctx, s, [product]);
+      if (s.step === 'texture') {
+        s.form.texture = text;
+        const product = mkProductFromForm(s.form);
+        await ctx.reply('Запускаю генерацию DOCX/XLSX...');
+        await runGeneration(ctx, s, [product]);
+        s.flow = null;
+        s.step = null;
+        s.form = {};
+      }
+    } catch (error) {
+      s.lastStatus = 'failed';
+      s.lastError = error.message;
+      await ctx.reply(`Ошибка: ${error.message}. Попробуйте /generate снова.`);
       s.flow = null;
       s.step = null;
       s.form = {};
     }
-  } catch (error) {
-    s.lastStatus = 'failed';
-    s.lastError = error.message;
-    await ctx.reply(`Ошибка: ${error.message}. Попробуйте /generate снова.`);
-    s.flow = null;
-    s.step = null;
-    s.form = {};
-  }
   });
 }
 
 function createBot(options = {}) {
   const token = options.token || process.env.BOT_TOKEN;
-  const TelegrafClass = options.TelegrafClass || Telegraf;
+  const TelegrafClass = options.TelegrafClass || require('telegraf').Telegraf;
+
   if (!token) throw new Error('Не задан BOT_TOKEN в переменных окружения');
-  const bot = new TelegrafClass(token);
-  registerHandlers(bot);
+
+  const bot = new TelegrafClass(token, options.telegrafOptions || {});
+  const allowedUsers = resolveAllowedUsers(options);
+
+  wrapTelegramApi(bot, {
+    retries: Number.isInteger(options.retryCount) ? options.retryCount : 3,
+    baseDelayMs: Number.isFinite(options.retryDelayMs) ? options.retryDelayMs : 250,
+    logger: options.logger || console
+  });
+
+  registerHandlers(bot, { allowedUsers });
+  return bot;
+}
+
+async function runBot(options = {}) {
+  const bot = createBot(options);
+
+  await launchBot(bot, options.launchOptions, {
+    retries: Number.isInteger(options.startupRetryCount) ? options.startupRetryCount : 3,
+    baseDelayMs: Number.isFinite(options.startupRetryDelayMs) ? options.startupRetryDelayMs : 500,
+    logger: options.logger || console
+  });
+
+  if (typeof bot.stop === 'function') {
+    process.once('SIGINT', () => bot.stop('SIGINT'));
+    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  }
+
   return bot;
 }
 
 if (require.main === module) {
-  const bot = createBot();
-  bot.launch().then(() => {
-    console.log('Telegram bot started');
-  });
-
-  process.once('SIGINT', () => bot.stop('SIGINT'));
-  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  runBot()
+    .then(() => {
+      console.log('Telegram bot started');
+    })
+    .catch((error) => {
+      console.error('Telegram bot failed to start:', error.message);
+      process.exit(1);
+    });
 }
 
 module.exports = {
   createBot,
-  parseExcelProducts
+  parseExcelProducts,
+  runBot,
+  parseAllowedUsers,
+  isAllowedUser
 };
