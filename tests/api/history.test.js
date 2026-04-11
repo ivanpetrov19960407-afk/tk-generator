@@ -46,6 +46,17 @@ const { createApp } = require('../../src/server/index');
     assert.strictEqual(detailBody.id, id, 'detail id should match request id');
     assert.ok(Array.isArray(detailBody.items), 'detail should include generation items');
 
+    const exportRes = await fetch(`${base}/api/export/csv?generation_id=${id}`);
+    assert.strictEqual(exportRes.status, 200, 'csv export should be 200');
+    assert.strictEqual(exportRes.headers.get('content-type'), 'text/csv; charset=utf-8', 'csv export should return text/csv');
+    assert.ok((exportRes.headers.get('content-disposition') || '').includes(`generation_${id}_export.csv`), 'csv export should return attachment filename');
+    const exportBuffer = Buffer.from(await exportRes.arrayBuffer());
+    assert.strictEqual(exportBuffer[0], 0xEF, 'csv export should start with BOM byte 0xEF');
+    assert.strictEqual(exportBuffer[1], 0xBB, 'csv export should start with BOM byte 0xBB');
+    assert.strictEqual(exportBuffer[2], 0xBF, 'csv export should start with BOM byte 0xBF');
+    const exportText = exportBuffer.toString('utf8');
+    assert.ok(exportText.includes('generation_id;position;product_name;material;texture;total_cost;status;error_message'), 'csv export should contain expected header');
+
     console.log('history.api test passed');
   } finally {
     server.close();

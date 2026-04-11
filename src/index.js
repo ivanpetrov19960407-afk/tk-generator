@@ -22,7 +22,7 @@ const { normalizeUnit } = require('./utils/unit-normalizer');
 const { getSupportedTextures } = require('./textures');
 const { validateBatchInput } = require('./validation/validator');
 const { loadConfig, getConfig } = require('./config');
-const { generateSummaryReport } = require('./summary-report');
+const { generateSummaryReport, writeSummaryCsvFile } = require('./summary-report');
 const { configureLogger, logger, LEVELS } = require('./logger');
 const { createRepository } = require('./db/repository');
 const {
@@ -76,6 +76,7 @@ function printHelp() {
       --format <docx|pdf|docx,pdf> Формат ТК (по умолчанию docx)
       --export-1c        Экспорт калькуляций в 1С-совместимый XML
       --export-1c-csv    Экспорт калькуляций в упрощённый CSV для 1С
+      --export-csv <path> Экспорт плоской CSV-таблицы позиций партии
       --profile          Вывести timing по этапам генерации
       --no-cache         Отключить кэширование неизменённых позиций
       --concurrency <n>  Число параллельных задач в пакетной генерации
@@ -576,6 +577,18 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     const summaryFormats = formats.includes('pdf') ? ['xlsx', 'pdf'] : ['xlsx'];
     const summary = await generateSummaryReport(effectiveProducts, results, outputDir, { format: summaryFormats });
     logger.info({ file: summary.file }, 'Сводный отчёт сформирован');
+  }
+
+  if (args['export-csv'] && !watchMode) {
+    const exportPath = path.resolve(String(args['export-csv']));
+    fs.mkdirSync(path.dirname(exportPath), { recursive: true });
+    const calculations = effectiveProducts.map((product) => ({
+      workProduct: product,
+      geometry: { qty: Number(product.quantity_pieces) || 1 },
+      calcPrice: null
+    }));
+    writeSummaryCsvFile(calculations, exportPath);
+    logger.info({ exportPath }, 'CSV-экспорт позиций партии сформирован');
   }
 
   if (args.rkm || watchMode) {
