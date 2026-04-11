@@ -17,7 +17,7 @@
 
 ```env
 # Required for bot
-TELEGRAM_BOT_TOKEN=123456:your-telegram-bot-token
+BOT_TOKEN=123456:your-telegram-bot-token
 
 # Auth and app mode
 AUTH_ENABLED=false
@@ -31,8 +31,7 @@ NODE_ENV=production
 > - `ADMIN_USER` -> `TKG_AUTH_ADMIN_USERNAME`
 > - `ADMIN_PASS` -> `TKG_AUTH_ADMIN_PASSWORD`
 >
-> `bot` сервис маппит:
-> - `TELEGRAM_BOT_TOKEN` -> `BOT_TOKEN`
+> `bot` сервис использует переменную `BOT_TOKEN`.
 
 ## 3) Сборка и запуск
 

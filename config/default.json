@@ -75,5 +75,8 @@
   "plugins_enabled": false,
   "allowed_plugins": [
     "default-materials"
-  ]
+  ],
+  "bot": {
+    "allowedUsers": []
+  }
 }

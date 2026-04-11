@@ -37,7 +37,7 @@ services:
     command: ["node", "src/bot/index.js"]
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      BOT_TOKEN: ${BOT_TOKEN}
       TKG_AUTH_ENABLED: ${AUTH_ENABLED:-false}
       TKG_AUTH_ADMIN_USERNAME: ${ADMIN_USER:-admin}
       TKG_AUTH_ADMIN_PASSWORD: ${ADMIN_PASS:-change-me}

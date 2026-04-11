@@ -62,6 +62,12 @@ tk-generator --input examples/batch_small.json --config ./my-config.json
 ```
 
 
+
+## Telegram-бот
+
+- Настройка и запуск: `docs/telegram-bot-setup.md`.
+- Docker запуск: `README-docker.md`.
+
 ## Матрица совместимости
 
 | Компонент | Поддерживаемые версии | Статус |

@@ -137,6 +137,9 @@ export interface Config {
     refreshTokenTtlSec: number;
     jwtSecret: string;
   };
+  bot: {
+    allowedUsers: number[];
+  };
   plugins_enabled: boolean;
   allowed_plugins: string[];
   autoUpdate: {

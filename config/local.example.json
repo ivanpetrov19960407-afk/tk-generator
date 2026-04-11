@@ -14,5 +14,8 @@
   "autoUpdate": {
     "enabled": true,
     "checkInterval": "24h"
+  },
+  "bot": {
+    "allowedUsers": []
   }
 }
