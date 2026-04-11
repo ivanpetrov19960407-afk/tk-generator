@@ -23,7 +23,7 @@
     "lint:fix": "eslint src tests --fix || npx --yes eslint@9.39.4 src tests --fix",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\"",
     "fonts:setup": "node scripts/setup-fonts.js",
-    "test:coverage": "npx --yes c8 npm test"
+    "test:coverage": "npx --yes c8 --reporter=text --reporter=lcov --reporter=html npm test"
   },
   "keywords": [
     "технологическая карта",
