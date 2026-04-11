@@ -17,6 +17,7 @@ const { normalizeUnit } = require('../utils/unit-normalizer');
 const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
 const { createAuth } = require('./auth');
+const { buildGenerationCsv } = require('../summary-report');
 
 const MAX_JSON_BODY_BYTES = 5 * 1024 * 1024;
 const MAX_EXCEL_UPLOAD_BYTES = 10 * 1024 * 1024;
@@ -258,6 +259,18 @@ function createOpenApiSpec() {
           responses: {
             200: { description: 'Детали генерации.', content: { 'application/json': { schema: { $ref: '#/components/schemas/HistoryEntry' } } } },
             404: { description: 'Запись не найдена.', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/export/csv': {
+        get: {
+          summary: 'Экспорт позиций запуска в CSV.',
+          tags: ['API'],
+          parameters: [{ name: 'generation_id', in: 'query', required: true, schema: { type: 'integer' } }],
+          responses: {
+            200: { description: 'CSV файл с позициями запуска.' },
+            400: { description: 'Некорректный запрос.' },
+            404: { description: 'Запуск не найден.' }
           }
         }
       },
@@ -631,6 +644,22 @@ async function createHandler(req, res, deps = {}) {
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
     return sendJson(res, 200, data);
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/export/csv') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const generationId = Number(url.searchParams.get('generation_id'));
+    if (!Number.isFinite(generationId) || generationId <= 0) return sendJson(res, 400, { error: 'generation_id is required' });
+    const generation = repository.getGenerationById(generationId);
+    if (!generation) return sendJson(res, 404, { error: 'Not Found' });
+    const csv = buildGenerationCsv(generation);
+    const fileName = `generation_${generationId}_export.csv`;
+    res.writeHead(200, {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${fileName}"`
+    });
+    res.end(csv);
+    return;
   }
 
   if (req.method === 'POST' && url.pathname === '/api/auth/login') {
