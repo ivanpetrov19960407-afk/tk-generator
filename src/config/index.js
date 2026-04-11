@@ -71,7 +71,8 @@ const DEFAULT_CONFIG = {
   autoUpdate: {
     enabled: true,
     checkInterval: '24h'
-  }
+  },
+  webhooks: []
 };
 
 /** @type {Config} */
@@ -255,6 +256,29 @@ function validateConfig(config) {
   }
   if (config.autoUpdate && config.autoUpdate.checkInterval != null && typeof config.autoUpdate.checkInterval !== 'string') {
     throw new Error('config.autoUpdate.checkInterval должен быть строкой.');
+  }
+  if (config.webhooks != null && !Array.isArray(config.webhooks)) {
+    throw new Error('config.webhooks должен быть массивом.');
+  }
+  if (Array.isArray(config.webhooks)) {
+    config.webhooks.forEach((webhook, index) => {
+      if (!isObject(webhook)) throw new Error(`config.webhooks[${index}] должен быть объектом.`);
+      if (!webhook.url || typeof webhook.url !== 'string') throw new Error(`config.webhooks[${index}].url должен быть строкой.`);
+      if (webhook.events != null && !Array.isArray(webhook.events)) throw new Error(`config.webhooks[${index}].events должен быть массивом строк.`);
+      if (webhook.enabled != null && typeof webhook.enabled !== 'boolean') throw new Error(`config.webhooks[${index}].enabled должен быть boolean.`);
+      if (webhook.secret != null && typeof webhook.secret !== 'string') throw new Error(`config.webhooks[${index}].secret должен быть строкой.`);
+      if (process.env.NODE_ENV === 'production') {
+        let parsed;
+        try {
+          parsed = new URL(webhook.url);
+        } catch (_error) {
+          throw new Error(`config.webhooks[${index}].url должен быть валидным URL.`);
+        }
+        if (parsed.protocol !== 'https:') {
+          throw new Error(`config.webhooks[${index}].url должен использовать https в production.`);
+        }
+      }
+    });
   }
 }
 

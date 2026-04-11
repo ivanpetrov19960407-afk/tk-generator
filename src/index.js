@@ -33,6 +33,7 @@ const {
 } = require('./self-update');
 const { loadPlugins } = require('./plugin-loader');
 const { parseDxfFile } = require('./utils/dxf-import');
+const { sendWebhook, WEBHOOK_EVENTS } = require('./webhooks');
 
 const args = minimist(process.argv.slice(2), {
   alias: {
@@ -98,6 +99,7 @@ function printHelp() {
       --self-update             Скачать свежий standalone-бинарник из GitHub Releases
       --list-plugins            Показать список найденных плагинов и их статус
       --disable-plugin <name>   Отключить плагин (можно указывать несколько раз или через запятую)
+      --webhook <url>           Одноразовый webhook для текущего запуска (добавляется к config.webhooks)
       --history                 Показать историю генераций (последние 20 запусков)
       --history-detail <id>     Показать детали запуска по ID
       --stats                   Показать агрегированную статистику генераций
@@ -707,6 +709,54 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     details: { generationId, inputPath, outputDir, watchMode },
     ip: 'local'
   });
+
+  const baseConfig = getConfig();
+  const runtimeWebhooks = Array.isArray(baseConfig.webhooks) ? baseConfig.webhooks.slice() : [];
+  if (args.webhook) {
+    const oneShotUrls = Array.isArray(args.webhook) ? args.webhook : [args.webhook];
+    for (const webhookUrl of oneShotUrls) {
+      runtimeWebhooks.push({
+        url: String(webhookUrl),
+        events: [...WEBHOOK_EVENTS],
+        enabled: true
+      });
+    }
+  }
+
+  const webhookConfig = { ...baseConfig, webhooks: runtimeWebhooks };
+  const batchPayload = {
+    generationId,
+    inputPath,
+    outputDir,
+    total: effectiveProducts.length,
+    success: successCount,
+    failed: failedCount,
+    durationMs: Math.round(nowMs() - runStartedAt)
+  };
+  await sendWebhook('batch.complete', batchPayload, webhookConfig);
+
+  for (let i = 0; i < effectiveProducts.length; i++) {
+    const product = effectiveProducts[i];
+    const tkResult = results[i];
+    const errors = errorByPosition.get(product.tk_number) || [];
+    if (errors.length > 0) {
+      await sendWebhook('generation.error', {
+        generationId,
+        tk_number: product.tk_number,
+        product_name: product.name || null,
+        status: 'error',
+        error_count: errors.length
+      }, webhookConfig);
+      continue;
+    }
+    await sendWebhook('generation.complete', {
+      generationId,
+      tk_number: product.tk_number,
+      product_name: product.name || null,
+      status: 'success',
+      files: tkResult && Array.isArray(tkResult.files) ? tkResult.files.map((item) => ({ format: item.format, filename: item.filename })) : []
+    }, webhookConfig);
+  }
 }
 
 function runWatchMode({ inputPath, outputDir }) {
