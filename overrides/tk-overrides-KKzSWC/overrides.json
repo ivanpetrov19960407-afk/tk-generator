@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "match": {
+        "texture": "бучардирование_лощение"
+      },
+      "patch": {
+        "drop_operations": [
+          29
+        ],
+        "replace_fields": {
+          "10": {
+            "name": "Уточнённая операция 10 (из overrides)",
+            "comment": "переопределено overrides"
+          }
+        }
+      }
+    }
+  ]
+}
