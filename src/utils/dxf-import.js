@@ -11,7 +11,8 @@ function safeNumber(value) {
 }
 
 function detectSourceUnit(parsed, warnings) {
-  const raw = parsed && parsed.header ? parsed.header.$INSUNITS : null;
+  const hdr = parsed && parsed.header ? parsed.header : {};
+  const raw = hdr.$INSUNITS != null ? hdr.$INSUNITS : hdr.insUnits != null ? hdr.insUnits : null;
   if (raw == null) {
     warnings.push('DXF: $INSUNITS не задан, предполагаются миллиметры.');
     return { sourceUnit: null, factor: 1, convertedFromInches: false };
@@ -246,6 +247,26 @@ function parseDxfContent(content) {
   if (!parsed || !Array.isArray(parsed.entities)) {
     throw new Error('Не удалось распарсить DXF: некорректная структура файла.');
   }
+
+  const hasDimValues = parsed.entities
+    .filter((e) => e.type === 'DIMENSION')
+    .some((e) => parseDimensionEntityValue(e) != null);
+
+  if (!hasDimValues) {
+    const fallback = parseDxfAsciiFallback(content);
+    const fbDims = (fallback.entities || []).filter((e) => e.type === 'DIMENSION');
+    if (fbDims.some((e) => parseDimensionEntityValue(e) != null)) {
+      let idx = 0;
+      for (const e of parsed.entities) {
+        if (e.type === 'DIMENSION' && idx < fbDims.length) {
+          const fb = fbDims[idx++];
+          if (fb.text != null) e.text = fb.text;
+          if (fb.actualMeasurement != null) e.actualMeasurement = fb.actualMeasurement;
+        }
+      }
+    }
+  }
+
   return parsed;
 }
 
