@@ -1,4 +1,5 @@
 'use strict';
+// @ts-check
 
 /**
  * cost-calculator.js — расчёт себестоимости по операциям.
@@ -9,6 +10,8 @@ const path = require('path');
 const { resolveRuntimeDir } = require('./runtime-paths');
 const { getConfig } = require('./config');
 
+/** @typedef {import('./types').Product} Product */
+
 const COST_PREFIX = '[COST]';
 const DATA_DIR = resolveRuntimeDir('data');
 const COSTS_DIR = path.join(DATA_DIR, 'costs');
@@ -16,10 +19,18 @@ const NORMS_PATH = path.join(DATA_DIR, 'rkm_norms.json');
 
 const ROUND_PRECISION = 100;
 
+/**
+ * @param {number|string|null|undefined} value
+ * @returns {number}
+ */
 function roundMoney(value) {
   return Math.round((Number(value) || 0) * ROUND_PRECISION) / ROUND_PRECISION;
 }
 
+/**
+ * @param {number|string|null|undefined} value
+ * @returns {string}
+ */
 function formatMoneyRu(value) {
   return new Intl.NumberFormat('ru-RU', {
     minimumFractionDigits: 2,
@@ -27,6 +38,10 @@ function formatMoneyRu(value) {
   }).format(roundMoney(value));
 }
 
+/**
+ * @param {string} filePath
+ * @returns {Record<string, any>}
+ */
 function readJsonRequired(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`Не найден файл данных: ${filePath}`);
@@ -34,6 +49,10 @@ function readJsonRequired(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+/**
+ * @param {{ laborRatesPath?: string; equipmentCostsPath?: string; materialPricesPath?: string; overheadPath?: string }} [options]
+ * @returns {{ laborRates: Record<string, number>; equipmentCosts: Record<string, number>; materialPrices: Record<string, any>; overhead: Record<string, any>; norms: Array<Record<string, any>> }}
+ */
 function loadCostData(options = {}) {
   const cfg = getConfig();
   const cfgPaths = (cfg.cost && cfg.cost.paths) || {};
@@ -57,6 +76,12 @@ function loadCostData(options = {}) {
   };
 }
 
+/**
+ * @param {Product} product
+ * @param {number} operationNumber
+ * @param {Array<Record<string, any>>} norms
+ * @returns {{ operation: Record<string, any>; laborHours: number; machineHours: number }}
+ */
 function resolveOperation(product, operationNumber, norms) {
   const operation = norms.find((item) => item.no === operationNumber);
   if (!operation) {
@@ -82,6 +107,11 @@ function resolveOperation(product, operationNumber, norms) {
   };
 }
 
+/**
+ * @param {{ by_operation?: Record<string, number>; default_per_operation?: number }} materialPrices
+ * @param {number} operationNumber
+ * @returns {number}
+ */
 function getMaterialCostForOperation(materialPrices, operationNumber) {
   const byOperation = materialPrices.by_operation || {};
   const fallback = materialPrices.default_per_operation || 0;
@@ -91,10 +121,10 @@ function getMaterialCostForOperation(materialPrices, operationNumber) {
 
 /**
  * Расчёт себестоимости операции.
- * @param {Object} product - Изделие.
+ * @param {Product} product - Изделие.
  * @param {number} operationNumber - Номер операции.
  * @param {Object} [options] - Опции загрузки тарифов.
- * @returns {Object} Детализация стоимости операции.
+ * @returns {{ operation_number:number; operation_name:string; labor_hours:number; labor_cost:number; machine_hours:number; machine_cost:number; material_cost:number; total_operation_cost:number }} Детализация стоимости операции.
  */
 function calculateCostByOperation(product, operationNumber, options = {}) {
   const { laborRates, equipmentCosts, materialPrices, norms } = loadCostData(options);
@@ -151,9 +181,9 @@ function calculateControlPrice(baseCost, controlCoefficient) {
 
 /**
  * Полный расчёт себестоимости изделия.
- * @param {Object} product - Изделие.
+ * @param {Product} product - Изделие.
  * @param {Object} [options] - Опции (override-файлы и параметры).
- * @returns {Object} Детализация себестоимости.
+ * @returns {{ product_id:number|null; product_name:string; created_at:string; operations_cost:Array<Record<string, any>>; total_direct_cost:number; overhead_percent:number; overhead_cost:number; total_cost:number; markup_percent:number; markup_amount:number; selling_price:number; control_price:number; margin:'WITHIN_CORRIDOR'|'OUTSIDE_CORRIDOR' }} Детализация себестоимости.
  */
 function calculateTotalCost(product, options = {}) {
   const { overhead, norms } = loadCostData(options);

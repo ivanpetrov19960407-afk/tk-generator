@@ -1,0 +1,10 @@
+{
+  "reporter": ["text", "lcov", "html"],
+  "all": true,
+  "src": ["src"],
+  "exclude": ["vendor/**", "tests/**"],
+  "check-coverage": true,
+  "lines": 60,
+  "functions": 60,
+  "branches": 50
+}

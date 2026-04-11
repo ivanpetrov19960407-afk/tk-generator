@@ -1,12 +1,24 @@
 'use strict';
+// @ts-check
 
 const { normalizeUnit } = require('../utils/unit-normalizer');
 const { getSupportedTextures, formatSupportedTextures } = require('../textures');
 
+/** @typedef {import('../types').Product} Product */
+
+/**
+ * @param {unknown} v
+ * @returns {v is number}
+ */
 function isPositiveNumber(v) {
   return typeof v === 'number' && Number.isFinite(v) && v > 0;
 }
 
+/**
+ * @param {Product|unknown} product
+ * @param {{ unknownUnitPolicy?: 'warning'|'error' }} [options]
+ * @returns {{ valid: boolean; errors: string[]; warnings: string[] }}
+ */
 function validateProduct(product, options = {}) {
   const unknownUnitPolicy = options.unknownUnitPolicy || 'warning';
   const errors = [];
@@ -70,6 +82,11 @@ function validateProduct(product, options = {}) {
   return { valid: errors.length === 0, errors, warnings };
 }
 
+/**
+ * @param {Array<Product>|unknown} products
+ * @param {{ unknownUnitPolicy?: 'warning'|'error' }} [options]
+ * @returns {{ valid: boolean; errors: string[]; warnings: string[] }}
+ */
 function validateProducts(products, options = {}) {
   if (!Array.isArray(products)) {
     return { valid: false, errors: ['Ожидается массив products[].'], warnings: [] };
@@ -86,6 +103,11 @@ function validateProducts(products, options = {}) {
   return report;
 }
 
+/**
+ * @param {{products?: Product[]}|Product[]|unknown} data
+ * @param {{ unknownUnitPolicy?: 'warning'|'error' }} [options]
+ * @returns {{ valid: boolean; errors: string[]; warnings: string[] }}
+ */
 function validateBatchInput(data, options = {}) {
   if (Array.isArray(data)) return validateProducts(data, options);
 
@@ -106,6 +128,11 @@ function validateBatchInput(data, options = {}) {
   };
 }
 
+/**
+ * @param {Product|unknown} product
+ * @param {{ unknownUnitPolicy?: 'warning'|'error' }} [options]
+ * @returns {{ valid: boolean; errors: string[]; warnings: string[] }}
+ */
 function validateProductOrThrow(product, options = {}) {
   const result = validateProduct(product, options);
   if (!result.valid) {

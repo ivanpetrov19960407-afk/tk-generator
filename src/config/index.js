@@ -1,9 +1,12 @@
 'use strict';
+// @ts-check
 
 const fs = require('fs');
 const path = require('path');
 const { resolveRuntimeDir } = require('../runtime-paths');
 const i18n = require('../i18n');
+
+/** @typedef {import('../types').Config} Config */
 
 const DEFAULT_CONFIG_DIR = resolveRuntimeDir('config');
 
@@ -68,16 +71,31 @@ const DEFAULT_CONFIG = {
   }
 };
 
+/** @type {Config} */
 let currentConfig = deepClone(DEFAULT_CONFIG);
 
+/**
+ * @template T
+ * @param {T} obj
+ * @returns {T}
+ */
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * @param {unknown} value
+ * @returns {value is Record<string, unknown>}
+ */
 function isObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value);
 }
 
+/**
+ * @param {Record<string, any>} base
+ * @param {Record<string, any>} override
+ * @returns {Record<string, any>}
+ */
 function deepMerge(base, override) {
   if (!isObject(base) || !isObject(override)) return override;
   const out = { ...base };
@@ -93,6 +111,10 @@ function deepMerge(base, override) {
   return out;
 }
 
+/**
+ * @param {string} filePath
+ * @returns {Record<string, any>}
+ */
 function readConfigFile(filePath) {
   if (!fs.existsSync(filePath)) return {};
   const ext = path.extname(filePath).toLowerCase();
@@ -112,6 +134,11 @@ function readConfigFile(filePath) {
   throw new Error(`Неподдерживаемый формат конфига: ${filePath}`);
 }
 
+/**
+ * @param {Config} config
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {Config}
+ */
 function applyEnvOverrides(config, env = process.env) {
   let out = deepClone(config);
 
@@ -153,6 +180,10 @@ function applyEnvOverrides(config, env = process.env) {
   return out;
 }
 
+/**
+ * @param {Config|Record<string, any>} config
+ * @returns {void}
+ */
 function validateConfig(config) {
   if (!isObject(config)) throw new Error('Конфиг должен быть объектом.');
   if (config.locale != null && typeof config.locale !== 'string') {
@@ -208,6 +239,10 @@ function validateConfig(config) {
   }
 }
 
+/**
+ * @param {{ configDir?: string; configPath?: string; env?: NodeJS.ProcessEnv }} [options]
+ * @returns {Config}
+ */
 function loadConfig(options = {}) {
   const configDir = options.configDir ? path.resolve(options.configDir) : DEFAULT_CONFIG_DIR;
   const configPath = options.configPath ? path.resolve(options.configPath) : null;
@@ -235,6 +270,9 @@ function loadConfig(options = {}) {
   return currentConfig;
 }
 
+/**
+ * @returns {Config}
+ */
 function getConfig() {
   return currentConfig;
 }
