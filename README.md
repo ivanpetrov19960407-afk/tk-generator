@@ -251,6 +251,11 @@ node scripts/build_batch_from_excel.js ./input.xlsx ./examples/full_album_batch.
 
 Если колонка `Габаритные размеры` отсутствует (и не передан `--excel-mapping` для `dimensions`), импорт завершится ошибкой с подсказкой.
 
+### DXF (.dxf)
+
+Поддержан базовый DXF-импорт для 2D-чертежей с извлечением `length/width/thickness`.
+Ограничения и эвристики описаны в `docs/dxf-import.md`.
+
 ## Поддерживаемые типы фактуры
 
 | Значение | Описание | Операции 17–20 |

@@ -1,248 +1,373 @@
 'use strict';
 
-/**
- * dxf-import.js
- *
- * Парсер DXF-файлов для извлечения размеров изделий.
- *
- * Поддерживает два метода извлечения размеров:
- *   1. DIMENSION — из DXF-сущностей типа DIMENSION (приоритетный)
- *   2. bbox     — по bounding-box линий/полилиний (fallback)
- *
- * Формат DXF (AutoCAD): текстовый, содержит секции HEADER, ENTITIES, и т.д.
- * Каждая запись — пара строк: групповой код и значение.
- */
+const fs = require('fs');
+const path = require('path');
 
-/**
- * Parse raw DXF text into structured sections/entities.
- * @param {string} content — raw DXF file content
- * @returns {{ entities: Array<{type: string, properties: Object}> }}
- */
-function parseDxfContent(content) {
-  if (!content || typeof content !== 'string') {
-    return { entities: [] };
-  }
+const INCH_TO_MM = 25.4;
 
-  const lines = content.split(/\r?\n/);
-  const entities = [];
-  let inEntities = false;
-  let current = null;
-
-  for (let i = 0; i < lines.length - 1; i++) {
-    const code = lines[i].trim();
-    const value = lines[i + 1] ? lines[i + 1].trim() : '';
-
-    if (code === '0' && value === 'SECTION') {
-      // peek at section name
-      if (i + 3 < lines.length && lines[i + 2].trim() === '2' && lines[i + 3].trim() === 'ENTITIES') {
-        inEntities = true;
-        i += 3;
-        continue;
-      }
-    }
-
-    if (code === '0' && value === 'ENDSEC') {
-      if (inEntities) {
-        if (current) entities.push(current);
-        current = null;
-        inEntities = false;
-      }
-      continue;
-    }
-
-    if (!inEntities) continue;
-
-    if (code === '0') {
-      if (current) entities.push(current);
-      current = { type: value, properties: {} };
-      i++;
-      continue;
-    }
-
-    if (current) {
-      const groupCode = parseInt(code, 10);
-      if (!Number.isNaN(groupCode)) {
-        // Store numeric values for coordinate group codes
-        if (groupCode >= 10 && groupCode <= 39) {
-          current.properties[groupCode] = parseFloat(value) || 0;
-        } else if (groupCode === 1 || groupCode === 3) {
-          // Text values
-          current.properties[groupCode] = value;
-        } else if (groupCode === 42) {
-          current.properties[groupCode] = parseFloat(value) || 0;
-        }
-      }
-      i++;
-    }
-  }
-
-  if (current) entities.push(current);
-
-  return { entities };
+function safeNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
 }
 
-/**
- * Extract dimensions from DIMENSION entities.
- * DXF DIMENSION entities contain measurement values directly.
- *
- * Group codes for DIMENSION:
- *   13, 23 — first definition point
- *   14, 24 — second definition point
- *   42     — actual measurement value (if present)
- *   1      — text override
- *
- * @param {Array} entities
- * @returns {{ values: number[], method: string } | null}
- */
-function extractFromDimensions(entities) {
-  const dims = entities.filter((e) => e.type === 'DIMENSION');
-  if (dims.length === 0) return null;
-
-  const values = [];
-  for (const dim of dims) {
-    const p = dim.properties;
-    // Prefer explicit measurement value (group code 42)
-    if (p[42] != null && p[42] > 0) {
-      values.push(p[42]);
-      continue;
-    }
-    // Try text override (group code 1)
-    if (p[1]) {
-      const num = parseFloat(String(p[1]).replace(',', '.'));
-      if (Number.isFinite(num) && num > 0) {
-        values.push(num);
-        continue;
-      }
-    }
-    // Calculate from definition points
-    const x1 = p[13] || 0;
-    const y1 = p[23] || 0;
-    const x2 = p[14] || 0;
-    const y2 = p[24] || 0;
-    const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    if (dist > 0) values.push(Math.round(dist * 100) / 100);
+function detectSourceUnit(parsed, warnings) {
+  const hdr = parsed && parsed.header ? parsed.header : {};
+  const raw = hdr.$INSUNITS != null ? hdr.$INSUNITS : hdr.insUnits != null ? hdr.insUnits : null;
+  if (raw == null) {
+    warnings.push('DXF: $INSUNITS не задан, предполагаются миллиметры.');
+    return { sourceUnit: null, factor: 1, convertedFromInches: false };
   }
 
-  if (values.length === 0) return null;
-  return { values, method: 'DIMENSION' };
+  const code = Number(raw);
+  if (code === 1) return { sourceUnit: 'inches', factor: INCH_TO_MM, convertedFromInches: true };
+  if (code === 4) return { sourceUnit: 'millimeters', factor: 1, convertedFromInches: false };
+
+  warnings.push(`DXF: $INSUNITS=${raw} не поддержан явно, предполагаются миллиметры.`);
+  return { sourceUnit: String(raw), factor: 1, convertedFromInches: false };
 }
 
-/**
- * Extract dimensions from bounding box of LINE/POLYLINE entities.
- * Fallback when no DIMENSION entities are present.
- *
- * @param {Array} entities
- * @returns {{ values: number[], method: string } | null}
- */
-function extractFromBbox(entities) {
-  const geometricTypes = ['LINE', 'POLYLINE', 'LWPOLYLINE', 'CIRCLE', 'ARC'];
-  const geom = entities.filter((e) => geometricTypes.includes(e.type));
-  if (geom.length === 0) return null;
+function toPointArray(entity) {
+  if (!entity || typeof entity !== 'object') return [];
+  if (Array.isArray(entity.vertices) && entity.vertices.length) {
+    return entity.vertices
+      .map((v) => ({ x: safeNumber(v.x), y: safeNumber(v.y) }))
+      .filter((v) => v.x != null && v.y != null);
+  }
+  if (entity.start && entity.end) {
+    const sx = safeNumber(entity.start.x);
+    const sy = safeNumber(entity.start.y);
+    const ex = safeNumber(entity.end.x);
+    const ey = safeNumber(entity.end.y);
+    const pts = [];
+    if (sx != null && sy != null) pts.push({ x: sx, y: sy });
+    if (ex != null && ey != null) pts.push({ x: ex, y: ey });
+    return pts;
+  }
+  return [];
+}
 
+function bboxFromPoints(points) {
+  if (!points.length) return null;
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
-
-  for (const ent of geom) {
-    const p = ent.properties;
-    // Start point (10, 20)
-    if (p[10] != null) {
-      if (p[10] < minX) minX = p[10];
-      if (p[10] > maxX) maxX = p[10];
-    }
-    if (p[20] != null) {
-      if (p[20] < minY) minY = p[20];
-      if (p[20] > maxY) maxY = p[20];
-    }
-    // End point (11, 21) — for LINE entities
-    if (p[11] != null) {
-      if (p[11] < minX) minX = p[11];
-      if (p[11] > maxX) maxX = p[11];
-    }
-    if (p[21] != null) {
-      if (p[21] < minY) minY = p[21];
-      if (p[21] > maxY) maxY = p[21];
-    }
+  for (const p of points) {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
   }
-
-  if (!Number.isFinite(minX) || !Number.isFinite(maxX)) return null;
-
-  const width = Math.round(Math.abs(maxX - minX) * 100) / 100;
-  const height = Math.round(Math.abs(maxY - minY) * 100) / 100;
-  const values = [width, height].filter((v) => v > 0);
-
-  if (values.length === 0) return null;
-  return { values, method: 'bbox' };
-}
-
-/**
- * Extract dimension values from DXF content.
- * Prefers DIMENSION entities over bounding-box calculation.
- *
- * @param {string} dxfContent — raw DXF file text
- * @returns {{ values: number[], method: string, error: string | null }}
- */
-function extractDimensions(dxfContent) {
-  const parsed = parseDxfContent(dxfContent);
-  if (parsed.entities.length === 0) {
-    return { values: [], method: null, error: 'DXF-файл не содержит сущностей' };
-  }
-
-  // Prefer DIMENSION entities (explicit measurements)
-  const fromDimension = extractFromDimensions(parsed.entities);
-  if (fromDimension) {
-    return { ...fromDimension, error: null };
-  }
-
-  // Fallback to bounding box
-  const fromBbox = extractFromBbox(parsed.entities);
-  if (fromBbox) {
-    return { ...fromBbox, error: null };
-  }
-
-  return { values: [], method: null, error: 'Не удалось извлечь размеры из DXF' };
-}
-
-/**
- * Convert extracted DXF dimensions to the standard product dimensions format.
- *
- * @param {{ values: number[], method: string }} extracted
- * @returns {{ value: {length: number, width: number, thickness: number} | null, error: string | null, method: string }}
- */
-function toDimensions(extracted) {
-  if (!extracted || !extracted.values || extracted.values.length === 0) {
-    return { value: null, error: extracted ? extracted.error : 'нет данных', method: null };
-  }
-
-  const sorted = [...extracted.values].sort((a, b) => b - a);
-  const length = sorted[0] || 0;
-  const width = sorted[1] || 0;
-  const thickness = sorted[2] || 0;
-
+  const dx = maxX - minX;
+  const dy = maxY - minY;
+  if (!(dx > 0 && dy > 0)) return null;
   return {
-    value: { length, width, thickness },
-    error: null,
-    method: extracted.method
+    length: Math.max(dx, dy),
+    width: Math.min(dx, dy),
+    area: dx * dy
   };
 }
 
-/**
- * Parse DXF file content and return product dimensions.
- *
- * @param {string} dxfContent — raw DXF file content
- * @returns {{ value: {length: number, width: number, thickness: number} | null, error: string | null, method: string }}
- */
-function parseDxfDimensions(dxfContent) {
-  const extracted = extractDimensions(dxfContent);
-  return toDimensions(extracted);
+function parseDimensionEntityValue(entity) {
+  const candidates = [entity.actualMeasurement, entity.text, entity.measurement, entity.value];
+  for (const candidate of candidates) {
+    if (candidate == null || candidate === '') continue;
+    const matched = String(candidate).replace(',', '.').match(/-?\d+(?:\.\d+)?/);
+    if (!matched) continue;
+    const value = Number(matched[0]);
+    if (Number.isFinite(value) && value > 0) return value;
+  }
+  return null;
 }
 
-module.exports = {
-  parseDxfContent,
-  extractFromDimensions,
-  extractFromBbox,
-  extractDimensions,
-  toDimensions,
-  parseDxfDimensions
-};
+function collectDimensionSizes(entities) {
+  return entities
+    .filter((e) => e.type === 'DIMENSION')
+    .map(parseDimensionEntityValue)
+    .filter((v) => Number.isFinite(v) && v > 0)
+    .sort((a, b) => b - a);
+}
+
+function parseThicknessFromString(value) {
+  if (!value) return null;
+  const text = String(value);
+  const patterns = [
+    /толщин[^0-9]*[:=]?\s*(\d+(?:[.,]\d+)?)/i,
+    /\bthk\s*[:=]?\s*(\d+(?:[.,]\d+)?)/i,
+    /\bt\s*[:=]\s*(\d+(?:[.,]\d+)?)/i,
+    /(\d+(?:[.,]\d+)?)\s*(?:mm|мм)\b/i
+  ];
+
+  for (const re of patterns) {
+    const hit = text.match(re);
+    if (!hit) continue;
+    const num = Number(hit[1].replace(',', '.'));
+    if (Number.isFinite(num) && num > 0) return num;
+  }
+  return null;
+}
+
+function collectTextHints(entities) {
+  return entities
+    .filter((e) => e.type === 'TEXT' || e.type === 'MTEXT')
+    .map((e) => String(e.text || e.string || e.value || ''))
+    .filter(Boolean);
+}
+
+function parseThicknessFromLayer(value) {
+  if (!value) return null;
+  const s = String(value);
+  const patterns = [
+    /\bT\s*=\s*(\d+(?:[.,]\d+)?)/i,
+    /\bTHK\s*=\s*(\d+(?:[.,]\d+)?)/i,
+    /\bT\s*(\d+(?:[.,]\d+)?)/i,
+    /\b(\d+(?:[.,]\d+)?)\s*(?:mm|мм)\b/i
+  ];
+  for (const re of patterns) {
+    const m = s.match(re);
+    if (!m) continue;
+    const num = Number(m[1].replace(',', '.'));
+    if (Number.isFinite(num) && num > 0) return num;
+  }
+  return null;
+}
+
+function detectMaterialHint(filePath, entities) {
+  const corpus = [path.basename(filePath), ...entities.map((e) => String(e.layer || '')), ...collectTextHints(entities)]
+    .join(' ')
+    .toLowerCase();
+  if (!corpus) return null;
+
+  const hints = [
+    { re: /габбро/i, value: 'габбро-диабаз' },
+    { re: /granit|гранит|жалгыз/i, value: 'granite' },
+    { re: /mramor|мрамор|delikato/i, value: 'marble' },
+    { re: /известняк|fatima/i, value: 'limestone' },
+    { re: /кварцит|quartzite/i, value: 'quartzite' }
+  ];
+
+  const found = hints.find((item) => item.re.test(corpus));
+  return found ? found.value : null;
+}
+
+function parseDxfAsciiFallback(content) {
+  const lines = content.split(/\r?\n/);
+  const entities = [];
+  const header = {};
+  let section = '';
+  let current = null;
+
+  for (let i = 0; i < lines.length - 1; i += 2) {
+    const code = String(lines[i] || '').trim();
+    const value = String(lines[i + 1] || '').trim();
+    if (code === '0' && value === 'SECTION') {
+      section = '';
+      continue;
+    }
+    if (code === '2' && section === '') {
+      section = value;
+      continue;
+    }
+    if (code === '0' && value === 'ENDSEC') {
+      if (current) {
+        entities.push(current);
+        current = null;
+      }
+      section = '';
+      continue;
+    }
+
+    if (section === 'HEADER') {
+      if (code === '9' && value === '$INSUNITS') {
+        const unitCode = lines[i + 3] != null ? String(lines[i + 3]).trim() : null;
+        if (unitCode != null) header.$INSUNITS = unitCode;
+      }
+      continue;
+    }
+
+    if (section !== 'ENTITIES') continue;
+
+    if (code === '0') {
+      if (current) entities.push(current);
+      current = { type: value, vertices: [] };
+      continue;
+    }
+    if (!current) continue;
+
+    if (code === '8') current.layer = value;
+    if (current.type === 'LINE') {
+      if (code === '10') {
+        current.start = current.start || {};
+        current.start.x = Number(value);
+      }
+      if (code === '20') {
+        current.start = current.start || {};
+        current.start.y = Number(value);
+      }
+      if (code === '11') {
+        current.end = current.end || {};
+        current.end.x = Number(value);
+      }
+      if (code === '21') {
+        current.end = current.end || {};
+        current.end.y = Number(value);
+      }
+    }
+    if (current.type === 'LWPOLYLINE' || current.type === 'POLYLINE') {
+      if (code === '10') {
+        current.vertices.push({ x: Number(value), y: null });
+      }
+      if (code === '20' && current.vertices.length) {
+        current.vertices[current.vertices.length - 1].y = Number(value);
+      }
+    }
+    if (current.type === 'TEXT' || current.type === 'MTEXT') {
+      if (code === '1') current.text = value;
+    }
+    if (current.type === 'DIMENSION') {
+      if (code === '1') current.text = value;
+      if (code === '42') current.actualMeasurement = Number(value);
+    }
+  }
+  if (current) entities.push(current);
+  return { header, entities };
+}
+
+function parseDxfContent(content) {
+  let parsed;
+  try {
+    const dxf = require('dxf');
+    parsed = dxf.parseString(content);
+  } catch (_error) {
+    parsed = null;
+  }
+  if (!parsed || !Array.isArray(parsed.entities)) {
+    parsed = parseDxfAsciiFallback(content);
+  }
+  if (!parsed || !Array.isArray(parsed.entities)) {
+    throw new Error('Не удалось распарсить DXF: некорректная структура файла.');
+  }
+
+  const hasDimValues = parsed.entities
+    .filter((e) => e.type === 'DIMENSION')
+    .some((e) => parseDimensionEntityValue(e) != null);
+
+  if (!hasDimValues) {
+    const fallback = parseDxfAsciiFallback(content);
+    const fbDims = (fallback.entities || []).filter((e) => e.type === 'DIMENSION');
+    if (fbDims.some((e) => parseDimensionEntityValue(e) != null)) {
+      let idx = 0;
+      for (const e of parsed.entities) {
+        if (e.type === 'DIMENSION' && idx < fbDims.length) {
+          const fb = fbDims[idx++];
+          if (fb.text != null) e.text = fb.text;
+          if (fb.actualMeasurement != null) e.actualMeasurement = fb.actualMeasurement;
+        }
+      }
+    }
+  }
+
+  return parsed;
+}
+
+function parseDxfFile(filePath, options = {}) {
+  const warnings = [];
+  const content = fs.readFileSync(filePath, 'utf8');
+  if (!/SECTION/i.test(content) || !/ENTITIES/i.test(content)) {
+    throw new Error('Невалидный DXF: отсутствуют обязательные секции SECTION/ENTITIES.');
+  }
+
+  const parsed = parseDxfContent(content);
+  const entities = parsed.entities || [];
+
+  const unitInfo = detectSourceUnit(parsed, warnings);
+  const factor = unitInfo.factor;
+
+  const geomEntities = entities.filter((e) => ['LWPOLYLINE', 'LINE', 'POLYLINE'].includes(e.type));
+  const layerBuckets = new Map();
+  for (const entity of geomEntities) {
+    const key = entity.layer || '__default__';
+    const arr = layerBuckets.get(key) || [];
+    arr.push(...toPointArray(entity));
+    layerBuckets.set(key, arr);
+  }
+  const bboxes = [...layerBuckets.values()]
+    .map((points) => bboxFromPoints(points))
+    .filter(Boolean)
+    .sort((a, b) => b.area - a.area);
+
+  if (bboxes.length > 1 && bboxes[0].area === bboxes[1].area) {
+    warnings.push('DXF: обнаружено несколько равных по размаху контуров, выбран первый.');
+  }
+
+  const primaryBox = bboxes[0] || bboxFromPoints(geomEntities.flatMap((entity) => toPointArray(entity)));
+  const bboxDims = primaryBox
+    ? { length: primaryBox.length * factor, width: primaryBox.width * factor }
+    : { length: null, width: null };
+
+  const dimensionCandidates = collectDimensionSizes(entities).map((v) => v * factor);
+  let dimensionSource = 'bbox';
+  let length = bboxDims.length;
+  let width = bboxDims.width;
+
+  if (dimensionCandidates.length >= 2) {
+    const dLength = dimensionCandidates[0];
+    const dWidth = dimensionCandidates[1];
+    if (dLength > 0 && dWidth > 0) {
+      length = Math.max(dLength, dWidth);
+      width = Math.min(dLength, dWidth);
+      dimensionSource = 'DIMENSION';
+      if (bboxDims.length && bboxDims.width) {
+        const delta = Math.abs(length - bboxDims.length) / bboxDims.length;
+        if (delta > 0.2) warnings.push('DXF: DIMENSION существенно отличается от bbox, использованы DIMENSION.');
+      }
+    }
+  }
+
+  const sources = [];
+  const rememberThickness = (value, source, priority) => {
+    if (!(Number.isFinite(value) && value > 0)) return;
+    sources.push({ value, source, priority });
+  };
+
+  rememberThickness(safeNumber(options.thickness), 'options.thickness', 1);
+  rememberThickness(safeNumber(options.cliThickness), 'cli.--thickness', 2);
+  rememberThickness(parseThicknessFromString(path.basename(filePath)), 'filename', 3);
+
+  const textValues = collectTextHints(entities);
+  for (const text of textValues) {
+    rememberThickness(parseThicknessFromString(text), 'text', 4);
+  }
+
+  const layers = [...new Set(entities.map((e) => e.layer).filter(Boolean))];
+  for (const layer of layers) {
+    rememberThickness(parseThicknessFromLayer(layer), 'layer', 5);
+  }
+
+  sources.sort((a, b) => a.priority - b.priority);
+  const selected = sources[0] || null;
+  const uniqueThicknesses = [...new Set(sources.map((s) => String(s.value)))];
+  if (uniqueThicknesses.length > 1) {
+    warnings.push(`DXF: найдены разные толщины (${uniqueThicknesses.join(', ')}), выбран источник ${selected.source}.`);
+  }
+
+  return {
+    dimensions: {
+      length: Number.isFinite(length) ? Number(length.toFixed(3)) : null,
+      width: Number.isFinite(width) ? Number(width.toFixed(3)) : null,
+      thickness: selected ? Number(selected.value) : null,
+      unit: 'mm'
+    },
+    material_hint: detectMaterialHint(filePath, entities),
+    entities_count: entities.length,
+    meta: {
+      sourceUnit: unitInfo.sourceUnit,
+      convertedFromInches: unitInfo.convertedFromInches,
+      thicknessSource: selected ? selected.source : null,
+      dimensionSource,
+      warnings
+    }
+  };
+}
+
+module.exports = { parseDxfFile, parseDxfContent };

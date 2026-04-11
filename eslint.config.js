@@ -18,6 +18,8 @@ module.exports = [
         require: 'readonly',
         URL: 'readonly',
         fetch: 'readonly',
+        FormData: 'readonly',
+        Blob: 'readonly',
         File: 'readonly',
         DataTransfer: 'readonly',
         document: 'readonly',
@@ -29,7 +31,7 @@ module.exports = [
     rules: {
       'no-undef': 'error',
       'no-unreachable': 'error',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
       'no-console': 'off',
       'prefer-const': 'error',
     },

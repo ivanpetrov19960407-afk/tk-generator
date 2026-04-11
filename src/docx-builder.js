@@ -18,8 +18,8 @@ const i18n = require('./i18n');
 const {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
   Header, Footer, AlignmentType, PageNumber, PageBreak,
-  BorderStyle, WidthType, ShadingType, VerticalAlign,
-  HeadingLevel, LineRuleType
+  BorderStyle, WidthType,
+  LineRuleType
 } = docx;
 
 // Constants

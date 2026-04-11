@@ -3,7 +3,7 @@
  * Builds the MK section from the template in sections_template.json
  */
 
-const { parametrize } = require('./operations');
+// const { parametrize } = require('./operations');
 const { calcProductMass, calcBlockMass, calcBatchMass } = require('./equipment');
 
 /**

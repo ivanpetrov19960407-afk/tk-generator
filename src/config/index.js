@@ -129,7 +129,7 @@ function readConfigFile(filePath) {
     let yaml;
     try {
       yaml = require('yaml');
-    } catch (err) {
+    } catch (_err) {
       throw new Error(`YAML конфиг ${filePath} не поддерживается: установите пакет "yaml" или используйте JSON.`);
     }
     return yaml.parse(raw);
