@@ -483,13 +483,15 @@ async function createHandler(req, res, deps = {}) {
     try {
       if (!enforceContentLengthLimit(MAX_EXCEL_UPLOAD_BYTES, 'security.payload_too_large')) return;
       const contentType = String(req.headers['content-type'] || '');
-      const boundaryMatch = contentType.match(/boundary=([^;]+)/i);
+      // Поддержка boundary как с кавычками (boundary="abc"), так и без (boundary=abc)
+      const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
       if (!contentType.includes('multipart/form-data') || !boundaryMatch) {
         return sendJson(res, 400, { ok: false, error: 'Ожидается multipart/form-data с файлом DXF.' });
       }
+      const boundary = (boundaryMatch[1] || boundaryMatch[2] || '').trim();
 
       const formBuffer = await readBody(req, MAX_EXCEL_UPLOAD_BYTES);
-      const filePart = parseMultipartSingleFile(formBuffer, boundaryMatch[1]);
+      const filePart = parseMultipartSingleFile(formBuffer, boundary);
       if (!filePart || !filePart.buffer || !filePart.buffer.length) {
         return sendJson(res, 400, { ok: false, error: 'Файл не найден в multipart-запросе.' });
       }
