@@ -370,4 +370,65 @@ function parseDxfFile(filePath, options = {}) {
   };
 }
 
-module.exports = { parseDxfFile, parseDxfContent };
+function parseDxfDimensions(content) {
+  const warnings = [];
+  if (!/SECTION/i.test(content) || !/ENTITIES/i.test(content)) {
+    return { error: 'Невалидный DXF: отсутствуют обязательные секции SECTION/ENTITIES.' };
+  }
+
+  let parsed;
+  try {
+    parsed = parseDxfContent(content);
+  } catch (err) {
+    return { error: err.message };
+  }
+
+  const entities = parsed.entities || [];
+  const unitInfo = detectSourceUnit(parsed, warnings);
+  const factor = unitInfo.factor;
+
+  const geomEntities = entities.filter((e) => ['LWPOLYLINE', 'LINE', 'POLYLINE'].includes(e.type));
+  const layerBuckets = new Map();
+  for (const entity of geomEntities) {
+    const key = entity.layer || '__default__';
+    const arr = layerBuckets.get(key) || [];
+    arr.push(...toPointArray(entity));
+    layerBuckets.set(key, arr);
+  }
+  const bboxes = [...layerBuckets.values()]
+    .map((points) => bboxFromPoints(points))
+    .filter(Boolean)
+    .sort((a, b) => b.area - a.area);
+
+  const primaryBox = bboxes[0] || bboxFromPoints(geomEntities.flatMap((entity) => toPointArray(entity)));
+  const bboxDims = primaryBox
+    ? { length: primaryBox.length * factor, width: primaryBox.width * factor }
+    : { length: null, width: null };
+
+  const dimensionCandidates = collectDimensionSizes(entities).map((v) => v * factor);
+  let method = 'bbox';
+  let length = bboxDims.length;
+  let width = bboxDims.width;
+
+  if (dimensionCandidates.length >= 2) {
+    const dLength = dimensionCandidates[0];
+    const dWidth = dimensionCandidates[1];
+    if (dLength > 0 && dWidth > 0) {
+      length = Math.max(dLength, dWidth);
+      width = Math.min(dLength, dWidth);
+      method = 'DIMENSION';
+    }
+  }
+
+  return {
+    value: {
+      length: Number.isFinite(length) ? Number(length.toFixed(3)) : null,
+      width: Number.isFinite(width) ? Number(width.toFixed(3)) : null,
+      unit: 'mm'
+    },
+    method,
+    warnings
+  };
+}
+
+module.exports = { parseDxfFile, parseDxfContent, parseDxfDimensions };
