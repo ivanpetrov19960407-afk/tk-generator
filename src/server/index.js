@@ -559,7 +559,7 @@ async function createHandler(req, res, deps = {}) {
           let totalCost = 0;
           try {
             totalCost = Number(calculateTotalCost(product).total_cost || 0);
-          } catch (error) {
+          } catch (_error) {
             totalCost = 0;
           }
           repository.saveGenerationItem({

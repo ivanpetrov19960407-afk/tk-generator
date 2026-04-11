@@ -237,7 +237,7 @@ function parseDxfContent(content) {
   try {
     const dxf = require('dxf');
     parsed = dxf.parseString(content);
-  } catch (error) {
+  } catch (_error) {
     parsed = null;
   }
   if (!parsed || !Array.isArray(parsed.entities)) {
