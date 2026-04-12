@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TK Generator v2.0</title>
   <link rel="stylesheet" href="/styles/main.css" />
+  <style>
+    .status-badge { padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; }
+    .status-badge.success { background:#e9f9ee; color:#1f7a34; }
+    .status-badge.error { background:#fdecec; color:#b3261e; }
+    .skeleton-row td { padding:0; }
+    .skeleton-line {
+      height:18px; margin:10px; border-radius:8px;
+      background: linear-gradient(90deg, rgba(120,120,120,0.14) 25%, rgba(160,160,160,0.24) 37%, rgba(120,120,120,0.14) 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+  </style>
 </head>
 <body>
   <div class="app-layout">
@@ -98,25 +114,47 @@
 
       <section id="section-history" class="section">
         <div class="card">
+          <h3>Фильтры</h3>
+          <div class="controls-row" style="flex-wrap:wrap;">
+            <input id="historySearchInput" type="text" placeholder="Поиск по материалу" style="min-width:240px; flex:1; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary);" />
+            <label style="display:flex; align-items:center; gap:8px;">
+              <span class="muted">С:</span>
+              <input id="historyFromInput" type="date" style="padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary);" />
+            </label>
+            <label style="display:flex; align-items:center; gap:8px;">
+              <span class="muted">По:</span>
+              <input id="historyToInput" type="date" style="padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary);" />
+            </label>
+            <button id="historyResetBtn" class="btn">Сбросить фильтры</button>
+          </div>
+        </div>
+
+        <div class="card">
           <h3>История генераций</h3>
-          <div id="historyEmpty" class="empty-state" style="display:none;">Запусти сервер для просмотра истории</div>
+          <div id="historyEmpty" class="empty-state" style="display:none; text-align:center;">
+            <div style="font-size:38px;">🗄</div>
+            <div style="margin-top:8px;">История генераций пуста. Создайте первый документ.</div>
+            <button id="historyToGenerationBtn" class="btn" style="margin-top:12px;">Перейти к генерации</button>
+          </div>
           <div id="historyTableWrap" class="table-wrap" style="display:none;">
             <table>
               <thead>
                 <tr>
-                  <th>Дата</th>
+                  <th>Дата и время</th>
                   <th>Позиций</th>
-                  <th>Материал</th>
+                  <th>Материалы</th>
                   <th>Статус</th>
+                  <th>Стоимость</th>
                   <th>Действия</th>
                 </tr>
               </thead>
               <tbody id="historyBody"></tbody>
             </table>
             <div class="controls-row">
-              <button id="historyPrevBtn" class="btn">← Назад</button>
+              <button id="historyPrevBtn" class="btn">←</button>
               <span id="historyPageInfo" class="badge">Страница 1</span>
-              <button id="historyNextBtn" class="btn">Вперёд →</button>
+              <button id="historyNextBtn" class="btn">→</button>
+              <span id="historyRangeInfo" class="muted" style="margin-left:auto;">Показано 0–0 из 0 записей</span>
             </div>
           </div>
         </div>
@@ -199,9 +237,11 @@
     let loadedProducts = [];
     let lastGeneratedBlob = null;
 
-    let historyItems = [];
     let historyPage = 1;
     const historyPageSize = 20;
+    let historyTotal = 0;
+    let historyLoading = false;
+    let historyFilters = { search: '', material: '', from: '', to: '' };
 
     outputDirInput.value = outputDir;
 
@@ -405,66 +445,146 @@
       pageTitle.textContent = names[sectionName] || 'Раздел';
 
       if (sectionName === 'history') {
-        loadHistory();
+        loadHistory({ resetPage: true });
       }
     }
 
-    async function loadHistory() {
+    function formatHistoryCurrency(value) {
+      return `${new Intl.NumberFormat('ru-RU').format(Number(value || 0))} ₽`;
+    }
+
+    function renderHistoryLoading() {
+      const empty = document.getElementById('historyEmpty');
+      const wrap = document.getElementById('historyTableWrap');
+      const body = document.getElementById('historyBody');
+      empty.style.display = 'none';
+      wrap.style.display = 'block';
+      body.innerHTML = Array.from({ length: 5 }).map(() => `
+        <tr class="skeleton-row">
+          <td><div class="skeleton-line"></div></td>
+          <td><div class="skeleton-line"></div></td>
+          <td><div class="skeleton-line"></div></td>
+          <td><div class="skeleton-line"></div></td>
+          <td><div class="skeleton-line"></div></td>
+          <td><div class="skeleton-line"></div></td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadHistory({ resetPage = false } = {}) {
+      if (resetPage) historyPage = 1;
+      historyLoading = true;
+      renderHistoryLoading();
       try {
-        const res = await apiFetch('/api/history');
+        const params = new URLSearchParams({
+          page: String(historyPage),
+          limit: String(historyPageSize),
+          search: historyFilters.search || '',
+          material: historyFilters.material || '',
+          from: historyFilters.from || '',
+          to: historyFilters.to || ''
+        });
+        const res = await apiFetch(`/api/history?${params.toString()}`);
         if (!res.ok) throw new Error('history unavailable');
         const data = await res.json();
-        historyItems = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
-        historyPage = 1;
-        renderHistoryPage();
+        renderHistoryPage(data);
       } catch (_err) {
         document.getElementById('historyEmpty').style.display = 'block';
         document.getElementById('historyTableWrap').style.display = 'none';
+      } finally {
+        historyLoading = false;
       }
     }
 
-    function renderHistoryPage() {
+    async function downloadHistoryFile(item) {
+      if (!item.output_available || !item.output_path) {
+        renderMessage('Файл недоступен для скачивания', 'warning');
+        return;
+      }
+      window.open(`/api/history/${item.id}/download`, '_blank');
+    }
+
+    async function repeatGeneration(itemId) {
+      try {
+        const res = await apiFetch(`/api/history/${itemId}`);
+        if (!res.ok) throw new Error('Не удалось загрузить данные запуска');
+        const data = await res.json();
+        const products = (data.items || []).map((entry, idx) => ({
+          tk_number: entry.position || (idx + 1),
+          name: entry.product_name || 'Без названия',
+          dimensions: { length: 0, width: 0, thickness: 0 },
+          material: { type: 'мрамор', name: entry.material || 'Не указан', density: 2700 },
+          texture: entry.texture || 'лощение'
+        }));
+        jsonInput.value = JSON.stringify(products, null, 2);
+        syncProductsFromTextarea('История');
+        switchSection('generation');
+        renderMessage(`Загружено позиций: ${products.length}`, 'success');
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    }
+
+    function renderHistoryPage(payload) {
       const empty = document.getElementById('historyEmpty');
       const wrap = document.getElementById('historyTableWrap');
       const body = document.getElementById('historyBody');
       const pageInfo = document.getElementById('historyPageInfo');
       const prevBtn = document.getElementById('historyPrevBtn');
       const nextBtn = document.getElementById('historyNextBtn');
+      const rangeInfo = document.getElementById('historyRangeInfo');
+      const items = Array.isArray(payload && payload.items) ? payload.items : [];
+      historyTotal = Number(payload && payload.total || 0);
 
-      if (!historyItems.length) {
+      if (!items.length && !historyLoading) {
         empty.style.display = 'block';
-        empty.textContent = 'История пуста';
         wrap.style.display = 'none';
+        rangeInfo.textContent = 'Показано 0–0 из 0 записей';
         return;
       }
 
       empty.style.display = 'none';
       wrap.style.display = 'block';
-
-      const start = (historyPage - 1) * historyPageSize;
-      const end = start + historyPageSize;
-      const pageItems = historyItems.slice(start, end);
-
-      body.innerHTML = pageItems.map((item) => {
-        const date = new Date(item.createdAt || item.date || Date.now()).toLocaleString('ru-RU');
-        const material = item.material || item.materialType || '-';
-        const count = item.positions || item.count || 0;
-        const success = item.status === 'success' || item.success === true;
+      body.innerHTML = items.map((item) => {
+        const date = new Date(item.created_at || Date.now()).toLocaleString('ru-RU');
+        const material = Array.isArray(item.materials) && item.materials.length ? item.materials.join(', ') : '-';
+        const count = Number(item.products_count || 0);
+        const success = item.status === 'success';
+        const statusLabel = success ? '✅ Успешно' : '❌ Ошибка';
+        const canDownload = Boolean(item.output_available && item.output_path);
         return `
           <tr>
             <td>${date}</td>
             <td>${count}</td>
             <td>${material}</td>
-            <td>${success ? '✅ Успех' : '❌ Ошибка'}</td>
-            <td><button class="btn" disabled>скачать</button> <button class="btn" disabled>удалить</button></td>
+            <td><span class="status-badge ${success ? 'success' : 'error'}">${statusLabel}</span></td>
+            <td>${formatHistoryCurrency(item.total_cost)}</td>
+            <td>
+              <button class="btn history-download-btn" data-id="${item.id}" ${canDownload ? '' : 'disabled'}>⬇ Скачать</button>
+              <button class="btn history-repeat-btn" data-id="${item.id}">🔁 Повторить</button>
+            </td>
           </tr>
         `;
       }).join('');
 
-      const totalPages = Math.max(1, Math.ceil(historyItems.length / historyPageSize));
+      const totalPages = Math.max(1, Math.ceil(historyTotal / historyPageSize));
       pageInfo.textContent = `Страница ${historyPage} из ${totalPages}`;
       prevBtn.disabled = historyPage <= 1;
       nextBtn.disabled = historyPage >= totalPages;
+      const start = historyTotal ? ((historyPage - 1) * historyPageSize) + 1 : 0;
+      const end = Math.min(historyPage * historyPageSize, historyTotal);
+      rangeInfo.textContent = `Показано ${start}–${end} из ${historyTotal} записей`;
+
+      body.querySelectorAll('.history-download-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          const item = items.find((row) => Number(row.id) === id);
+          if (item) downloadHistoryFile(item);
+        });
+      });
+      body.querySelectorAll('.history-repeat-btn').forEach((btn) => {
+        btn.addEventListener('click', () => repeatGeneration(Number(btn.dataset.id)));
+      });
     }
 
     async function initAuth() {
@@ -643,13 +763,38 @@
     // History paging
     document.getElementById('historyPrevBtn').addEventListener('click', () => {
       historyPage = Math.max(1, historyPage - 1);
-      renderHistoryPage();
+      loadHistory();
+      document.getElementById('historyTableWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     document.getElementById('historyNextBtn').addEventListener('click', () => {
-      const maxPage = Math.max(1, Math.ceil(historyItems.length / historyPageSize));
+      const maxPage = Math.max(1, Math.ceil(historyTotal / historyPageSize));
       historyPage = Math.min(maxPage, historyPage + 1);
-      renderHistoryPage();
+      loadHistory();
+      document.getElementById('historyTableWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('historyToGenerationBtn').addEventListener('click', () => switchSection('generation'));
+    document.getElementById('historyResetBtn').addEventListener('click', () => {
+      historyFilters = { search: '', material: '', from: '', to: '' };
+      document.getElementById('historySearchInput').value = '';
+      document.getElementById('historyFromInput').value = '';
+      document.getElementById('historyToInput').value = '';
+      loadHistory({ resetPage: true });
+    });
+    document.getElementById('historySearchInput').addEventListener('input', (event) => {
+      const value = String(event.target.value || '').trim();
+      historyFilters.search = value;
+      historyFilters.material = value;
+      loadHistory({ resetPage: true });
+    });
+    document.getElementById('historyFromInput').addEventListener('change', (event) => {
+      historyFilters.from = String(event.target.value || '').trim();
+      loadHistory({ resetPage: true });
+    });
+    document.getElementById('historyToInput').addEventListener('change', (event) => {
+      historyFilters.to = String(event.target.value || '').trim();
+      loadHistory({ resetPage: true });
     });
 
     // Settings
