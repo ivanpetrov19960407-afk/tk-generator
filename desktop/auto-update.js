@@ -15,6 +15,12 @@ function parseIntervalToMs(interval) {
   return value * 24 * 60 * 60 * 1000;
 }
 
+function checkForUpdatesNow(logger = console) {
+  return autoUpdater.checkForUpdates().catch((error) => {
+    logger.error({ error: error.message }, 'Не удалось проверить обновления Electron');
+  });
+}
+
 function setupAutoUpdates({ app, window, config, logger = console }) {
   const options = (config && config.autoUpdate) || { enabled: true, checkInterval: '24h' };
   if (!options.enabled) {
@@ -69,11 +75,7 @@ function setupAutoUpdates({ app, window, config, logger = console }) {
     }
   });
 
-  const runCheck = () => {
-    autoUpdater.checkForUpdates().catch((error) => {
-      logger.error({ error: error.message }, 'Не удалось проверить обновления Electron');
-    });
-  };
+  const runCheck = () => checkForUpdatesNow(logger);
 
   app.once('ready', runCheck);
   const timer = setInterval(runCheck, intervalMs);
@@ -83,5 +85,6 @@ function setupAutoUpdates({ app, window, config, logger = console }) {
 
 module.exports = {
   setupAutoUpdates,
-  parseIntervalToMs
+  parseIntervalToMs,
+  checkForUpdatesNow
 };

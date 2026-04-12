@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TK Generator — Splash</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1A2035;
+      color: #fff;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+    }
+
+    .card {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      color: #d1d9ff;
+      font-size: 15px;
+    }
+
+    .dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #c9d8ff;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    .footer {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #9bb2ff;
+    }
+
+    @keyframes pulse {
+      0%, 80%, 100% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">⚙ TK Generator</div>
+    <div class="subtitle">Запуск сервера...</div>
+    <div class="dots" aria-hidden="true">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+    <div class="footer">Инициализация...</div>
+  </div>
+</body>
+</html>
