@@ -32,6 +32,14 @@
       .analytics-filters { grid-template-columns: repeat(2, 1fr); }
       .analytics-card-grid, .analytics-charts, .analytics-bottom-charts { grid-template-columns: 1fr; }
     }
+    .settings-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:12px; }
+    .settings-group h4 { margin:0 0 10px; font-size:16px; }
+    .settings-field { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+    .settings-field input, .settings-field select { padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary); }
+    .settings-inline { display:flex; gap:8px; align-items:center; }
+    .settings-inline-wrap { display:flex; gap:12px; flex-wrap:wrap; }
+    .settings-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .compact-tables table th, .compact-tables table td { font-size:12px; padding:6px; }
 
   </style>
 </head>
@@ -225,20 +233,72 @@
       <section id="section-settings" class="section">
         <div class="card">
           <h3>Настройки</h3>
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <label>
-              Папка вывода
-              <div style="display:flex; gap:10px; margin-top:6px;">
-                <input id="outputDirInput" type="text" readonly style="flex:1; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary);" />
-                <button id="changeOutputDirBtn" class="btn" style="display:none;">Изменить</button>
+          <div class="settings-grid">
+            <div class="card settings-group">
+              <h4>Реквизиты компании</h4>
+              <label class="settings-field">Название организации <input id="companyNameInput" type="text" /></label>
+              <label class="settings-field">Адрес <input id="companyAddressInput" type="text" /></label>
+              <label class="settings-field">ИНН <input id="companyInnInput" type="text" inputmode="numeric" maxlength="12" /></label>
+              <label class="settings-field">Подпись руководителя <input id="companyDirectorInput" type="text" /></label>
+              <div class="settings-actions">
+                <button id="saveCompanyBtn" class="btn">Сохранить реквизиты</button>
+                <button id="resetCompanyBtn" class="btn">Сбросить</button>
               </div>
-            </label>
+            </div>
 
-            <label style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="themeSwitch" />
-              Тёмная тема
-            </label>
+            <div class="card settings-group">
+              <h4>Генерация</h4>
+              <div class="settings-field">
+                <span>Формат по умолчанию</span>
+                <div class="settings-inline-wrap">
+                  <label class="settings-inline"><input type="radio" name="defaultFormat" value="docx" /> docx</label>
+                  <label class="settings-inline"><input type="radio" name="defaultFormat" value="pdf" /> pdf</label>
+                  <label class="settings-inline"><input type="radio" name="defaultFormat" value="xlsx" /> xlsx</label>
+                </div>
+              </div>
+              <label class="settings-field">Папка вывода
+                <div class="settings-inline">
+                  <input id="outputDirInput" type="text" readonly />
+                  <button id="changeOutputDirBtn" class="btn" style="display:none;">Изменить</button>
+                </div>
+              </label>
+              <label class="settings-inline"><input id="useWorkersInput" type="checkbox" /> Использовать Worker Threads</label>
+              <label class="settings-field">Язык документов
+                <select id="generationLanguageInput">
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
+            </div>
 
+            <div class="card settings-group">
+              <h4>Уведомления</h4>
+              <label class="settings-field">Webhook URL <input id="webhookUrlInput" type="text" placeholder="https://..." /></label>
+              <label class="settings-field">Telegram Chat ID <input id="telegramChatIdInput" type="text" inputmode="numeric" /></label>
+              <label class="settings-inline"><input id="notifyCompleteInput" type="checkbox" /> Уведомлять при завершении генерации</label>
+              <label class="settings-inline"><input id="notifyErrorInput" type="checkbox" /> Уведомлять при ошибках</label>
+              <div class="settings-actions">
+                <button id="testNotificationBtn" class="btn">Тест уведомления</button>
+              </div>
+            </div>
+
+            <div class="card settings-group">
+              <h4>Интерфейс</h4>
+              <label class="settings-inline"><input type="checkbox" id="themeSwitch" /> Тёмная тема</label>
+              <label class="settings-inline"><input type="checkbox" id="compactTablesInput" /> Компактный режим таблиц</label>
+              <label class="settings-field">Количество строк в таблице истории
+                <select id="historyRowsInput">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button id="saveSettingsBtn" class="btn btn-primary">Сохранить</button>
+          </div>
+          <div style="margin-top:12px;">
             <button id="openDevtoolsBtn" class="btn" style="display:none;">Открыть DevTools</button>
             <div id="versionInfo" class="muted">Версия программы: ...</div>
           </div>
@@ -287,15 +347,28 @@
     const outputDirInput = document.getElementById('outputDirInput');
     const themeToggle = document.getElementById('themeToggle');
     const themeSwitch = document.getElementById('themeSwitch');
+    const companyNameInput = document.getElementById('companyNameInput');
+    const companyAddressInput = document.getElementById('companyAddressInput');
+    const companyInnInput = document.getElementById('companyInnInput');
+    const companyDirectorInput = document.getElementById('companyDirectorInput');
+    const generationLanguageInput = document.getElementById('generationLanguageInput');
+    const useWorkersInput = document.getElementById('useWorkersInput');
+    const webhookUrlInput = document.getElementById('webhookUrlInput');
+    const telegramChatIdInput = document.getElementById('telegramChatIdInput');
+    const notifyCompleteInput = document.getElementById('notifyCompleteInput');
+    const notifyErrorInput = document.getElementById('notifyErrorInput');
+    const compactTablesInput = document.getElementById('compactTablesInput');
+    const historyRowsInput = document.getElementById('historyRowsInput');
 
     let outputDir = localStorage.getItem('tkg_output_dir') || '';
+    let settingsState = null;
     let authEnabled = false;
     let authToken = localStorage.getItem('tkg_access_token') || '';
     let loadedProducts = [];
     let lastGeneratedBlob = null;
 
     let historyPage = 1;
-    const historyPageSize = 20;
+    let historyPageSize = 20;
     let historyTotal = 0;
     let historyLoading = false;
     let historyFilters = { search: '', material: '', from: '', to: '' };
@@ -484,6 +557,105 @@
       themeToggle.textContent = isDark ? '🌙' : '☀';
       themeSwitch.checked = isDark;
       localStorage.setItem('tkg_theme', theme);
+    }
+
+    function applyCompactTables(enabled) {
+      document.body.classList.toggle('compact-tables', Boolean(enabled));
+    }
+
+    function getSelectedDefaultFormat() {
+      const input = document.querySelector('input[name="defaultFormat"]:checked');
+      return input ? input.value : 'docx';
+    }
+
+    function setSelectedDefaultFormat(format) {
+      const normalized = ['docx', 'pdf', 'xlsx'].includes(format) ? format : 'docx';
+      const input = document.querySelector(`input[name="defaultFormat"][value="${normalized}"]`);
+      if (input) input.checked = true;
+    }
+
+    function sanitizeDigits(value, maxLength = 64) {
+      return String(value || '').replace(/\D+/g, '').slice(0, maxLength);
+    }
+
+    function validateSettingsPayload(payload) {
+      const inn = String(payload.company.inn || '');
+      if (inn && !/^\d{10}(\d{2})?$/.test(inn)) throw new Error('ИНН должен содержать 10 или 12 цифр.');
+      const webhookUrl = String(payload.notifications.webhookUrl || '').trim();
+      if (webhookUrl && !webhookUrl.startsWith('https://')) throw new Error('Webhook URL должен начинаться с https://');
+      const chatId = String(payload.notifications.telegramChatId || '');
+      if (chatId && !/^\d+$/.test(chatId)) throw new Error('Telegram Chat ID должен содержать только цифры.');
+    }
+
+    function buildSettingsPayload() {
+      return {
+        company: {
+          name: companyNameInput.value.trim(),
+          address: companyAddressInput.value.trim(),
+          inn: sanitizeDigits(companyInnInput.value, 12),
+          director: companyDirectorInput.value.trim()
+        },
+        generation: {
+          defaultFormat: getSelectedDefaultFormat(),
+          outputDir: outputDirInput.value.trim(),
+          useWorkerThreads: useWorkersInput.checked,
+          language: generationLanguageInput.value
+        },
+        notifications: {
+          webhookUrl: webhookUrlInput.value.trim(),
+          telegramChatId: sanitizeDigits(telegramChatIdInput.value, 32),
+          notifyOnComplete: notifyCompleteInput.checked,
+          notifyOnError: notifyErrorInput.checked
+        },
+        interface: {
+          theme: themeSwitch.checked ? 'dark' : 'light',
+          compactTables: compactTablesInput.checked,
+          historyRows: Number(historyRowsInput.value || 20)
+        }
+      };
+    }
+
+    function applySettingsForm(config) {
+      settingsState = config || {};
+      companyNameInput.value = settingsState.company?.name || '';
+      companyAddressInput.value = settingsState.company?.address || '';
+      companyInnInput.value = sanitizeDigits(settingsState.company?.inn || settingsState.company?.INN || '', 12);
+      companyDirectorInput.value = settingsState.company?.director || '';
+      setSelectedDefaultFormat(settingsState.generation?.defaultFormat || 'docx');
+      outputDirInput.value = settingsState.generation?.outputDir || outputDir;
+      outputDir = outputDirInput.value;
+      useWorkersInput.checked = Boolean(settingsState.generation?.useWorkerThreads);
+      generationLanguageInput.value = settingsState.generation?.language === 'en' ? 'en' : 'ru';
+      webhookUrlInput.value = settingsState.notifications?.webhookUrl || '';
+      telegramChatIdInput.value = sanitizeDigits(settingsState.notifications?.telegramChatId || '', 32);
+      notifyCompleteInput.checked = Boolean(settingsState.notifications?.notifyOnComplete);
+      notifyErrorInput.checked = Boolean(settingsState.notifications?.notifyOnError);
+      compactTablesInput.checked = Boolean(settingsState.interface?.compactTables);
+      historyRowsInput.value = String(settingsState.interface?.historyRows || historyPageSize || 20);
+      historyPageSize = Number(historyRowsInput.value);
+      applyCompactTables(compactTablesInput.checked);
+      updateTheme(settingsState.interface?.theme === 'dark' ? 'dark' : (localStorage.getItem('tkg_theme') || 'light'));
+    }
+
+    async function loadSettings() {
+      const res = await apiFetch('/api/config');
+      if (!res.ok) throw new Error('Не удалось загрузить настройки');
+      const cfg = await res.json();
+      applySettingsForm(cfg);
+      return cfg;
+    }
+
+    async function saveSettings(payload) {
+      validateSettingsPayload(payload);
+      const res = await apiFetch('/api/config', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Не удалось сохранить настройки');
+      applySettingsForm(data.config || payload);
+      showToast('Настройки сохранены', 'success');
     }
 
     function setServerStatus(ok, text) {
@@ -1000,8 +1172,58 @@
       if (!selected) return;
       outputDir = selected;
       outputDirInput.value = selected;
-      localStorage.setItem('tkg_output_dir', selected);
       renderMessage(`Папка вывода: ${selected}`, 'success');
+    });
+
+    document.getElementById('saveCompanyBtn').addEventListener('click', async () => {
+      try {
+        const payload = { company: buildSettingsPayload().company };
+        await saveSettings(payload);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    document.getElementById('resetCompanyBtn').addEventListener('click', () => {
+      companyNameInput.value = settingsState?.company?.name || '';
+      companyAddressInput.value = settingsState?.company?.address || '';
+      companyInnInput.value = sanitizeDigits(settingsState?.company?.inn || settingsState?.company?.INN || '', 12);
+      companyDirectorInput.value = settingsState?.company?.director || '';
+      renderMessage('Реквизиты сброшены', 'info');
+    });
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+      try {
+        const payload = buildSettingsPayload();
+        await saveSettings(payload);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    document.getElementById('testNotificationBtn').addEventListener('click', async () => {
+      try {
+        const payload = buildSettingsPayload();
+        validateSettingsPayload(payload);
+        const res = await apiFetch('/api/webhooks/test', { method: 'POST' });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || 'Тест уведомления не выполнен');
+        renderMessage('Тест уведомления отправлен', 'success');
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    companyInnInput.addEventListener('input', () => {
+      companyInnInput.value = sanitizeDigits(companyInnInput.value, 12);
+    });
+    telegramChatIdInput.addEventListener('input', () => {
+      telegramChatIdInput.value = sanitizeDigits(telegramChatIdInput.value, 32);
+    });
+    compactTablesInput.addEventListener('change', () => applyCompactTables(compactTablesInput.checked));
+    historyRowsInput.addEventListener('change', () => {
+      historyPageSize = Number(historyRowsInput.value || 20);
+      if (document.getElementById('section-history').classList.contains('active')) loadHistory({ resetPage: true });
     });
 
     document.getElementById('openDevtoolsBtn').addEventListener('click', () => {
@@ -1059,7 +1281,6 @@
         if (selected) {
           outputDir = selected;
           outputDirInput.value = selected;
-          localStorage.setItem('tkg_output_dir', selected);
           renderMessage(`Папка вывода: ${selected}`, 'success');
         }
       });
@@ -1095,13 +1316,13 @@
           if (selected) {
             outputDir = selected;
             outputDirInput.value = selected;
-            localStorage.setItem('tkg_output_dir', selected);
             renderMessage(`Папка вывода: ${selected}`, 'success');
           }
         }
       });
     }
 
+    loadSettings().catch((err) => renderMessage(err.message, 'warning'));
     initAuth();
     if (window.location.hash === '#analytics') {
       switchSection('analytics');
