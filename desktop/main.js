@@ -16,16 +16,43 @@ process.on('uncaughtException', (error) => {
 
 const { createApp } = require('../src/server');
 const { loadConfig, getConfig } = require('../src/config');
-const { setupAutoUpdates } = require('./auto-update');
+const { setupAutoUpdates, checkForUpdatesNow } = require('./auto-update');
+const { version: appVersion } = require('../package.json');
 
 let win;
 let tray;
+let splash;
 let apiServer;
 let apiPort;
 let selectedOutputDir = null;
 let generationStatus = 'Готово';
 let stopAutoUpdateTimer = null;
+let isQuitting = false;
+let trayHintShown = false;
 const isElectronE2E = process.env.TK_ELECTRON_E2E === '1';
+const appIconPath = path.join(__dirname, '../assets/icon.svg');
+
+function hideToTrayWithToast() {
+  if (!win) return;
+  win.hide();
+
+  if (!trayHintShown) {
+    trayHintShown = true;
+    win.webContents
+      .executeJavaScript('typeof showToast === "function" && showToast("Приложение свернуто в трей", "info")', true)
+      .catch(() => {});
+  }
+}
+
+function triggerAutoUpdateCheck() {
+  checkForUpdatesNow(console);
+  dialog.showMessageBox(win, {
+    type: 'info',
+    title: 'Проверка обновлений',
+    message: 'Проверка обновлений запущена.',
+    buttons: ['OK']
+  }).catch(() => {});
+}
 
 function createMenu() {
   const template = [
@@ -48,7 +75,57 @@ function createMenu() {
           click: () => win && win.webContents.send('menu-action', 'settings')
         },
         { type: 'separator' },
+        {
+          label: 'Перезагрузить',
+          accelerator: 'CmdOrCtrl+R',
+          click: () => win && win.reload()
+        },
+        {
+          label: 'Перезагрузить (F5)',
+          accelerator: 'F5',
+          click: () => win && win.reload()
+        },
+        {
+          label: 'Свернуть в трей',
+          accelerator: 'Esc',
+          click: () => hideToTrayWithToast()
+        },
+        ...(process.env.NODE_ENV === 'development'
+          ? [
+              {
+                label: 'Открыть DevTools',
+                accelerator: 'CmdOrCtrl+Shift+I',
+                click: () => win && win.webContents.openDevTools({ mode: 'detach' })
+              }
+            ]
+          : []),
+        { type: 'separator' },
         { role: process.platform === 'darwin' ? 'close' : 'quit' }
+      ]
+    },
+    {
+      label: 'Справка',
+      submenu: [
+        {
+          label: 'О программе',
+          click: () => {
+            dialog.showMessageBox(win, {
+              type: 'info',
+              title: 'О программе',
+              message: `TK Generator v${appVersion}`,
+              detail: 'GitHub: https://github.com/ivanpetrov19960407-afk/tk-generator',
+              buttons: ['OK']
+            });
+          }
+        },
+        {
+          label: 'Документация',
+          click: () => shell.openExternal('https://ivanpetrov19960407-afk.github.io/tk-generator/')
+        },
+        {
+          label: 'Проверить обновления',
+          click: () => triggerAutoUpdateCheck()
+        }
       ]
     }
   ];
@@ -56,12 +133,8 @@ function createMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-function ensureTray() {
-  if (isElectronE2E) return;
-  if (tray || process.platform === 'darwin') return;
-  const trayIcon = nativeImage.createFromDataURL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAK0lEQVR4AWP4//8/Azbw////GQYGBgb+////jwEJw6kB0QwMDAwMDAwAANV+Ezh6+U5rAAAAAElFTkSuQmCC');
-  tray = new Tray(trayIcon);
-  tray.setToolTip(`TK Generator: ${generationStatus}`);
+function rebuildTrayMenu() {
+  if (!tray) return;
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: `Статус: ${generationStatus}`, enabled: false },
@@ -75,9 +148,30 @@ function ensureTray() {
           }
         }
       },
-      { role: 'quit', label: 'Выход' }
+      {
+        label: 'Выход',
+        click: () => {
+          isQuitting = true;
+          app.quit();
+        }
+      }
     ])
   );
+}
+
+function ensureTray() {
+  if (isElectronE2E) return;
+  if (tray || process.platform === 'darwin') return;
+  const trayIcon = nativeImage.createFromPath(appIconPath);
+  tray = new Tray(trayIcon);
+  tray.setToolTip(`TK Generator: ${generationStatus}`);
+  tray.on('double-click', () => {
+    if (win) {
+      win.show();
+      win.focus();
+    }
+  });
+  rebuildTrayMenu();
 }
 
 function updateStatus(status, progress) {
@@ -85,6 +179,7 @@ function updateStatus(status, progress) {
 
   if (tray) {
     tray.setToolTip(`TK Generator: ${generationStatus}`);
+    rebuildTrayMenu();
   }
 
   if (win) {
@@ -112,9 +207,42 @@ async function startApiServer() {
   apiPort = apiServer.address().port;
 }
 
+function createSplashWindow() {
+  splash = new BrowserWindow({
+    width: 400,
+    height: 280,
+    frame: false,
+    alwaysOnTop: true,
+    resizable: false,
+    movable: true,
+    minimizable: false,
+    maximizable: false,
+    show: true,
+    icon: appIconPath,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+  splash.loadFile(path.join(__dirname, '../public/splash.html'));
+}
+
 async function createMainWindow() {
   loadConfig();
-  await startApiServer();
+  createSplashWindow();
+
+  try {
+    await startApiServer();
+  } catch (error) {
+    if (splash) {
+      splash.close();
+      splash = null;
+    }
+    dialog.showErrorBox('Ошибка запуска', error.message || 'Не удалось запустить встроенный сервер.');
+    app.quit();
+    return;
+  }
+
   if (process.env.TK_ELECTRON_E2E_OUTPUT_DIR) {
     selectedOutputDir = process.env.TK_ELECTRON_E2E_OUTPUT_DIR;
   }
@@ -124,6 +252,8 @@ async function createMainWindow() {
     height: 820,
     minWidth: 960,
     minHeight: 700,
+    show: false,
+    icon: appIconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -131,7 +261,20 @@ async function createMainWindow() {
     }
   });
 
+  win.on('close', (e) => {
+    if (isQuitting) return;
+    e.preventDefault();
+    hideToTrayWithToast();
+  });
+
   await win.loadURL(`http://127.0.0.1:${apiPort}/`);
+
+  if (splash) {
+    splash.close();
+    splash = null;
+  }
+
+  win.show();
 
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
@@ -200,12 +343,35 @@ ipcMain.on('generation-progress', (_event, payload) => {
   updateStatus(status, progress);
 
   if (payload && payload.completed) {
-    new Notification({
+    if (payload.outputDir) {
+      selectedOutputDir = payload.outputDir;
+    }
+
+    const generatedCount = payload.count || payload.generated || payload.items || null;
+    const doneMessage = generatedCount
+      ? `Готово: ${generatedCount} позиции сгенерированы`
+      : (payload.message || 'Генерация завершена');
+
+    const notification = new Notification({
       title: 'TK Generator',
-      body: payload.message || 'Генерация завершена'
-    }).show();
+      body: doneMessage,
+      actions: [{ type: 'button', text: 'Открыть папку' }],
+      closeButtonText: 'Закрыть'
+    });
+
+    const openFolder = () => {
+      if (!selectedOutputDir) return;
+      shell.openPath(selectedOutputDir);
+    };
+
+    notification.on('click', openFolder);
+    notification.on('action', (_event, index) => {
+      if (index === 0) openFolder();
+    });
+    notification.show();
+
     if (isElectronE2E) {
-      process.stdout.write(`NOTIFICATION_SHOWN:${payload.message || 'Генерация завершена'}\n`);
+      process.stdout.write(`NOTIFICATION_SHOWN:${doneMessage}\n`);
     }
   }
 });
@@ -236,6 +402,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
+  isQuitting = true;
+
   if (stopAutoUpdateTimer) {
     stopAutoUpdateTimer();
     stopAutoUpdateTimer = null;
