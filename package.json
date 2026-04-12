@@ -1,6 +1,6 @@
 {
   "name": "tk-generator",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Генератор технологических карт (ТК+МК) для изделий из натурального камня",
   "main": "src/index.js",
   "scripts": {
@@ -23,7 +23,9 @@
     "lint:fix": "eslint src tests --fix || npx --yes eslint@9.39.4 src tests --fix",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" || npx --yes prettier@3.8.2 --write \"src/**/*.js\" \"tests/**/*.js\"",
     "fonts:setup": "node scripts/setup-fonts.js",
-    "test:coverage": "npx --yes c8 --reporter=text --reporter=lcov --reporter=html npm test"
+    "test:coverage": "npx --yes c8 --reporter=text --reporter=lcov --reporter=html npm test",
+    "prepare": "husky || npx --yes husky@9.1.7",
+    "hooks:install": "husky install || npx --yes husky@9.1.7 install"
   },
   "keywords": [
     "технологическая карта",
@@ -49,5 +51,10 @@
   },
   "bin": {
     "tk-generator": "src/index.js"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7"
   }
 }
