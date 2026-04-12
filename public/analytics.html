@@ -4,32 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Аналитика себестоимости</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="/vendor/chart.min.js"></script>
+  <script src="/vendor/html2canvas.min.js"></script>
+  <script src="/vendor/jspdf.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fb; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .filters { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 8px; background: #fff; border-radius: 8px; padding: 12px; }
-    .card-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .card, .chart-card { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    :root {
+      --bg-app: #F0F2F5;
+      --bg-card: #FFFFFF;
+      --text-primary: #1A1A2E;
+      --text-secondary: #6B7280;
+      --accent: #1565C0;
+      --border: #E5E7EB;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-app: #0D1117;
+        --bg-card: #161B22;
+        --text-primary: #E6EDF3;
+        --text-secondary: #9CA3AF;
+        --border: #30363D;
+      }
+    }
+    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 20px; background: var(--bg-app); color: var(--text-primary); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; }
+    .topbar a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .filters { display: grid; grid-template-columns: repeat(5, minmax(140px, 1fr)); gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: var(--shadow); }
+    .card-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .card, .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: var(--shadow); }
     .charts { margin-top: 12px; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
-    .charts-bottom { margin-top: 10px; }
+    .charts-bottom { margin-top: 10px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
     .metric { font-size: 24px; font-weight: 700; margin-top: 4px; }
-    label { font-size: 12px; color: #555; }
-    input, select, button { width: 100%; box-sizing: border-box; padding: 8px; }
-    button { cursor: pointer; }
+    label { font-size: 12px; color: var(--text-secondary); }
+    input, select, button { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); }
+    button { cursor: pointer; background: var(--accent); color: #fff; border-color: transparent; }
     .actions { display: flex; gap: 8px; align-items: end; }
     @media (max-width: 980px) {
       .filters { grid-template-columns: repeat(2, 1fr); }
-      .card-grid, .charts { grid-template-columns: 1fr; }
+      .card-grid, .charts, .charts-bottom { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="topbar">
     <h1>Дашборд себестоимости</h1>
-    <a href="/index.html">← К генератору</a>
+    <a href="/index.html#analytics">← Вернуться</a>
   </div>
 
   <div id="dashboardRoot">
@@ -41,6 +60,7 @@
       <div class="actions">
         <button id="applyBtn">Применить</button>
         <button id="pdfBtn">Экспорт PDF</button>
+        <button id="csvBtn">Экспорт CSV</button>
       </div>
     </div>
 
@@ -48,6 +68,7 @@
       <div class="card"><div>Генераций</div><div id="totalGenerations" class="metric">0</div></div>
       <div class="card"><div>Изделий</div><div id="totalProducts" class="metric">0</div></div>
       <div class="card"><div>Средняя себестоимость</div><div id="avgCost" class="metric">0 ₽</div></div>
+      <div class="card"><div>Топ материал</div><div id="topMaterial" class="metric" style="font-size:18px;">—</div></div>
     </div>
 
     <div class="charts">
@@ -70,6 +91,10 @@
         <h3>Распределение по фактурам</h3>
         <canvas id="texturesChart" height="110"></canvas>
       </div>
+      <div class="chart-card">
+        <h3>Стоимость по операциям</h3>
+        <canvas id="operationsChart" height="110"></canvas>
+      </div>
     </div>
   </div>
 
@@ -77,10 +102,9 @@
     const token = localStorage.getItem('tkg_access_token') || '';
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
     const fmtMoney = (value) => `${new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(Number(value || 0))} ₽`;
+    let dashboardSummary = null;
 
-    let trendChart;
-    let materialsChart;
-    let texturesChart;
+    let trendChart; let materialsChart; let texturesChart; let operationsChart;
 
     function buildQuery() {
       const query = new URLSearchParams();
@@ -107,53 +131,70 @@
     function drawOrUpdateChart(chart, ctx, type, data, options) {
       if (chart) {
         chart.data = data;
+        chart.config.options = options || {};
         chart.update();
         return chart;
       }
       return new Chart(ctx, { type, data, options });
     }
 
+    function downloadCsv(summary, query) {
+      const rows = [
+        ['metric', 'value'],
+        ['total_generations', summary.total_generations || 0],
+        ['total_products', summary.total_products || 0],
+        ['average_cost', Number(summary.average_cost || 0).toFixed(2)],
+        ['total_cost', Number(summary.total_cost || 0).toFixed(2)],
+        ['top_material', summary.top_material || '']
+      ];
+      rows.push(['filters', query.toString()]);
+      const csv = rows.map((line) => line.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `analytics-summary-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     async function refreshDashboard() {
       const query = buildQuery();
-      const [summary, trends, materials, textures] = await Promise.all([
+      const [summary, trends, materials, textures, operations] = await Promise.all([
         apiGet('/api/analytics/summary', query),
         apiGet('/api/analytics/cost-trends', query),
         apiGet('/api/analytics/materials', query),
-        apiGet('/api/analytics/textures', query)
+        apiGet('/api/analytics/textures', query),
+        apiGet('/api/analytics/operations', query)
       ]);
+      dashboardSummary = summary;
+      const topMaterial = (materials.items || [])[0];
+      summary.top_material = topMaterial ? topMaterial.material : '—';
 
       document.getElementById('totalGenerations').textContent = summary.total_generations || 0;
       document.getElementById('totalProducts').textContent = summary.total_products || 0;
       document.getElementById('avgCost').textContent = fmtMoney(summary.average_cost || 0);
+      document.getElementById('topMaterial').textContent = summary.top_material || '—';
 
       trendChart = drawOrUpdateChart(trendChart, document.getElementById('trendChart'), 'line', {
         labels: (trends.items || []).map((x) => x.bucket),
-        datasets: [{
-          label: 'Средняя себестоимость',
-          data: (trends.items || []).map((x) => x.average_cost),
-          borderColor: '#1f77b4',
-          backgroundColor: 'rgba(31,119,180,.15)',
-          tension: 0.25,
-          fill: true
-        }]
+        datasets: [{ label: 'Средняя себестоимость', data: (trends.items || []).map((x) => x.average_cost), borderColor: '#1f77b4', backgroundColor: 'rgba(31,119,180,.15)', tension: 0.25, fill: true }]
       }, { responsive: true, maintainAspectRatio: false });
 
       materialsChart = drawOrUpdateChart(materialsChart, document.getElementById('materialsChart'), 'pie', {
         labels: (materials.items || []).map((x) => x.material),
-        datasets: [{
-          label: 'Материалы',
-          data: (materials.items || []).map((x) => x.total_cost)
-        }]
+        datasets: [{ label: 'Материалы', data: (materials.items || []).map((x) => x.total_cost) }]
       }, { responsive: true, maintainAspectRatio: false });
 
       texturesChart = drawOrUpdateChart(texturesChart, document.getElementById('texturesChart'), 'bar', {
         labels: (textures.items || []).map((x) => x.texture),
-        datasets: [{
-          label: 'Количество изделий',
-          data: (textures.items || []).map((x) => x.products),
-          backgroundColor: '#6a5acd'
-        }]
+        datasets: [{ label: 'Количество изделий', data: (textures.items || []).map((x) => x.products), backgroundColor: '#6a5acd' }]
       }, { responsive: true, maintainAspectRatio: false });
+
+      operationsChart = drawOrUpdateChart(operationsChart, document.getElementById('operationsChart'), 'bar', {
+        labels: (operations.items || []).map((x) => x.operation),
+        datasets: [{ label: 'Стоимость', data: (operations.items || []).map((x) => x.total_cost), backgroundColor: '#2E7D32' }]
+      }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y' });
     }
 
     async function exportPdf() {
@@ -171,6 +212,10 @@
     document.getElementById('applyBtn').addEventListener('click', () => refreshDashboard().catch((e) => alert(e.message)));
     document.getElementById('groupBy').addEventListener('change', () => refreshDashboard().catch((e) => alert(e.message)));
     document.getElementById('pdfBtn').addEventListener('click', () => exportPdf().catch((e) => alert(e.message)));
+    document.getElementById('csvBtn').addEventListener('click', () => {
+      if (!dashboardSummary) return;
+      downloadCsv(dashboardSummary, buildQuery());
+    });
 
     refreshDashboard().catch((e) => alert(e.message));
   </script>
