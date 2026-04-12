@@ -146,6 +146,13 @@ export interface Config {
     enabled: boolean;
     checkInterval: string;
   };
+  webhooks: Array<{
+    id?: number;
+    url: string;
+    events: string[];
+    secret?: string | null;
+    enabled?: boolean;
+  }>;
 }
 
 export interface Plugin {

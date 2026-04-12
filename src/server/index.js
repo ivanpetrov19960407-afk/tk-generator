@@ -18,6 +18,7 @@ const { loadConfig, getConfig } = require('../config');
 const { createRepository } = require('../db/repository');
 const { createAuth } = require('./auth');
 const { buildGenerationCsv } = require('../summary-report');
+const { sendWebhook, WEBHOOK_EVENTS } = require('../webhooks');
 
 const MAX_JSON_BODY_BYTES = 5 * 1024 * 1024;
 const MAX_EXCEL_UPLOAD_BYTES = 10 * 1024 * 1024;
@@ -434,6 +435,47 @@ function createSwaggerHtml() {
 </html>`;
 }
 
+function sanitizeWebhookPayload(body) {
+  const raw = body || {};
+  return {
+    url: String(raw.url || '').trim(),
+    events: Array.isArray(raw.events) ? raw.events.map((item) => String(item)) : [],
+    secret: raw.secret == null ? null : String(raw.secret),
+    enabled: raw.enabled == null ? true : Boolean(raw.enabled)
+  };
+}
+
+function validateWebhookPayload(payload, config) {
+  if (!payload.url) return 'url is required';
+  let parsed;
+  try {
+    parsed = new URL(payload.url);
+  } catch (_error) {
+    return 'url must be valid URL';
+  }
+  if (process.env.NODE_ENV === 'production' && parsed.protocol !== 'https:') {
+    return 'webhook url must use https in production';
+  }
+  if (!Array.isArray(payload.events)) return 'events must be array';
+  const hasInvalidEvent = payload.events.some((event) => !WEBHOOK_EVENTS.has(event));
+  if (hasInvalidEvent) return `events contains unsupported values; allowed: ${[...WEBHOOK_EVENTS].join(', ')}`;
+  if (payload.secret != null && typeof payload.secret !== 'string') return 'secret must be string';
+  if (payload.enabled != null && typeof payload.enabled !== 'boolean') return 'enabled must be boolean';
+  if (config && config.webhooks && process.env.NODE_ENV === 'production' && parsed.protocol !== 'https:') {
+    return 'webhook url must use https in production';
+  }
+  return null;
+}
+
+function getRuntimeWebhookConfig(repository) {
+  const cfg = getConfig();
+  const persistentWebhooks = repository.listWebhooks();
+  return {
+    ...cfg,
+    webhooks: [...(Array.isArray(cfg.webhooks) ? cfg.webhooks : []), ...persistentWebhooks]
+  };
+}
+
 async function createHandler(req, res, deps = {}) {
   const url = new URL(req.url, 'http://localhost');
   const repository = deps.repository || createRepository();
@@ -467,7 +509,9 @@ async function createHandler(req, res, deps = {}) {
   }
 
   if (req.method === 'GET' && url.pathname === '/api/health') {
-    return sendJson(res, 200, { status: 'ok', service: 'tk-generator-api' });
+    const payload = { status: 'ok', service: 'tk-generator-api' };
+    await sendWebhook('health.check', payload, getRuntimeWebhookConfig(repository));
+    return sendJson(res, 200, payload);
   }
 
   if (req.method === 'POST' && url.pathname === '/api/validate') {
@@ -595,6 +639,37 @@ async function createHandler(req, res, deps = {}) {
           details: { generationId, method: req.method, path: req.url },
           ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
         });
+        await sendWebhook('batch.complete', {
+          generationId,
+          source: 'api',
+          total: normalizedProducts.length,
+          success: normalizedProducts.length - failed,
+          failed,
+          durationMs: Date.now() - startedAt
+        }, getRuntimeWebhookConfig(repository));
+        for (let index = 0; index < normalizedProducts.length; index++) {
+          const product = normalizedProducts[index];
+          const tkResult = tkResults[index];
+          if (tkResult && tkResult.success) {
+            await sendWebhook('generation.complete', {
+              generationId,
+              source: 'api',
+              tk_number: product.tk_number,
+              product_name: product.name || null,
+              status: 'success',
+              files: tkResult.files || []
+            }, getRuntimeWebhookConfig(repository));
+          } else {
+            await sendWebhook('generation.error', {
+              generationId,
+              source: 'api',
+              tk_number: product.tk_number,
+              product_name: product.name || null,
+              status: 'error',
+              error: 'generation_failed'
+            }, getRuntimeWebhookConfig(repository));
+          }
+        }
 
         const zip = new JSZip();
         for (const file of fs.readdirSync(tmpDir)) {
@@ -630,6 +705,47 @@ async function createHandler(req, res, deps = {}) {
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
     return sendJson(res, 200, data);
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/webhooks') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    const items = repository.listWebhooks().map((item) => ({
+      id: item.id,
+      url: item.url,
+      events: item.events,
+      enabled: item.enabled,
+      created_at: item.created_at,
+      updated_at: item.updated_at
+    }));
+    return sendJson(res, 200, { items });
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/webhooks') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+    const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
+    const payload = sanitizeWebhookPayload(body);
+    const validationError = validateWebhookPayload(payload, getConfig());
+    if (validationError) return sendJson(res, 400, { error: validationError });
+    const created = repository.createWebhook(payload);
+    return sendJson(res, 201, {
+      webhook: {
+        id: created.id,
+        url: created.url,
+        events: created.events,
+        enabled: created.enabled,
+        created_at: created.created_at,
+        updated_at: created.updated_at
+      }
+    });
+  }
+
+  if (req.method === 'DELETE' && /^\/api\/webhooks\/\d+$/.test(url.pathname)) {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    const id = Number(url.pathname.split('/').pop());
+    const deleted = repository.deleteWebhook(id);
+    if (!deleted) return sendJson(res, 404, { error: 'Not Found' });
+    return sendJson(res, 200, { ok: true });
   }
 
   if (req.method === 'GET' && /^\/api\/history\/\d+$/.test(url.pathname)) {

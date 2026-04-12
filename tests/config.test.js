@@ -70,5 +70,41 @@ function createTmpConfig(files) {
   }
 
   assert.ok(failed, 'Ожидалась ошибка валидации конфига');
+
+  const prodDir = createTmpConfig({
+    'default.json': {
+      company: {},
+      rkm: {
+        logisticsDefaults: {
+          distance_km: 100,
+          tariff_rub_km: 10,
+          trips: 1,
+          loading: 0,
+          unloading: 0,
+          insurance_pct: 0
+        },
+        skipTransportTkNumbers: [],
+        specialMaterialRules: {}
+      },
+      webhooks: [
+        {
+          url: 'http://example.com/hook',
+          events: ['batch.complete'],
+          enabled: true
+        }
+      ]
+    }
+  });
+  const prevEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  let prodFailed = false;
+  try {
+    loadConfig({ configDir: prodDir });
+  } catch (err) {
+    prodFailed = /https/.test(err.message);
+  } finally {
+    process.env.NODE_ENV = prevEnv;
+  }
+  assert.ok(prodFailed, 'Ожидалась ошибка non-https webhook в production');
   console.log('config.test.js passed');
 })();

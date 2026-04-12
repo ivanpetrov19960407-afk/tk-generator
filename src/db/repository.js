@@ -68,6 +68,26 @@ function createRepository(dbOrOptions) {
     )
   `);
   const updateUserLastLoginStmt = db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?');
+  const listWebhooksStmt = db.prepare('SELECT id, url, events, secret, enabled, created_at, updated_at FROM webhooks ORDER BY id ASC');
+  const getWebhookByIdStmt = db.prepare('SELECT id, url, events, secret, enabled, created_at, updated_at FROM webhooks WHERE id = ?');
+  const insertWebhookStmt = db.prepare(`
+    INSERT INTO webhooks (
+      url,
+      events,
+      secret,
+      enabled,
+      created_at,
+      updated_at
+    ) VALUES (
+      @url,
+      @events,
+      @secret,
+      @enabled,
+      @created_at,
+      @updated_at
+    )
+  `);
+  const deleteWebhookStmt = db.prepare('DELETE FROM webhooks WHERE id = ?');
 
   function saveGeneration(payload) {
     const row = {
@@ -318,6 +338,44 @@ function createRepository(dbOrOptions) {
     return getUserById(Number(res.lastInsertRowid));
   }
 
+  function normalizeWebhook(row) {
+    if (!row) return null;
+    return {
+      id: Number(row.id),
+      url: row.url,
+      events: row.events ? JSON.parse(row.events) : [],
+      secret: row.secret || null,
+      enabled: Boolean(row.enabled),
+      created_at: row.created_at,
+      updated_at: row.updated_at
+    };
+  }
+
+  function listWebhooks() {
+    return listWebhooksStmt.all().map(normalizeWebhook);
+  }
+
+  function createWebhook(payload) {
+    const nowIso = new Date().toISOString();
+    const row = {
+      url: String(payload.url || '').trim(),
+      events: JSON.stringify(Array.isArray(payload.events) ? payload.events : []),
+      secret: payload.secret ? String(payload.secret) : null,
+      enabled: payload.enabled == null ? 1 : Number(payload.enabled ? 1 : 0),
+      created_at: nowIso,
+      updated_at: nowIso
+    };
+    const res = insertWebhookStmt.run(row);
+    return normalizeWebhook(getWebhookByIdStmt.get(Number(res.lastInsertRowid)));
+  }
+
+  function deleteWebhook(id) {
+    const row = normalizeWebhook(getWebhookByIdStmt.get(Number(id)));
+    if (!row) return null;
+    deleteWebhookStmt.run(Number(id));
+    return row;
+  }
+
   return {
     db,
     saveGeneration,
@@ -334,7 +392,10 @@ function createRepository(dbOrOptions) {
     getUserByUsername,
     getUserById,
     createUser,
-    touchUserLogin
+    touchUserLogin,
+    listWebhooks,
+    createWebhook,
+    deleteWebhook
   };
 }
 
