@@ -1,0 +1,7 @@
+{
+  "name": "@commitlint/cli",
+  "version": "19.8.1",
+  "bin": {
+    "commitlint": "bin/commitlint.js"
+  }
+}

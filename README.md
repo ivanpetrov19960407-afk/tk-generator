@@ -1,5 +1,8 @@
 # Генератор ТК+МК для изделий из натурального камня
 
+![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-blue)
+![License ISC](https://img.shields.io/badge/license-ISC-green)
+![CI GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-success)
 ![Coverage >=60%](https://img.shields.io/badge/coverage-%E2%89%A560%25-brightgreen)
 
 Параметрический генератор технологических карт (ТК) и маршрутных карт (МК) для производства изделий из натурального камня (мрамор, гранит и др.).

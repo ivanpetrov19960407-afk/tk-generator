@@ -4,14 +4,14 @@
 
 ## Требования к окружению
 
-- Node.js 18 LTS или 20 LTS (рекомендуется).
+- Node.js 18+ (рекомендуется LTS).
 - npm 9+.
-- Linux/macOS/WSL (Windows без WSL не тестируется в CI).
 
 ## Локальный запуск
 
 ```bash
 npm ci
+npm run hooks:install
 npm test
 npm run smoke
 ```
@@ -24,47 +24,27 @@ tk-generator --input examples/batch_small.json --output ./output
 npx tk-generator --input examples/batch_small.json --output ./output
 ```
 
+## Conventional Commits
+
+В проекте используется `commitlint` с `@commitlint/config-conventional` (локальные зависимости в `vendor/` для офлайн-совместимости CI).
+
+Примеры корректных сообщений коммитов:
+
+- `feat(api): add webhook retries`
+- `fix(dxf): handle boundary parsing`
+- `docs: update release process`
+
+Локально проверка выполняется через Husky hook `.husky/commit-msg`.
+
 ## Стиль изменений
 
 - Изменения должны быть атомарными и покрываться тестами.
 - Для новых входных форматов добавляйте пример в `examples/`.
 - Для изменений схем обновляйте `schemas/*.json` и тесты валидации.
 
-## JSDoc и постепенная типизация (без миграции на TS)
-
-- Ставьте `// @ts-check` в верхней части файла для модулей с активной доработкой или повышенным риском регрессий.
-- Для экспортируемых функций обязательно указывайте `@param` и `@returns`, включая optional/nullable поля.
-- Для типов проекта используйте `@typedef` через `import('../types').TypeName` и описывайте shape объектов явно (вложенные поля, union-подобные значения).
-- `any` допустим только локально (например, при чтении внешнего JSON), когда точный shape заранее неизвестен; старайтесь сразу сужать тип после валидации.
-
-Примеры из репозитория:
-
-```js
-/** @typedef {import('./types').Product} Product */
-/**
- * @param {Product} product
- * @returns {Product}
- */
-function applyDefaults(product) { /* ... */ }
-```
-
-```js
-/**
- * @param {unknown} v
- * @returns {v is number}
- */
-function isPositiveNumber(v) { /* ... */ }
-```
-
-## Коммиты и версии
-
-- Используем SemVer (`MAJOR.MINOR.PATCH`).
-- Патч-релиз (`x.y.z`) — исправления без ломающих изменений.
-- Для заметных изменений обновляйте `CHANGELOG.md`.
-
 ## Pull Request checklist
 
 - [ ] `npm ci` выполнен без ошибок
 - [ ] `npm test` зелёный
+- [ ] `npm run lint` зелёный
 - [ ] Обновлены docs (`README.md`, `CHANGELOG.md`) при необходимости
-- [ ] Изменения совместимы с заявленной матрицей совместимости
