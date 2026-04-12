@@ -14,15 +14,137 @@ const { calculateTotalCost } = require('../cost-calculator');
 const { parseDimensions, resolveExcelMapping, validateRequiredColumns } = require('../utils/excel-import');
 const { parseDxfFile } = require('../utils/dxf-import');
 const { normalizeUnit } = require('../utils/unit-normalizer');
-const { loadConfig, getConfig } = require('../config');
+const { loadConfig, getConfig, deepMerge } = require('../config');
 const { createRepository } = require('../db/repository');
 const { createAuth } = require('./auth');
 const { buildGenerationCsv } = require('../summary-report');
 const { sendWebhook, WEBHOOK_EVENTS } = require('../webhooks');
+const { resolveRuntimeDir } = require('../runtime-paths');
 
 const MAX_JSON_BODY_BYTES = 5 * 1024 * 1024;
 const MAX_EXCEL_UPLOAD_BYTES = 10 * 1024 * 1024;
 const GENERATION_TIMEOUT_MS = 30 * 1000;
+const CONFIG_DIR = resolveRuntimeDir('config');
+const LOCAL_CONFIG_PATH = path.join(CONFIG_DIR, 'local.json');
+let APP_VERSION = 'unknown';
+try {
+  const pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+  APP_VERSION = pkg.version || APP_VERSION;
+} catch (_error) {}
+
+function ensureSettingsDefaults(config) {
+  const normalized = JSON.parse(JSON.stringify(config || {}));
+  normalized.company = normalized.company || {};
+  normalized.generation = normalized.generation || {};
+  normalized.notifications = normalized.notifications || {};
+  normalized.interface = normalized.interface || {};
+  normalized.webhooks = Array.isArray(normalized.webhooks) ? normalized.webhooks : [];
+
+  normalized.company.inn = String(normalized.company.inn || normalized.company.INN || '');
+  normalized.company.director = String(normalized.company.director || '');
+  normalized.generation.defaultFormat = String(normalized.generation.defaultFormat || 'docx');
+  normalized.generation.outputDir = String(normalized.generation.outputDir || '');
+  normalized.generation.useWorkerThreads = Boolean(normalized.generation.useWorkerThreads);
+  normalized.generation.language = String(normalized.generation.language || normalized.locale || 'ru');
+  normalized.notifications.webhookUrl = String(
+    normalized.notifications.webhookUrl
+    || (normalized.webhooks[0] && normalized.webhooks[0].url)
+    || ''
+  );
+  normalized.notifications.telegramChatId = String(normalized.notifications.telegramChatId || '');
+  normalized.notifications.notifyOnComplete = Boolean(normalized.notifications.notifyOnComplete);
+  normalized.notifications.notifyOnError = Boolean(normalized.notifications.notifyOnError);
+  normalized.interface.theme = String(normalized.interface.theme || 'light');
+  normalized.interface.compactTables = Boolean(normalized.interface.compactTables);
+  normalized.interface.historyRows = [10, 20, 50].includes(Number(normalized.interface.historyRows))
+    ? Number(normalized.interface.historyRows)
+    : 20;
+  return normalized;
+}
+
+function getClientConfig() {
+  const config = ensureSettingsDefaults(getConfig());
+  return {
+    ...config,
+    version: APP_VERSION,
+    nodeEnv: process.env.NODE_ENV || 'development',
+    dev: (process.env.NODE_ENV || 'development') !== 'production'
+  };
+}
+
+function readLocalConfigFile() {
+  if (!fs.existsSync(LOCAL_CONFIG_PATH)) return {};
+  return JSON.parse(fs.readFileSync(LOCAL_CONFIG_PATH, 'utf8'));
+}
+
+function buildAllowedConfigPatch(payload = {}) {
+  const patch = {};
+  if (payload.company && typeof payload.company === 'object' && !Array.isArray(payload.company)) {
+    const companyPatch = {};
+    if ('name' in payload.company) companyPatch.name = String(payload.company.name || '').trim();
+    if ('address' in payload.company) companyPatch.address = String(payload.company.address || '').trim();
+    if ('inn' in payload.company) {
+      const inn = String(payload.company.inn || '').replace(/\D+/g, '');
+      companyPatch.inn = inn;
+      companyPatch.INN = inn;
+    }
+    if ('director' in payload.company) companyPatch.director = String(payload.company.director || '').trim();
+    if (Object.keys(companyPatch).length) patch.company = companyPatch;
+  }
+
+  if (payload.generation && typeof payload.generation === 'object' && !Array.isArray(payload.generation)) {
+    const generationPatch = {};
+    if ('defaultFormat' in payload.generation) {
+      const value = String(payload.generation.defaultFormat || '').toLowerCase();
+      if (['docx', 'pdf', 'xlsx'].includes(value)) generationPatch.defaultFormat = value;
+    }
+    if ('outputDir' in payload.generation) generationPatch.outputDir = String(payload.generation.outputDir || '');
+    if ('useWorkerThreads' in payload.generation) generationPatch.useWorkerThreads = Boolean(payload.generation.useWorkerThreads);
+    if ('language' in payload.generation) {
+      const language = String(payload.generation.language || '').toLowerCase();
+      generationPatch.language = language === 'en' ? 'en' : 'ru';
+    }
+    if (Object.keys(generationPatch).length) patch.generation = generationPatch;
+  }
+
+  if (payload.notifications && typeof payload.notifications === 'object' && !Array.isArray(payload.notifications)) {
+    const notificationsPatch = {};
+    if ('webhookUrl' in payload.notifications) {
+      const webhookUrl = String(payload.notifications.webhookUrl || '').trim();
+      notificationsPatch.webhookUrl = webhookUrl;
+      patch.webhooks = webhookUrl
+        ? [{ url: webhookUrl, events: ['generation.complete', 'generation.error'], enabled: true }]
+        : [];
+    }
+    if ('telegramChatId' in payload.notifications) notificationsPatch.telegramChatId = String(payload.notifications.telegramChatId || '').trim();
+    if ('notifyOnComplete' in payload.notifications) notificationsPatch.notifyOnComplete = Boolean(payload.notifications.notifyOnComplete);
+    if ('notifyOnError' in payload.notifications) notificationsPatch.notifyOnError = Boolean(payload.notifications.notifyOnError);
+    if (Object.keys(notificationsPatch).length) patch.notifications = notificationsPatch;
+  }
+
+  if (payload.interface && typeof payload.interface === 'object' && !Array.isArray(payload.interface)) {
+    const interfacePatch = {};
+    if ('theme' in payload.interface) interfacePatch.theme = String(payload.interface.theme || '').toLowerCase() === 'dark' ? 'dark' : 'light';
+    if ('compactTables' in payload.interface) interfacePatch.compactTables = Boolean(payload.interface.compactTables);
+    if ('historyRows' in payload.interface) {
+      const historyRows = Number(payload.interface.historyRows);
+      if ([10, 20, 50].includes(historyRows)) interfacePatch.historyRows = historyRows;
+    }
+    if (Object.keys(interfacePatch).length) patch.interface = interfacePatch;
+  }
+  return patch;
+}
+
+function saveConfigPatch(payload) {
+  const allowedPatch = buildAllowedConfigPatch(payload);
+  if (!Object.keys(allowedPatch).length) return getClientConfig();
+  fs.mkdirSync(CONFIG_DIR, { recursive: true });
+  const localConfig = readLocalConfigFile();
+  const mergedLocal = deepMerge(localConfig, allowedPatch);
+  fs.writeFileSync(LOCAL_CONFIG_PATH, `${JSON.stringify(mergedLocal, null, 2)}\n`, 'utf8');
+  loadConfig();
+  return getClientConfig();
+}
 
 function parseProductsPayload(body) {
   if (Array.isArray(body)) return body;
@@ -164,14 +286,7 @@ function parseAnalyticsFilters(url) {
 }
 
 function getPublicConfig(config) {
-  return {
-    company: { name: config.company && config.company.name },
-    auth: { enabled: Boolean(config.auth && config.auth.enabled) },
-    rkm: {
-      logisticsDefaults: config.rkm && config.rkm.logisticsDefaults,
-      skipTransportTkNumbers: config.rkm && config.rkm.skipTransportTkNumbers
-    }
-  };
+  return getClientConfig(config);
 }
 
 function createOpenApiSpec() {
@@ -517,6 +632,18 @@ async function createHandler(req, res, deps = {}) {
     return sendJson(res, 200, getPublicConfig(getConfig()));
   }
 
+  if (req.method === 'PATCH' && url.pathname === '/api/config') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    if (!enforceContentLengthLimit(MAX_JSON_BODY_BYTES, 'security.payload_too_large')) return;
+    try {
+      const body = JSON.parse((await readBody(req, MAX_JSON_BODY_BYTES)).toString('utf8') || '{}');
+      const config = saveConfigPatch(body);
+      return sendJson(res, 200, { ok: true, config });
+    } catch (error) {
+      return sendJson(res, 400, { error: error.message || 'Не удалось сохранить конфиг' });
+    }
+  }
+
   if (req.method === 'GET' && url.pathname === '/api/health') {
     const payload = { status: 'ok', service: 'tk-generator-api' };
     await sendWebhook('health.check', payload, getRuntimeWebhookConfig(repository));
@@ -771,6 +898,16 @@ async function createHandler(req, res, deps = {}) {
     const id = Number(url.pathname.split('/').pop());
     const deleted = repository.deleteWebhook(id);
     if (!deleted) return sendJson(res, 404, { error: 'Not Found' });
+    return sendJson(res, 200, { ok: true });
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/webhooks/test') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'admin'))) return;
+    const runtimeConfig = getRuntimeWebhookConfig(repository);
+    await sendWebhook('health.check', {
+      source: 'manual-test',
+      timestamp: new Date().toISOString()
+    }, runtimeConfig);
     return sendJson(res, 200, { ok: true });
   }
 
