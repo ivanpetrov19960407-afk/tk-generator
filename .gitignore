@@ -1,9 +1,16 @@
 node_modules/
+dist/
+dist-electron/
 output/*.docx
 output/*.pdf
 *.pdf
 .DS_Store
 data/Vizualizitsiia.pdf
+data/*.sqlite
+data/*.sqlite-*
 output/
+overrides/
+installed-smoke-output/
+assets/fonts/*.ttf
 
 config/local.json

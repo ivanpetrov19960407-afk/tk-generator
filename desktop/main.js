@@ -1,17 +1,34 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain, Menu, Tray, Notification, shell, nativeImage } = require('electron');
 
 app.commandLine.appendSwitch('no-sandbox');
 app.commandLine.appendSwitch('disable-gpu');
 
-const electronErrorLogPath = path.join(__dirname, 'electron-error.log');
+function getElectronErrorLogPath() {
+  try {
+    return path.join(app.getPath('userData'), 'electron-error.log');
+  } catch (_error) {
+    return path.join(os.tmpdir(), 'tk-generator-electron-error.log');
+  }
+}
+
 process.on('uncaughtException', (error) => {
   const timestamp = new Date().toISOString();
   const details = error && error.stack ? error.stack : String(error);
-  fs.appendFileSync(electronErrorLogPath, `[${timestamp}] ${details}\n`);
+  try {
+    const logPath = getElectronErrorLogPath();
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    fs.appendFileSync(logPath, `[${timestamp}] ${details}\n`);
+  } catch (_writeError) {}
+});
+
+process.on('unhandledRejection', (reason) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  process.emit('uncaughtException', error);
 });
 
 const { createApp } = require('../src/server');
@@ -30,7 +47,39 @@ let stopAutoUpdateTimer = null;
 let isQuitting = false;
 let trayHintShown = false;
 const isElectronE2E = process.env.TK_ELECTRON_E2E === '1';
+const smokeMarkerArg = process.argv.find((arg) => arg.startsWith('--tk-electron-smoke-marker='));
+const smokeMarkerPathFromArg = smokeMarkerArg ? smokeMarkerArg.slice('--tk-electron-smoke-marker='.length) : '';
+const smokeMarkerPathFromSwitch = app.commandLine.getSwitchValue('tk-electron-smoke-marker');
+const electronSmokeMarkerPath = process.env.TK_ELECTRON_SMOKE_MARKER || smokeMarkerPathFromArg || smokeMarkerPathFromSwitch || null;
+const isElectronSmoke = process.env.TK_ELECTRON_SMOKE === '1'
+  || process.argv.includes('--tk-electron-smoke')
+  || app.commandLine.hasSwitch('tk-electron-smoke')
+  || Boolean(electronSmokeMarkerPath);
 const appIconPath = path.join(__dirname, '../assets/icon.svg');
+let electronSmokeMarked = false;
+
+function writeElectronSmokeStatus(message) {
+  if (!isElectronSmoke) return;
+  process.stdout.write(`${message}\n`);
+}
+
+function configureWritableRuntimePaths() {
+  const userDataDir = app.getPath('userData');
+  process.env.TK_GENERATOR_DB_PATH = process.env.TK_GENERATOR_DB_PATH
+    || path.join(userDataDir, 'data', 'tk-generator.sqlite');
+  process.env.TKG_CONFIG_LOCAL_PATH = process.env.TKG_CONFIG_LOCAL_PATH
+    || path.join(userDataDir, 'config', 'local.json');
+}
+
+function markElectronSmokeReady() {
+  if (!isElectronSmoke || electronSmokeMarked) return;
+  electronSmokeMarked = true;
+  if (electronSmokeMarkerPath) {
+    fs.writeFileSync(electronSmokeMarkerPath, 'WINDOW_READY\n');
+  }
+  process.stdout.write('WINDOW_READY\n');
+  setTimeout(() => app.quit(), 1000);
+}
 
 function hideToTrayWithToast() {
   if (!win) return;
@@ -160,7 +209,7 @@ function rebuildTrayMenu() {
 }
 
 function ensureTray() {
-  if (isElectronE2E) return;
+  if (isElectronE2E || isElectronSmoke) return;
   if (tray || process.platform === 'darwin') return;
   const trayIcon = nativeImage.createFromPath(appIconPath);
   tray = new Tray(trayIcon);
@@ -190,9 +239,12 @@ function updateStatus(status, progress) {
 const SERVER_START_TIMEOUT_MS = 30000;
 
 async function startApiServer() {
+  writeElectronSmokeStatus('SMOKE_API_CREATE_START');
   const expressApp = createApp();
+  writeElectronSmokeStatus('SMOKE_API_CREATE_DONE');
 
   const serverPromise = new Promise((resolve, reject) => {
+    writeElectronSmokeStatus('SMOKE_API_LISTEN_START');
     const server = expressApp.listen(0, '127.0.0.1', () => resolve(server));
     server.on('error', reject);
   });
@@ -228,18 +280,30 @@ function createSplashWindow() {
 }
 
 async function createMainWindow() {
+  configureWritableRuntimePaths();
+  writeElectronSmokeStatus('SMOKE_RUNTIME_PATHS_READY');
   loadConfig();
+  writeElectronSmokeStatus('SMOKE_CONFIG_READY');
   createSplashWindow();
 
   try {
     await startApiServer();
+    writeElectronSmokeStatus(`SMOKE_API_READY:${apiPort}`);
   } catch (error) {
+    if (isElectronSmoke) {
+      const details = error && error.stack ? error.stack : String(error);
+      process.stderr.write(`${details}\n`);
+    }
     if (splash) {
       splash.close();
       splash = null;
     }
     dialog.showErrorBox('Ошибка запуска', error.message || 'Не удалось запустить встроенный сервер.');
-    app.quit();
+    if (isElectronSmoke) {
+      app.exit(1);
+    } else {
+      app.quit();
+    }
     return;
   }
 
@@ -267,7 +331,18 @@ async function createMainWindow() {
     hideToTrayWithToast();
   });
 
-  await win.loadURL(`http://127.0.0.1:${apiPort}/`);
+  try {
+    await win.loadURL(`http://127.0.0.1:${apiPort}/`);
+    writeElectronSmokeStatus('SMOKE_WINDOW_LOADED');
+  } catch (error) {
+    if (isElectronSmoke) {
+      const details = error && error.stack ? error.stack : String(error);
+      process.stderr.write(`${details}\n`);
+      app.exit(1);
+      return;
+    }
+    throw error;
+  }
 
   if (splash) {
     splash.close();
@@ -280,12 +355,7 @@ async function createMainWindow() {
     win.webContents.openDevTools();
   }
 
-  if (process.env.TK_ELECTRON_SMOKE === '1') {
-    win.webContents.once('did-finish-load', () => {
-      process.stdout.write('WINDOW_READY\n');
-      setTimeout(() => app.quit(), 200);
-    });
-  }
+  markElectronSmokeReady();
 
   win.on('closed', () => {
     win = null;
@@ -294,7 +364,7 @@ async function createMainWindow() {
   ensureTray();
   createMenu();
 
-  if (!stopAutoUpdateTimer && !isElectronE2E) {
+  if (!stopAutoUpdateTimer && !isElectronE2E && !isElectronSmoke) {
     stopAutoUpdateTimer = setupAutoUpdates({
       app,
       window: win,

@@ -283,17 +283,20 @@ function validateConfig(config) {
 }
 
 /**
- * @param {{ configDir?: string; configPath?: string; env?: NodeJS.ProcessEnv }} [options]
+ * @param {{ configDir?: string; defaultConfigDir?: string; localConfigPath?: string; configPath?: string; env?: NodeJS.ProcessEnv }} [options]
  * @returns {Config}
  */
 function loadConfig(options = {}) {
-  const configDir = options.configDir ? path.resolve(options.configDir) : DEFAULT_CONFIG_DIR;
+  const env = options.env || process.env;
+  const configDir = path.resolve(options.configDir || env.TKG_CONFIG_DIR || DEFAULT_CONFIG_DIR);
+  const defaultConfigDir = path.resolve(options.defaultConfigDir || env.TKG_CONFIG_DEFAULT_DIR || configDir);
+  const localConfigPath = path.resolve(options.localConfigPath || env.TKG_CONFIG_LOCAL_PATH || path.join(configDir, 'local.json'));
   const configPath = options.configPath ? path.resolve(options.configPath) : null;
 
   let merged = deepClone(DEFAULT_CONFIG);
 
-  const defaultFile = path.join(configDir, 'default.json');
-  const localFile = path.join(configDir, 'local.json');
+  const defaultFile = path.join(defaultConfigDir, 'default.json');
+  const localFile = localConfigPath;
 
   merged = deepMerge(merged, readConfigFile(defaultFile));
   merged = deepMerge(merged, readConfigFile(localFile));
@@ -305,7 +308,7 @@ function loadConfig(options = {}) {
     merged = deepMerge(merged, readConfigFile(configPath));
   }
 
-  merged = applyEnvOverrides(merged, options.env || process.env);
+  merged = applyEnvOverrides(merged, env);
   validateConfig(merged);
   i18n.setLocale(merged.locale || 'ru');
   currentConfig = merged;

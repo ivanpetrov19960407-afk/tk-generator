@@ -1,6 +1,7 @@
 {
   "appId": "com.tk.generator.desktop",
   "productName": "TK Generator",
+  "electronVersion": "35.7.5",
   "directories": {
     "output": "dist-electron"
   },
@@ -8,9 +9,12 @@
     "desktop/**/*",
     "src/**/*",
     "public/**/*",
+    "assets/**/*",
     "data/**/*",
     "templates/**/*",
     "config/**/*",
+    "schemas/**/*",
+    "plugins/**/*",
     "vendor/**/*",
     "package.json"
   ],
@@ -38,6 +42,5 @@
       "owner": "ivanpetrov19960407-afk",
       "repo": "tk-generator"
     }
-  ],
-  "icon": "../assets/icon.svg"
+  ]
 }

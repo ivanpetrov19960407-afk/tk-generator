@@ -676,18 +676,24 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     process.exitCode = 0;
   }
 
-  const repository = createRepository();
-  const generationId = repository.saveGeneration({
-    timestamp: new Date().toISOString(),
-    input_file: inputPath,
-    products_count: effectiveProducts.length,
-    success_count: successCount,
-    error_count: failedCount,
-    duration_ms: Math.round(nowMs() - runStartedAt),
-    output_dir: outputDir
-  });
+  const repository = createGenerationRepository();
+  let generationId = null;
+
+  if (repository) {
+    generationId = repository.saveGeneration({
+      timestamp: new Date().toISOString(),
+      input_file: inputPath,
+      products_count: effectiveProducts.length,
+      success_count: successCount,
+      error_count: failedCount,
+      duration_ms: Math.round(nowMs() - runStartedAt),
+      output_dir: outputDir
+    });
+  }
 
   for (let i = 0; i < effectiveProducts.length; i++) {
+    if (!repository) break;
+
     const product = effectiveProducts[i];
     const tkResult = results[i];
     const messages = errorByPosition.get(product.tk_number) || [];
@@ -703,12 +709,14 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
     });
   }
 
-  repository.saveAuditLog({
-    action: 'cli.generate',
-    user: process.env.USER || process.env.USERNAME || 'cli',
-    details: { generationId, inputPath, outputDir, watchMode },
-    ip: 'local'
-  });
+  if (repository) {
+    repository.saveAuditLog({
+      action: 'cli.generate',
+      user: process.env.USER || process.env.USERNAME || 'cli',
+      details: { generationId, inputPath, outputDir, watchMode },
+      ip: 'local'
+    });
+  }
 
   const baseConfig = getConfig();
   const runtimeWebhooks = Array.isArray(baseConfig.webhooks) ? baseConfig.webhooks.slice() : [];
@@ -756,6 +764,16 @@ async function runGenerationCycle({ inputPath, outputDir, watchMode = false }) {
       status: 'success',
       files: tkResult && Array.isArray(tkResult.files) ? tkResult.files.map((item) => ({ format: item.format, filename: item.filename })) : []
     }, webhookConfig);
+  }
+}
+
+function createGenerationRepository() {
+  try {
+    return createRepository();
+  } catch (error) {
+    if (!isStandaloneRuntime()) throw error;
+    logger.warn({ error: error.message }, 'Generation history is unavailable in standalone; continuing without SQLite history.');
+    return null;
   }
 }
 
