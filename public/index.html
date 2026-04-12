@@ -3,84 +3,222 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TK Generator Web</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
-    textarea { width: 100%; min-height: 240px; font-family: monospace; }
-    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
-    .error { color: #b00020; background: #fdecef; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
-    .warning { color: #7a5a00; background: #fff7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
-    .ok { color: #0f5132; background: #d1e7dd; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
-    .drop-zone { border: 2px dashed #999; border-radius: 8px; padding: 14px; margin-top: 12px; text-align: center; }
-    .drop-zone.active { border-color: #1976d2; background: #eef6ff; }
-    .auth-box { border: 1px solid #d0d7de; border-radius: 8px; padding: 12px; margin-bottom: 14px; max-width: 360px; }
-    .auth-box input { width: 100%; box-sizing: border-box; margin: 6px 0; padding: 8px; }
-    .muted { color: #666; font-size: 12px; }
-  </style>
+  <title>TK Generator v2.0</title>
+  <link rel="stylesheet" href="/styles/main.css" />
 </head>
 <body>
-  <h1>TK Generator — Web-интерфейс</h1>
-  <p><a href="/analytics.html">Открыть дашборд аналитики себестоимости</a></p>
-  <div id="authSection" class="auth-box" style="display:none">
-    <h3>Вход</h3>
-    <input id="loginUsername" placeholder="Логин" autocomplete="username" />
-    <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password" />
-    <div class="controls">
-      <button id="loginBtn">Войти</button>
-      <button id="logoutBtn" style="display:none">Выйти</button>
-    </div>
-    <div id="authStatus" class="muted"></div>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar__logo">⚙ TK Generator v2.0</div>
+      <ul class="nav-list">
+        <li><button class="nav-btn active" data-section="generation">📄 Генерация</button></li>
+        <li><button class="nav-btn" data-section="history">🗄 История</button></li>
+        <li><button class="nav-btn" data-section="analytics">📊 Аналитика</button></li>
+        <li><button class="nav-btn" data-section="settings">⚙ Настройки</button></li>
+      </ul>
+      <div id="serverStatus" class="sidebar__status">🟡 Проверка сервера…</div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <h1 id="pageTitle" class="page-title">Генерация</h1>
+        <div class="header-actions">
+          <button id="themeToggle" class="icon-btn" title="Сменить тему">☀</button>
+          <div id="positionCounter" class="badge">Позиций: 0</div>
+        </div>
+      </header>
+
+      <section id="section-generation" class="section active">
+        <div class="card">
+          <h3>Загрузка данных</h3>
+          <input id="excelInput" type="file" accept=".xlsx,.xls,.json" hidden />
+          <div id="dropZone" class="drop-zone">
+            <div style="font-size:34px">📂</div>
+            <div>Перетащите Excel/JSON или нажмите</div>
+            <div class="muted">Поддерживается .xlsx, .xls, .json</div>
+          </div>
+          <div class="controls-row">
+            <button id="openFileBtn" class="btn" style="display:none;">Открыть файл</button>
+            <button id="selectOutputBtn" class="btn" style="display:none;">Выбрать папку вывода</button>
+            <button id="openOutputFolderBtn" class="btn" style="display:none;">Открыть папку</button>
+          </div>
+          <div id="fileInfo" class="muted" style="margin-top:10px;">Файл не загружен</div>
+
+          <div class="collapsible" id="jsonEditorCard">
+            <button id="toggleJsonBtn" class="btn" style="width:100%; border-radius:0;">✏ Редактировать JSON</button>
+            <div class="collapsible__body">
+              <textarea id="jsonInput" placeholder='[{"name":"...","dimensions":{"length":700,"width":700,"thickness":30},"material":{"type":"мрамор","name":"..."},"texture":"лощение"}]'></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div id="previewCard" class="card" style="display:none;">
+          <h3>Превью позиций</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Название</th>
+                  <th>Материал</th>
+                  <th>Размеры (Д×Ш×Т)</th>
+                  <th>Фактура</th>
+                </tr>
+              </thead>
+              <tbody id="previewBody"></tbody>
+            </table>
+          </div>
+          <div class="controls-row">
+            <button id="showAllBtn" class="btn" style="display:none;"></button>
+            <button id="clearDataBtn" class="btn">Очистить</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Действия</h3>
+          <div class="actions-row">
+            <button id="validateBtn" class="btn btn-outline btn-large">✅ Валидировать</button>
+            <button id="generateBtn" class="btn btn-primary btn-large">⚡ Генерировать</button>
+          </div>
+
+          <div id="progressWrap" class="progress">
+            <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+            <div class="progress-meta">
+              <span id="progressText">Ожидание</span>
+              <span id="progressPercent">0%</span>
+            </div>
+          </div>
+
+          <div class="controls-row" id="resultActions" style="display:none;">
+            <button id="openFolderResultBtn" class="btn" style="display:none;">📁 Открыть папку</button>
+            <button id="downloadZipBtn" class="btn">⬇ Скачать ZIP</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-history" class="section">
+        <div class="card">
+          <h3>История генераций</h3>
+          <div id="historyEmpty" class="empty-state" style="display:none;">Запусти сервер для просмотра истории</div>
+          <div id="historyTableWrap" class="table-wrap" style="display:none;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Позиций</th>
+                  <th>Материал</th>
+                  <th>Статус</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+            <div class="controls-row">
+              <button id="historyPrevBtn" class="btn">← Назад</button>
+              <span id="historyPageInfo" class="badge">Страница 1</span>
+              <button id="historyNextBtn" class="btn">Вперёд →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-analytics" class="section">
+        <div class="card">
+          <h3>Аналитика</h3>
+          <p class="muted">Аналитика открывается в отдельной странице.</p>
+          <a href="/analytics.html" class="btn" style="display:inline-block; text-decoration:none;">Открыть analytics.html</a>
+        </div>
+      </section>
+
+      <section id="section-settings" class="section">
+        <div class="card">
+          <h3>Настройки</h3>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <label>
+              Папка вывода
+              <div style="display:flex; gap:10px; margin-top:6px;">
+                <input id="outputDirInput" type="text" readonly style="flex:1; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary);" />
+                <button id="changeOutputDirBtn" class="btn" style="display:none;">Изменить</button>
+              </div>
+            </label>
+
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="themeSwitch" />
+              Тёмная тема
+            </label>
+
+            <button id="openDevtoolsBtn" class="btn" style="display:none;">Открыть DevTools</button>
+            <div id="versionInfo" class="muted">Версия программы: ...</div>
+          </div>
+
+          <div id="authSection" class="card" style="margin-top:14px; display:none;">
+            <h3>Вход</h3>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input id="loginUsername" placeholder="Логин" autocomplete="username" style="padding:10px; border:1px solid var(--border); border-radius:8px;" />
+              <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password" style="padding:10px; border:1px solid var(--border); border-radius:8px;" />
+              <div class="controls-row">
+                <button id="loginBtn" class="btn">Войти</button>
+                <button id="logoutBtn" class="btn" style="display:none;">Выйти</button>
+              </div>
+              <div id="authStatus" class="muted"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <p>Загрузите Excel/JSON или вставьте JSON (массив products).</p>
-
-  <input id="excelInput" type="file" accept=".xlsx,.xls,.json" />
-
-  <div class="controls" id="desktopControls" style="display:none">
-    <button id="openFileBtn">Открыть файл</button>
-    <button id="selectOutputBtn">Папка вывода</button>
-    <button id="openOutputFolderBtn">Открыть папку вывода</button>
-  </div>
-
-  <div id="dropZone" class="drop-zone">Перетащите сюда .xlsx/.xls/.json файл</div>
-
-  <h3>JSON products</h3>
-  <textarea id="jsonInput" placeholder='[{"name":"...","dimensions":{"length":700,"width":700,"thickness":30},"material":{"type":"мрамор","name":"..."},"texture":"лощение"}]'></textarea>
-
-  <div class="controls">
-    <button id="validateBtn">Валидировать</button>
-    <button id="generateBtn">Генерировать</button>
-  </div>
-
-  <div id="messages"></div>
+  <div id="toastContainer" class="toast-container"></div>
 
   <script>
+    const desktopApi = window.desktopAPI || null;
+
     const excelInput = document.getElementById('excelInput');
     const jsonInput = document.getElementById('jsonInput');
-    const messages = document.getElementById('messages');
     const dropZone = document.getElementById('dropZone');
     const authSection = document.getElementById('authSection');
     const authStatus = document.getElementById('authStatus');
+    const fileInfo = document.getElementById('fileInfo');
+    const previewCard = document.getElementById('previewCard');
+    const previewBody = document.getElementById('previewBody');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const positionCounter = document.getElementById('positionCounter');
+    const pageTitle = document.getElementById('pageTitle');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const progressPercent = document.getElementById('progressPercent');
 
-    const desktopApi = window.desktopAPI || null;
-    let outputDir = null;
+    const outputDirInput = document.getElementById('outputDirInput');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeSwitch = document.getElementById('themeSwitch');
+
+    let outputDir = localStorage.getItem('tkg_output_dir') || '';
     let authEnabled = false;
     let authToken = localStorage.getItem('tkg_access_token') || '';
+    let loadedProducts = [];
+    let lastGeneratedBlob = null;
 
-    if (desktopApi) {
-      document.getElementById('desktopControls').style.display = 'flex';
+    let historyItems = [];
+    let historyPage = 1;
+    const historyPageSize = 20;
+
+    outputDirInput.value = outputDir;
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.getElementById('toastContainer').appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
 
-    function renderMessage(text, type = 'ok') {
-      const div = document.createElement('div');
-      div.className = type;
-      div.textContent = text;
-      messages.appendChild(div);
+    function renderMessage(text, type = 'info') {
+      const mapping = { ok: 'success', error: 'error', warning: 'warning', info: 'info' };
+      showToast(text, mapping[type] || type);
     }
 
-    function clearMessages() {
-      messages.innerHTML = '';
-    }
+    function clearMessages() {}
 
     function authHeaders() {
       return authToken ? { Authorization: `Bearer ${authToken}` } : {};
@@ -109,15 +247,86 @@
       return JSON.parse(raw);
     }
 
+    function getProductMaterial(item = {}) {
+      return item.material?.name || item.material?.type || item.material || '-';
+    }
+
+    function getDimensions(item = {}) {
+      const d = item.dimensions || {};
+      return [d.length ?? '-', d.width ?? '-', d.thickness ?? '-'].join('×');
+    }
+
+    function updateCounters() {
+      positionCounter.textContent = `Позиций: ${loadedProducts.length}`;
+    }
+
+    function renderPreview(limit = 20) {
+      if (!loadedProducts.length) {
+        previewCard.style.display = 'none';
+        return;
+      }
+
+      previewCard.style.display = 'block';
+      const rows = loadedProducts.slice(0, limit);
+      previewBody.innerHTML = rows.map((item, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td>${item.name || '-'}</td>
+          <td>${getProductMaterial(item)}</td>
+          <td>${getDimensions(item)}</td>
+          <td>${item.texture || '-'}</td>
+        </tr>
+      `).join('');
+
+      if (loadedProducts.length > limit) {
+        showAllBtn.style.display = 'inline-block';
+        showAllBtn.textContent = `Показать все ${loadedProducts.length} позиций`;
+      } else {
+        showAllBtn.style.display = 'none';
+      }
+    }
+
+    function syncProductsFromTextarea(sourceName = 'JSON') {
+      try {
+        loadedProducts = readProductsFromTextarea();
+        updateCounters();
+        renderPreview();
+        fileInfo.textContent = `${sourceName}: ${loadedProducts.length} позиций`;
+      } catch (err) {
+        renderMessage(`Ошибка JSON: ${err.message}`, 'error');
+      }
+    }
+
+    function resetData() {
+      loadedProducts = [];
+      jsonInput.value = '';
+      excelInput.value = '';
+      fileInfo.textContent = 'Файл не загружен';
+      lastGeneratedBlob = null;
+      document.getElementById('resultActions').style.display = 'none';
+      updateCounters();
+      renderPreview();
+    }
+
+    function setProgress(status, percent = 0) {
+      progressWrap.classList.add('visible');
+      progressText.textContent = status;
+      const safe = Math.max(0, Math.min(100, Math.floor(percent || 0)));
+      progressPercent.textContent = `${safe}%`;
+      progressBar.style.width = `${safe}%`;
+    }
+
     async function processFile(file) {
       const name = String(file.name || '').toLowerCase();
       if (name.endsWith('.json')) {
         jsonInput.value = await file.text();
-        renderMessage('JSON загружен', 'ok');
+        syncProductsFromTextarea(file.name || 'JSON');
+        renderMessage('JSON загружен', 'success');
         return;
       }
 
       await uploadExcelAndFillJson(file);
+      syncProductsFromTextarea(file.name || 'Excel');
     }
 
     async function uploadExcelAndFillJson(file) {
@@ -130,52 +339,13 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка загрузки Excel');
       jsonInput.value = JSON.stringify(data.products, null, 2);
-      renderMessage(`Excel распознан: ${data.products.length} позиций`, 'ok');
+      renderMessage(`Excel распознан: ${data.products.length} позиций`, 'success');
     }
 
     async function loadPathFromDesktop(filePayload) {
       const file = new File([new Uint8Array(filePayload.data)], filePayload.fileName);
       await processFile(file);
     }
-
-    excelInput.addEventListener('change', async () => {
-      clearMessages();
-      const file = excelInput.files && excelInput.files[0];
-      if (!file) return;
-      try {
-        await processFile(file);
-      } catch (err) {
-        renderMessage(err.message, 'error');
-      }
-    });
-
-    document.getElementById('validateBtn').addEventListener('click', async () => {
-      clearMessages();
-      try {
-        const products = readProductsFromTextarea();
-        const res = await apiFetch('/api/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ products })
-        });
-        const report = await res.json();
-
-        if (!res.ok) {
-          renderMessage(report.error || 'Ошибка API валидации', 'error');
-          return;
-        }
-
-        if (report.valid) {
-          renderMessage('Валидация пройдена', 'ok');
-        } else {
-          report.errors.forEach((e) => renderMessage(e, 'error'));
-        }
-
-        report.warnings.forEach((w) => renderMessage(w, 'warning'));
-      } catch (err) {
-        renderMessage(`Ошибка: ${err.message}`, 'error');
-      }
-    });
 
     async function saveGeneratedBlob(blob) {
       if (!desktopApi) {
@@ -191,6 +361,8 @@
       if (!outputDir) {
         outputDir = await desktopApi.selectOutputDir();
         if (!outputDir) throw new Error('Папка вывода не выбрана');
+        localStorage.setItem('tkg_output_dir', outputDir);
+        outputDirInput.value = outputDir;
       }
 
       const arrayBuffer = await blob.arrayBuffer();
@@ -199,102 +371,100 @@
         suggestedName: 'tk-generator-result.zip'
       });
 
-      renderMessage(`ZIP сохранён: ${savedPath}`, 'ok');
+      renderMessage(`ZIP сохранён: ${savedPath}`, 'success');
+      return savedPath;
     }
 
-    document.getElementById('generateBtn').addEventListener('click', async () => {
-      clearMessages();
-      try {
-        desktopApi && desktopApi.emitGenerationProgress({ status: 'Генерация', progress: 10 });
-        const products = readProductsFromTextarea();
-        const res = await apiFetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ products })
-        });
+    function updateTheme(theme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('dark-theme', isDark);
+      themeToggle.textContent = isDark ? '🌙' : '☀';
+      themeSwitch.checked = isDark;
+      localStorage.setItem('tkg_theme', theme);
+    }
 
-        if (!res.ok) {
-          const err = await res.json();
-          if (err.report && Array.isArray(err.report.errors)) {
-            err.report.errors.forEach((e) => renderMessage(e, 'error'));
-          } else {
-            renderMessage(err.error || 'Ошибка генерации', 'error');
-          }
-          desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка генерации', progress: null });
-          return;
-        }
+    function setServerStatus(ok, text) {
+      document.getElementById('serverStatus').textContent = `${ok ? '🟢 Сервер готов' : '🔴 Ошибка'}${text ? ` — ${text}` : ''}`;
+    }
 
-        desktopApi && desktopApi.emitGenerationProgress({ status: 'Упаковка результата', progress: 80 });
-        const blob = await res.blob();
-        await saveGeneratedBlob(blob);
-        desktopApi && desktopApi.emitGenerationProgress({ status: 'Готово', progress: 100, completed: true });
-      } catch (err) {
-        renderMessage(`Ошибка: ${err.message}`, 'error');
-        desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка', progress: null });
+    function switchSection(sectionName) {
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.section === sectionName);
+      });
+
+      document.querySelectorAll('.section').forEach((section) => {
+        section.classList.toggle('active', section.id === `section-${sectionName}`);
+      });
+
+      const names = {
+        generation: 'Генерация',
+        history: 'История',
+        analytics: 'Аналитика',
+        settings: 'Настройки'
+      };
+      pageTitle.textContent = names[sectionName] || 'Раздел';
+
+      if (sectionName === 'history') {
+        loadHistory();
       }
-    });
+    }
 
-    dropZone.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      dropZone.classList.add('active');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('active');
-    });
-
-    dropZone.addEventListener('drop', async (event) => {
-      event.preventDefault();
-      dropZone.classList.remove('active');
-      clearMessages();
-
-      const file = event.dataTransfer.files && event.dataTransfer.files[0];
-      if (!file) return;
-
+    async function loadHistory() {
       try {
-        await processFile(file);
-      } catch (err) {
-        renderMessage(err.message, 'error');
+        const res = await apiFetch('/api/history');
+        if (!res.ok) throw new Error('history unavailable');
+        const data = await res.json();
+        historyItems = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+        historyPage = 1;
+        renderHistoryPage();
+      } catch (_err) {
+        document.getElementById('historyEmpty').style.display = 'block';
+        document.getElementById('historyTableWrap').style.display = 'none';
       }
-    });
+    }
 
-    if (desktopApi) {
-      desktopApi.onMenuAction(async (action) => {
-        if (action === 'open-file') {
-          const filePayload = await desktopApi.openFile();
-          if (!filePayload) return;
-          try {
-            await loadPathFromDesktop(filePayload);
-          } catch (err) {
-            renderMessage(err.message, 'error');
-          }
-        }
+    function renderHistoryPage() {
+      const empty = document.getElementById('historyEmpty');
+      const wrap = document.getElementById('historyTableWrap');
+      const body = document.getElementById('historyBody');
+      const pageInfo = document.getElementById('historyPageInfo');
+      const prevBtn = document.getElementById('historyPrevBtn');
+      const nextBtn = document.getElementById('historyNextBtn');
 
-        if (action === 'generate') {
-          document.getElementById('generateBtn').click();
-        }
+      if (!historyItems.length) {
+        empty.style.display = 'block';
+        empty.textContent = 'История пуста';
+        wrap.style.display = 'none';
+        return;
+      }
 
-        if (action === 'settings') {
-          outputDir = await desktopApi.selectOutputDir();
-          if (outputDir) renderMessage(`Папка вывода: ${outputDir}`, 'ok');
-        }
-      });
+      empty.style.display = 'none';
+      wrap.style.display = 'block';
 
-      document.getElementById('openFileBtn').addEventListener('click', async () => {
-        const filePayload = await desktopApi.openFile();
-        if (!filePayload) return;
-        await loadPathFromDesktop(filePayload);
-      });
+      const start = (historyPage - 1) * historyPageSize;
+      const end = start + historyPageSize;
+      const pageItems = historyItems.slice(start, end);
 
-      document.getElementById('selectOutputBtn').addEventListener('click', async () => {
-        outputDir = await desktopApi.selectOutputDir();
-        if (outputDir) renderMessage(`Папка вывода: ${outputDir}`, 'ok');
-      });
+      body.innerHTML = pageItems.map((item) => {
+        const date = new Date(item.createdAt || item.date || Date.now()).toLocaleString('ru-RU');
+        const material = item.material || item.materialType || '-';
+        const count = item.positions || item.count || 0;
+        const success = item.status === 'success' || item.success === true;
+        return `
+          <tr>
+            <td>${date}</td>
+            <td>${count}</td>
+            <td>${material}</td>
+            <td>${success ? '✅ Успех' : '❌ Ошибка'}</td>
+            <td><button class="btn" disabled>скачать</button> <button class="btn" disabled>удалить</button></td>
+          </tr>
+        `;
+      }).join('');
 
-      document.getElementById('openOutputFolderBtn').addEventListener('click', async () => {
-        const opened = await desktopApi.openOutputFolder();
-        if (!opened) renderMessage('Сначала выберите папку вывода', 'warning');
-      });
+      const totalPages = Math.max(1, Math.ceil(historyItems.length / historyPageSize));
+      pageInfo.textContent = `Страница ${historyPage} из ${totalPages}`;
+      prevBtn.disabled = historyPage <= 1;
+      nextBtn.disabled = historyPage >= totalPages;
     }
 
     async function initAuth() {
@@ -302,6 +472,12 @@
         const cfgRes = await fetch('/api/config');
         const cfg = await cfgRes.json();
         authEnabled = Boolean(cfg.auth && cfg.auth.enabled);
+
+        const devMode = Boolean(cfg.dev || cfg.nodeEnv === 'development');
+        document.getElementById('openDevtoolsBtn').style.display = devMode ? 'inline-block' : 'none';
+        document.getElementById('versionInfo').textContent = `Версия программы: ${cfg.version || 'неизвестно'}`;
+        setServerStatus(true, cfg.version ? `v${cfg.version}` : '');
+
         if (!authEnabled) return;
 
         authSection.style.display = 'block';
@@ -320,12 +496,183 @@
         const me = await meRes.json();
         setAuthState(me.user);
       } catch (err) {
+        document.getElementById('versionInfo').textContent = 'Версия программы: недоступна';
+        setServerStatus(false, 'нет соединения');
         renderMessage(`Ошибка инициализации auth: ${err.message}`, 'warning');
       }
     }
 
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => switchSection(btn.dataset.section));
+    });
+
+    // Theme
+    const preferredTheme = localStorage.getItem('tkg_theme') || 'light';
+    updateTheme(preferredTheme);
+    themeToggle.addEventListener('click', () => updateTheme(document.body.classList.contains('dark-theme') ? 'light' : 'dark'));
+    themeSwitch.addEventListener('change', () => updateTheme(themeSwitch.checked ? 'dark' : 'light'));
+
+    // JSON editor
+    document.getElementById('toggleJsonBtn').addEventListener('click', () => {
+      document.getElementById('jsonEditorCard').classList.toggle('open');
+    });
+
+    // File interactions
+    dropZone.addEventListener('click', () => excelInput.click());
+
+    excelInput.addEventListener('change', async () => {
+      const file = excelInput.files && excelInput.files[0];
+      if (!file) return;
+      try {
+        await processFile(file);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    dropZone.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      dropZone.classList.add('active');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('active');
+    });
+
+    dropZone.addEventListener('drop', async (event) => {
+      event.preventDefault();
+      dropZone.classList.remove('active');
+
+      const file = event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!file) return;
+
+      try {
+        await processFile(file);
+      } catch (err) {
+        renderMessage(err.message, 'error');
+      }
+    });
+
+    jsonInput.addEventListener('input', () => syncProductsFromTextarea('JSON'));
+
+    showAllBtn.addEventListener('click', () => renderPreview(loadedProducts.length));
+    document.getElementById('clearDataBtn').addEventListener('click', () => {
+      resetData();
+      renderMessage('Данные очищены', 'info');
+    });
+
+    // Validation/generation
+    document.getElementById('validateBtn').addEventListener('click', async () => {
+      try {
+        const products = readProductsFromTextarea();
+        const res = await apiFetch('/api/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+        const report = await res.json();
+
+        if (!res.ok) {
+          renderMessage(report.error || 'Ошибка API валидации', 'error');
+          return;
+        }
+
+        if (report.valid) {
+          renderMessage('Валидация пройдена', 'success');
+        } else {
+          (report.errors || []).forEach((e) => renderMessage(e, 'error'));
+        }
+
+        (report.warnings || []).forEach((w) => renderMessage(w, 'warning'));
+      } catch (err) {
+        renderMessage(`Ошибка: ${err.message}`, 'error');
+      }
+    });
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      try {
+        setProgress('Генерация', 10);
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Генерация', progress: 10 });
+
+        const products = readProductsFromTextarea();
+        const res = await apiFetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          if (err.report && Array.isArray(err.report.errors)) {
+            err.report.errors.forEach((e) => renderMessage(e, 'error'));
+          } else {
+            renderMessage(err.error || 'Ошибка генерации', 'error');
+          }
+          setProgress('Ошибка генерации', 0);
+          desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка генерации', progress: null });
+          return;
+        }
+
+        setProgress('Упаковка результата', 80);
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Упаковка результата', progress: 80 });
+
+        const blob = await res.blob();
+        lastGeneratedBlob = blob;
+        await saveGeneratedBlob(blob);
+
+        setProgress('Готово', 100);
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Готово', progress: 100, completed: true });
+        document.getElementById('resultActions').style.display = 'flex';
+        renderMessage('Генерация завершена', 'success');
+      } catch (err) {
+        renderMessage(`Ошибка: ${err.message}`, 'error');
+        setProgress('Ошибка', 0);
+        desktopApi && desktopApi.emitGenerationProgress({ status: 'Ошибка', progress: null });
+      }
+    });
+
+    document.getElementById('downloadZipBtn').addEventListener('click', async () => {
+      if (!lastGeneratedBlob) {
+        renderMessage('Сначала выполните генерацию', 'warning');
+        return;
+      }
+      await saveGeneratedBlob(lastGeneratedBlob);
+    });
+
+    // History paging
+    document.getElementById('historyPrevBtn').addEventListener('click', () => {
+      historyPage = Math.max(1, historyPage - 1);
+      renderHistoryPage();
+    });
+
+    document.getElementById('historyNextBtn').addEventListener('click', () => {
+      const maxPage = Math.max(1, Math.ceil(historyItems.length / historyPageSize));
+      historyPage = Math.min(maxPage, historyPage + 1);
+      renderHistoryPage();
+    });
+
+    // Settings
+    document.getElementById('changeOutputDirBtn').addEventListener('click', async () => {
+      if (!desktopApi) return;
+      const selected = await desktopApi.selectOutputDir();
+      if (!selected) return;
+      outputDir = selected;
+      outputDirInput.value = selected;
+      localStorage.setItem('tkg_output_dir', selected);
+      renderMessage(`Папка вывода: ${selected}`, 'success');
+    });
+
+    document.getElementById('openDevtoolsBtn').addEventListener('click', () => {
+      if (desktopApi && typeof desktopApi.onMenuAction === 'function') {
+        renderMessage('Используйте меню приложения для открытия DevTools', 'info');
+      } else {
+        renderMessage('DevTools доступны в браузере через F12', 'info');
+      }
+    });
+
+    // Auth actions
     document.getElementById('loginBtn').addEventListener('click', async () => {
-      clearMessages();
       try {
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
@@ -339,7 +686,7 @@
         authToken = data.tokens.accessToken;
         localStorage.setItem('tkg_access_token', authToken);
         setAuthState(data.user);
-        renderMessage('Вход выполнен', 'ok');
+        renderMessage('Вход выполнен', 'success');
       } catch (err) {
         setAuthState(null);
         renderMessage(err.message, 'error');
@@ -350,10 +697,72 @@
       authToken = '';
       localStorage.removeItem('tkg_access_token');
       setAuthState(null);
-      renderMessage('Вы вышли из системы', 'ok');
+      renderMessage('Вы вышли из системы', 'info');
     });
 
+    if (desktopApi) {
+      document.getElementById('openFileBtn').style.display = 'inline-block';
+      document.getElementById('selectOutputBtn').style.display = 'inline-block';
+      document.getElementById('openOutputFolderBtn').style.display = 'inline-block';
+      document.getElementById('openFolderResultBtn').style.display = 'inline-block';
+      document.getElementById('changeOutputDirBtn').style.display = 'inline-block';
+
+      document.getElementById('openFileBtn').addEventListener('click', async () => {
+        const filePayload = await desktopApi.openFile();
+        if (!filePayload) return;
+        await loadPathFromDesktop(filePayload);
+      });
+
+      document.getElementById('selectOutputBtn').addEventListener('click', async () => {
+        const selected = await desktopApi.selectOutputDir();
+        if (selected) {
+          outputDir = selected;
+          outputDirInput.value = selected;
+          localStorage.setItem('tkg_output_dir', selected);
+          renderMessage(`Папка вывода: ${selected}`, 'success');
+        }
+      });
+
+      document.getElementById('openOutputFolderBtn').addEventListener('click', async () => {
+        const opened = await desktopApi.openOutputFolder();
+        if (!opened) renderMessage('Сначала выберите папку вывода', 'warning');
+      });
+
+      document.getElementById('openFolderResultBtn').addEventListener('click', async () => {
+        const opened = await desktopApi.openOutputFolder();
+        if (!opened) renderMessage('Сначала выберите папку вывода', 'warning');
+      });
+
+      desktopApi.onMenuAction(async (action) => {
+        if (action === 'open-file') {
+          const filePayload = await desktopApi.openFile();
+          if (!filePayload) return;
+          try {
+            await loadPathFromDesktop(filePayload);
+          } catch (err) {
+            renderMessage(err.message, 'error');
+          }
+        }
+
+        if (action === 'generate') {
+          document.getElementById('generateBtn').click();
+        }
+
+        if (action === 'settings') {
+          switchSection('settings');
+          const selected = await desktopApi.selectOutputDir();
+          if (selected) {
+            outputDir = selected;
+            outputDirInput.value = selected;
+            localStorage.setItem('tkg_output_dir', selected);
+            renderMessage(`Папка вывода: ${selected}`, 'success');
+          }
+        }
+      });
+    }
+
     initAuth();
+    updateCounters();
   </script>
 </body>
 </html>
