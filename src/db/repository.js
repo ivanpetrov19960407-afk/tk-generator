@@ -173,6 +173,94 @@ function createRepository(dbOrOptions) {
     return { ...generation, items };
   }
 
+  function getHistoryList(filter = {}) {
+    const page = Math.max(1, Number(filter.page || 1));
+    const limit = Math.min(100, Math.max(1, Number(filter.limit || 20)));
+    const offset = (page - 1) * limit;
+    const search = String(filter.search || '').trim().toLowerCase();
+    const material = String(filter.material || '').trim().toLowerCase();
+    const from = filter.from ? String(filter.from).trim() : '';
+    const to = filter.to ? String(filter.to).trim() : '';
+
+    const whereConditions = [];
+    const whereParams = [];
+
+    if (from) {
+      whereConditions.push('g.timestamp >= ?');
+      whereParams.push(from);
+    }
+    if (to) {
+      whereConditions.push('g.timestamp <= ?');
+      whereParams.push(to);
+    }
+    if (search) {
+      whereConditions.push('EXISTS (SELECT 1 FROM generation_items gis WHERE gis.generation_id = g.id AND LOWER(COALESCE(gis.material, "")) LIKE ?)');
+      whereParams.push(`%${search}%`);
+    }
+    if (material) {
+      whereConditions.push('EXISTS (SELECT 1 FROM generation_items gim WHERE gim.generation_id = g.id AND LOWER(COALESCE(gim.material, "")) = ?)');
+      whereParams.push(material);
+    }
+
+    const whereClause = whereConditions.length ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    const totalRow = db.prepare(`SELECT COUNT(*) AS count FROM generations g ${whereClause}`).get(...whereParams);
+    const rows = db.prepare(`
+      SELECT
+        g.id,
+        g.timestamp AS created_at,
+        g.products_count,
+        CASE WHEN g.error_count > 0 THEN 'error' ELSE 'success' END AS status,
+        g.output_dir,
+        COALESCE(SUM(gi.total_cost), 0) AS total_cost,
+        GROUP_CONCAT(DISTINCT NULLIF(gi.material, '')) AS materials_csv,
+        (
+          SELECT gif.output_files
+          FROM generation_items gif
+          WHERE gif.generation_id = g.id
+            AND gif.output_files IS NOT NULL
+            AND gif.output_files != ''
+          ORDER BY gif.id ASC
+          LIMIT 1
+        ) AS output_files
+      FROM generations g
+      LEFT JOIN generation_items gi ON gi.generation_id = g.id
+      ${whereClause}
+      GROUP BY g.id
+      ORDER BY g.id DESC
+      LIMIT ? OFFSET ?
+    `).all(...whereParams, limit, offset);
+
+    const items = rows.map((row) => {
+      let outputPath = null;
+      if (row.output_files) {
+        try {
+          const parsed = JSON.parse(row.output_files);
+          outputPath = Array.isArray(parsed) && parsed.length ? parsed[0] : null;
+        } catch (_error) {
+          outputPath = null;
+        }
+      }
+
+      return {
+        id: Number(row.id),
+        created_at: row.created_at,
+        products_count: Number(row.products_count || 0),
+        materials: row.materials_csv ? String(row.materials_csv).split(',').filter(Boolean) : [],
+        status: row.status,
+        output_path: outputPath,
+        total_cost: Number(row.total_cost || 0),
+        output_dir: row.output_dir || null
+      };
+    });
+
+    return {
+      items,
+      total: Number(totalRow.count || 0),
+      page,
+      limit
+    };
+  }
+
   function getStats(dateRange = {}) {
     const conditions = [];
     const params = [];
@@ -382,6 +470,7 @@ function createRepository(dbOrOptions) {
     saveGenerationItem,
     saveAuditLog,
     getGenerations,
+    getHistoryList,
     getGenerationById,
     getStats,
     getAnalyticsSummary,

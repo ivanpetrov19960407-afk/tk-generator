@@ -696,15 +696,32 @@ async function createHandler(req, res, deps = {}) {
   if (req.method === 'GET' && url.pathname === '/api/history') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
     const page = Number(url.searchParams.get('page') || 1);
-    const pageSize = Number(url.searchParams.get('pageSize') || 20);
-    const data = repository.getGenerations({ page, pageSize });
+    const limit = Number(url.searchParams.get('limit') || url.searchParams.get('pageSize') || 20);
+    const search = (url.searchParams.get('search') || '').trim();
+    const material = (url.searchParams.get('material') || '').trim();
+    const from = (url.searchParams.get('from') || '').trim();
+    const to = (url.searchParams.get('to') || '').trim();
+    const data = repository.getHistoryList({ page, limit, search, material, from, to });
+    const normalized = {
+      ...data,
+      items: data.items.map((item) => ({
+        id: item.id,
+        created_at: item.created_at,
+        products_count: item.products_count,
+        materials: item.materials,
+        status: item.status,
+        output_path: item.output_path,
+        total_cost: item.total_cost,
+        output_available: Boolean(item.output_path && fs.existsSync(item.output_path))
+      }))
+    };
     repository.saveAuditLog({
       action: 'api.history.list',
       user: (req.auth && req.auth.user && req.auth.user.username) || req.headers['x-user'] || 'api',
-      details: { page, pageSize },
+      details: { page, limit, search, material, from, to },
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
-    return sendJson(res, 200, data);
+    return sendJson(res, 200, normalized);
   }
 
   if (req.method === 'GET' && url.pathname === '/api/webhooks') {
@@ -760,6 +777,26 @@ async function createHandler(req, res, deps = {}) {
       ip: req.socket && req.socket.remoteAddress ? req.socket.remoteAddress : null
     });
     return sendJson(res, 200, data);
+  }
+
+  if (req.method === 'GET' && /^\/api\/history\/\d+\/download$/.test(url.pathname)) {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const parts = url.pathname.split('/');
+    const id = Number(parts[3]);
+    const data = repository.getGenerationById(id);
+    if (!data) return sendJson(res, 404, { error: 'Not Found' });
+    const firstItemWithFile = (data.items || []).find((item) => {
+      return Array.isArray(item.output_files) && item.output_files.length && fs.existsSync(item.output_files[0]);
+    });
+    if (!firstItemWithFile) return sendJson(res, 404, { error: 'Файл недоступен' });
+    const filePath = firstItemWithFile.output_files[0];
+    const fileName = path.basename(filePath);
+    res.writeHead(200, {
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${fileName}"`
+    });
+    fs.createReadStream(filePath).pipe(res);
+    return;
   }
 
   if (req.method === 'GET' && url.pathname === '/api/export/csv') {
