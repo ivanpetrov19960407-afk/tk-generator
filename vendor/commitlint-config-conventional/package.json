@@ -1,0 +1,5 @@
+{
+  "name": "@commitlint/config-conventional",
+  "version": "19.8.1",
+  "main": "index.js"
+}

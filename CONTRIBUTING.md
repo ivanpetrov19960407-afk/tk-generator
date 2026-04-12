@@ -26,7 +26,7 @@ npx tk-generator --input examples/batch_small.json --output ./output
 
 ## Conventional Commits
 
-В проекте используется `commitlint` с `@commitlint/config-conventional`.
+В проекте используется `commitlint` с `@commitlint/config-conventional` (локальные зависимости в `vendor/` для офлайн-совместимости CI).
 
 Примеры корректных сообщений коммитов:
 
