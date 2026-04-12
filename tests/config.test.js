@@ -51,6 +51,29 @@ function createTmpConfig(files) {
   const transport = calcTransport({ rkm: {} }, { itogo_production: 0 });
   assert.strictEqual(transport.total, 150 * 10);
 
+  const defaultOnlyDir = createTmpConfig({
+    'default.json': {
+      rkm: {
+        logisticsDefaults: {
+          distance_km: 200,
+          tariff_rub_km: 10,
+          trips: 1,
+          loading: 0,
+          unloading: 0,
+          insurance_pct: 0
+        },
+        skipTransportTkNumbers: [],
+        specialMaterialRules: {}
+      },
+      company: {}
+    }
+  });
+  const userConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tkg-user-config-'));
+  const userLocalPath = path.join(userConfigDir, 'local.json');
+  fs.writeFileSync(userLocalPath, JSON.stringify({ rkm: { logisticsDefaults: { distance_km: 250 } } }), 'utf8');
+  const splitConfig = loadConfig({ configDir: defaultOnlyDir, localConfigPath: userLocalPath, env: {} });
+  assert.strictEqual(splitConfig.rkm.logisticsDefaults.distance_km, 250);
+
   const badDir = createTmpConfig({
     'default.json': {
       company: {},

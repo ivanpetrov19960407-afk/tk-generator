@@ -24,11 +24,10 @@ const { resolveRuntimeDir } = require('../runtime-paths');
 const MAX_JSON_BODY_BYTES = 5 * 1024 * 1024;
 const MAX_EXCEL_UPLOAD_BYTES = 10 * 1024 * 1024;
 const GENERATION_TIMEOUT_MS = 30 * 1000;
-const CONFIG_DIR = resolveRuntimeDir('config');
-const LOCAL_CONFIG_PATH = path.join(CONFIG_DIR, 'local.json');
+const PUBLIC_DIR = resolveRuntimeDir('public');
 let APP_VERSION = 'unknown';
 try {
-  const pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+  const pkg = JSON.parse(fs.readFileSync(path.join(resolveRuntimeDir('.'), 'package.json'), 'utf8'));
   APP_VERSION = pkg.version || APP_VERSION;
 } catch (_error) {}
 
@@ -72,9 +71,16 @@ function getClientConfig() {
   };
 }
 
+function getLocalConfigPath() {
+  return process.env.TKG_CONFIG_LOCAL_PATH
+    ? path.resolve(process.env.TKG_CONFIG_LOCAL_PATH)
+    : path.join(resolveRuntimeDir('config'), 'local.json');
+}
+
 function readLocalConfigFile() {
-  if (!fs.existsSync(LOCAL_CONFIG_PATH)) return {};
-  return JSON.parse(fs.readFileSync(LOCAL_CONFIG_PATH, 'utf8'));
+  const localConfigPath = getLocalConfigPath();
+  if (!fs.existsSync(localConfigPath)) return {};
+  return JSON.parse(fs.readFileSync(localConfigPath, 'utf8'));
 }
 
 function buildAllowedConfigPatch(payload = {}) {
@@ -138,10 +144,11 @@ function buildAllowedConfigPatch(payload = {}) {
 function saveConfigPatch(payload) {
   const allowedPatch = buildAllowedConfigPatch(payload);
   if (!Object.keys(allowedPatch).length) return getClientConfig();
-  fs.mkdirSync(CONFIG_DIR, { recursive: true });
+  const localConfigPath = getLocalConfigPath();
+  fs.mkdirSync(path.dirname(localConfigPath), { recursive: true });
   const localConfig = readLocalConfigFile();
   const mergedLocal = deepMerge(localConfig, allowedPatch);
-  fs.writeFileSync(LOCAL_CONFIG_PATH, `${JSON.stringify(mergedLocal, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(localConfigPath, `${JSON.stringify(mergedLocal, null, 2)}\n`, 'utf8');
   loadConfig();
   return getClientConfig();
 }
@@ -1031,8 +1038,8 @@ async function createHandler(req, res, deps = {}) {
 
 
   if (req.method === 'GET' && url.pathname.startsWith('/styles/')) {
-    const file = path.resolve(process.cwd(), 'public', url.pathname.slice(1));
-    if (!file.startsWith(path.resolve(process.cwd(), 'public', 'styles'))) return sendJson(res, 403, { error: 'Forbidden' });
+    const file = path.resolve(PUBLIC_DIR, url.pathname.slice(1));
+    if (!file.startsWith(path.resolve(PUBLIC_DIR, 'styles'))) return sendJson(res, 403, { error: 'Forbidden' });
     if (!fs.existsSync(file)) return sendJson(res, 404, { error: 'Not Found' });
     res.writeHead(200, { 'Content-Type': 'text/css; charset=utf-8' });
     res.end(fs.readFileSync(file));
@@ -1040,8 +1047,8 @@ async function createHandler(req, res, deps = {}) {
   }
 
   if (req.method === 'GET' && url.pathname.startsWith('/vendor/')) {
-    const file = path.resolve(process.cwd(), 'public', url.pathname.slice(1));
-    if (!file.startsWith(path.resolve(process.cwd(), 'public', 'vendor'))) return sendJson(res, 403, { error: 'Forbidden' });
+    const file = path.resolve(PUBLIC_DIR, url.pathname.slice(1));
+    if (!file.startsWith(path.resolve(PUBLIC_DIR, 'vendor'))) return sendJson(res, 403, { error: 'Forbidden' });
     if (!fs.existsSync(file)) return sendJson(res, 404, { error: 'Not Found' });
     const contentType = file.endsWith('.css') ? 'text/css; charset=utf-8' : 'application/javascript; charset=utf-8';
     res.writeHead(200, { 'Content-Type': contentType });
@@ -1050,28 +1057,28 @@ async function createHandler(req, res, deps = {}) {
   }
 
   if (req.method === 'GET' && url.pathname === '/swagger-ui.css') {
-    const file = path.resolve(process.cwd(), 'public', 'swagger-ui.css');
+    const file = path.resolve(PUBLIC_DIR, 'swagger-ui.css');
     res.writeHead(200, { 'Content-Type': 'text/css; charset=utf-8' });
     res.end(fs.readFileSync(file));
     return;
   }
 
   if (req.method === 'GET' && url.pathname === '/swagger-ui-bundle.js') {
-    const file = path.resolve(process.cwd(), 'public', 'swagger-ui-bundle.js');
+    const file = path.resolve(PUBLIC_DIR, 'swagger-ui-bundle.js');
     res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
     res.end(fs.readFileSync(file));
     return;
   }
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-    const file = path.resolve(process.cwd(), 'public', 'index.html');
+    const file = path.resolve(PUBLIC_DIR, 'index.html');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(fs.readFileSync(file));
     return;
   }
 
   if (req.method === 'GET' && url.pathname === '/analytics.html') {
-    const file = path.resolve(process.cwd(), 'public', 'analytics.html');
+    const file = path.resolve(PUBLIC_DIR, 'analytics.html');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(fs.readFileSync(file));
     return;
@@ -1086,11 +1093,11 @@ function createApp() {
   const auth = createAuth(config, repository);
   const bootstrapPromise = auth.ensureBootstrapAdmin();
   return {
-    listen(port, cb) {
+    listen(...args) {
       const server = http.createServer((req, res) => {
         createHandler(req, res, { repository, auth, bootstrapPromise }).catch((error) => sendJson(res, 500, { error: error.message }));
       });
-      return server.listen(port, cb);
+      return server.listen(...args);
     }
   };
 }
