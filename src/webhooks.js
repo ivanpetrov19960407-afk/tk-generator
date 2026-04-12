@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { logger } = require('./logger');
+const AbortControllerImpl = globalThis.AbortController;
 
 const WEBHOOK_EVENTS = new Set([
   'generation.complete',
@@ -54,8 +55,10 @@ async function postWithRetry(subscription, body) {
   let attempt = 0;
 
   while (attempt <= RETRY_DELAYS_MS.length) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const controller = AbortControllerImpl ? new AbortControllerImpl() : null;
+    const timeout = setTimeout(() => {
+      if (controller) controller.abort();
+    }, REQUEST_TIMEOUT_MS);
     try {
       const response = await fetch(subscription.url, {
         method: 'POST',
@@ -64,7 +67,7 @@ async function postWithRetry(subscription, body) {
           ...(signature ? { 'X-TKG-Signature': signature } : {})
         },
         body,
-        signal: controller.signal
+        signal: controller ? controller.signal : undefined
       });
       clearTimeout(timeout);
 
