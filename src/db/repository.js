@@ -383,6 +383,28 @@ function createRepository(dbOrOptions) {
     }));
   }
 
+
+  function getAnalyticsOperations(filter = {}) {
+    const { whereClause, params } = buildAnalyticsFilter(filter);
+    const limit = Math.min(25, Math.max(1, Number(filter.limit || 10)));
+    return db.prepare(`
+      SELECT
+        COALESCE(NULLIF(gi.product_name, ''), 'Без названия') AS operation,
+        COUNT(*) AS products,
+        COALESCE(SUM(gi.total_cost), 0) AS total_cost,
+        COALESCE(AVG(gi.total_cost), 0) AS average_cost
+      FROM generation_items gi
+      INNER JOIN generations g ON g.id = gi.generation_id
+      ${whereClause}
+      GROUP BY operation
+      ORDER BY total_cost DESC, products DESC
+      LIMIT ?
+    `).all(...params, limit).map((row) => ({
+      ...row,
+      total_cost: Number(row.total_cost || 0),
+      average_cost: Number(row.average_cost || 0)
+    }));
+  }
   function getAnalyticsTextures(filter = {}) {
     const { whereClause, params } = buildAnalyticsFilter(filter);
     return db.prepare(`
@@ -476,6 +498,7 @@ function createRepository(dbOrOptions) {
     getAnalyticsSummary,
     getAnalyticsCostTrends,
     getAnalyticsMaterials,
+    getAnalyticsOperations,
     getAnalyticsTextures,
     countUsers,
     getUserByUsername,

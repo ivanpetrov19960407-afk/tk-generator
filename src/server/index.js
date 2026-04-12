@@ -332,6 +332,15 @@ function createOpenApiSpec() {
           }
         }
       },
+      '/api/analytics/operations': {
+        get: {
+          summary: 'Стоимость по операциям.',
+          tags: ['Analytics'],
+          responses: {
+            200: { description: 'Статистика по операциям.' }
+          }
+        }
+      },
       '/api/analytics/textures': {
         get: {
           summary: 'Распределение по фактурам.',
@@ -868,6 +877,14 @@ async function createHandler(req, res, deps = {}) {
     return sendJson(res, 200, { filters: { ...filters, limit }, items });
   }
 
+  if (req.method === 'GET' && url.pathname === '/api/analytics/operations') {
+    if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
+    const filters = parseAnalyticsFilters(url);
+    const limit = Number(url.searchParams.get('limit') || 10);
+    const items = repository.getAnalyticsOperations({ ...filters, limit });
+    return sendJson(res, 200, { filters: { ...filters, limit }, items });
+  }
+
   if (req.method === 'GET' && url.pathname === '/api/analytics/textures') {
     if (auth && !(await auth.requireRole(req, res, sendJson, 'viewer'))) return;
     const filters = parseAnalyticsFilters(url);
@@ -875,6 +892,25 @@ async function createHandler(req, res, deps = {}) {
     return sendJson(res, 200, { filters, items });
   }
 
+
+  if (req.method === 'GET' && url.pathname.startsWith('/styles/')) {
+    const file = path.resolve(process.cwd(), 'public', url.pathname.slice(1));
+    if (!file.startsWith(path.resolve(process.cwd(), 'public', 'styles'))) return sendJson(res, 403, { error: 'Forbidden' });
+    if (!fs.existsSync(file)) return sendJson(res, 404, { error: 'Not Found' });
+    res.writeHead(200, { 'Content-Type': 'text/css; charset=utf-8' });
+    res.end(fs.readFileSync(file));
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname.startsWith('/vendor/')) {
+    const file = path.resolve(process.cwd(), 'public', url.pathname.slice(1));
+    if (!file.startsWith(path.resolve(process.cwd(), 'public', 'vendor'))) return sendJson(res, 403, { error: 'Forbidden' });
+    if (!fs.existsSync(file)) return sendJson(res, 404, { error: 'Not Found' });
+    const contentType = file.endsWith('.css') ? 'text/css; charset=utf-8' : 'application/javascript; charset=utf-8';
+    res.writeHead(200, { 'Content-Type': contentType });
+    res.end(fs.readFileSync(file));
+    return;
+  }
 
   if (req.method === 'GET' && url.pathname === '/swagger-ui.css') {
     const file = path.resolve(process.cwd(), 'public', 'swagger-ui.css');

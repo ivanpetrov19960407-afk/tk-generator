@@ -55,6 +55,11 @@ const { createApp } = require('../../src/server/index');
     const textures = await texturesRes.json();
     assert.ok(Array.isArray(textures.items), 'textures should include items array');
 
+    const operationsRes = await fetch(`${base}/api/analytics/operations`);
+    assert.strictEqual(operationsRes.status, 200, 'analytics operations should be 200');
+    const operations = await operationsRes.json();
+    assert.ok(Array.isArray(operations.items), 'operations should include items array');
+
     console.log('analytics.api test passed');
   } finally {
     server.close();
